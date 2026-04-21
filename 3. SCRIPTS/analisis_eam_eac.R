@@ -1,0 +1,152 @@
+# Analisis inicial EAM/EAC desde archivos ZIP
+# Genera inventario de archivos, resumen anual y variables mas comunes.
+
+required_packages <- c(
+  "dplyr", "purrr", "stringr", "readr", "haven", "readxl", "janitor", "ggplot2", "tibble", "tidyr", "scales"
+)
+
+install_if_missing <- function(pkgs) {
+  missing <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
+  if (length(missing) > 0) {
+    install.packages(missing, repos = "https://cloud.r-project.org")
+  }
+}
+
+install_if_missing(required_packages)
+invisible(lapply(required_packages, library, character.only = TRUE))
+
+root_dir <- normalizePath(".", winslash = "/", mustWork = TRUE)
+data_dir <- file.path(root_dir, "1. DATOS")
+extract_root <- file.path(root_dir, "2. PROCESAMIENTO", "_tmp_unzip")
+output_dir <- file.path(root_dir, "4. RESULTADOS")
+
+if (!dir.exists(data_dir)) {
+  stop("No se encontro la carpeta de datos en: ", data_dir)
+}
+
+dir.create(extract_root, recursive = TRUE, showWarnings = FALSE)
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+
+zip_files <- list.files(data_dir, pattern = "\\.zip$", recursive = TRUE, full.names = TRUE, ignore.case = TRUE)
+if (length(zip_files) == 0) {
+  stop("No se encontraron archivos ZIP en la carpeta de datos.")
+}
+
+# Descomprime cada ZIP en su propia subcarpeta para evitar colisiones de nombres.
+for (z in zip_files) {
+  zip_name <- tools::file_path_sans_ext(basename(z))
+  dest_dir <- file.path(extract_root, zip_name)
+  dir.create(dest_dir, recursive = TRUE, showWarnings = FALSE)
+  unzip(z, exdir = dest_dir)
+}
+
+candidate_files <- list.files(
+  extract_root,
+  pattern = "\\.(csv|dta|sav|xlsx)$",
+  recursive = TRUE,
+  full.names = TRUE,
+  ignore.case = TRUE
+)
+
+if (length(candidate_files) == 0) {
+  stop("No se encontraron archivos compatibles (csv/dta/sav/xlsx) despues de descomprimir.")
+}
+
+preview_n <- 5000
+
+infer_source <- function(path) {
+  p <- toupper(path)
+  if (stringr::str_detect(p, "EAM")) return("EAM")
+  if (stringr::str_detect(p, "EAC")) return("EAC")
+  "OTRO"
+}
+
+infer_year <- function(path) {
+  y <- stringr::str_extract(path, "(19|20)[0-9]{2}")
+  suppressWarnings(as.integer(y))
+}
+
+read_preview <- function(path, n_max = 5000) {
+  ext <- tolower(tools::file_ext(path))
+
+  out <- tryCatch({
+    if (ext == "csv") {
+      readr::read_csv(path, n_max = n_max, show_col_types = FALSE)
+    } else if (ext == "dta") {
+      haven::read_dta(path, n_max = n_max)
+    } else if (ext == "sav") {
+      haven::read_sav(path, n_max = n_max)
+    } else if (ext == "xlsx") {
+      readxl::read_excel(path, n_max = n_max)
+    } else {
+      NULL
+    }
+  }, error = function(e) {
+    message("No se pudo leer: ", path, " | ", e$message)
+    NULL
+  })
+
+  out
+}
+
+inventory <- purrr::map_dfr(candidate_files, function(f) {
+  dat <- read_preview(f, n_max = preview_n)
+
+  tibble::tibble(
+    archivo = f,
+    fuente = infer_source(f),
+    anio = infer_year(f),
+    extension = tolower(tools::file_ext(f)),
+    filas_muestra = if (is.null(dat)) NA_integer_ else nrow(dat),
+    columnas = if (is.null(dat)) NA_integer_ else ncol(dat),
+    nombres_columnas = if (is.null(dat)) NA_character_ else paste(names(dat), collapse = "|")
+  )
+})
+
+summary_year <- inventory %>%
+  dplyr::group_by(fuente, anio) %>%
+  dplyr::summarise(
+    archivos = dplyr::n(),
+    filas_muestra_totales = sum(filas_muestra, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  dplyr::arrange(fuente, anio)
+
+variables_common <- inventory %>%
+  dplyr::filter(!is.na(nombres_columnas), nombres_columnas != "") %>%
+  dplyr::mutate(variable = stringr::str_split(nombres_columnas, "\\|")) %>%
+  tidyr::unnest(variable) %>%
+  dplyr::mutate(variable = janitor::make_clean_names(variable)) %>%
+  dplyr::group_by(fuente, variable) %>%
+  dplyr::summarise(presencia_en_archivos = dplyr::n(), .groups = "drop") %>%
+  dplyr::arrange(fuente, dplyr::desc(presencia_en_archivos), variable)
+
+readr::write_csv(inventory, file.path(output_dir, "inventario_archivos.csv"))
+readr::write_csv(summary_year, file.path(output_dir, "resumen_por_fuente_anio.csv"))
+readr::write_csv(variables_common, file.path(output_dir, "variables_mas_comunes.csv"))
+
+plot_df <- summary_year %>% dplyr::filter(!is.na(anio))
+
+if (nrow(plot_df) > 0) {
+  p <- ggplot2::ggplot(plot_df, ggplot2::aes(x = anio, y = archivos, color = fuente)) +
+    ggplot2::geom_line(linewidth = 1) +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::scale_x_continuous(breaks = scales::pretty_breaks()) +
+    ggplot2::labs(
+      title = "Cantidad de archivos procesados por anio",
+      x = "Anio",
+      y = "Numero de archivos",
+      color = "Fuente"
+    ) +
+    ggplot2::theme_minimal(base_size = 12)
+
+  ggplot2::ggsave(
+    filename = file.path(output_dir, "plot_archivos_por_anio.png"),
+    plot = p,
+    width = 10,
+    height = 6,
+    dpi = 120
+  )
+}
+
+message("Analisis completado. Revisa la carpeta: ", output_dir)
