@@ -11,30 +11,20 @@ suppressPackageStartupMessages({
   library(here)
 })
 
+source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
+
 # -----------------------------
 # 1) Configuracion de rutas
 # -----------------------------
 
-plot_dir <- here::here("4. RESULTADOS", "panel_diagnostico")
-data_output_dir <- here::here("1. DATOS", "6. BASES_DERIVADAS", "panel_diagnostico")
-dir.create(plot_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(data_output_dir, recursive = TRUE, showWarnings = FALSE)
+paths <- ensure_project_structure()
+plot_dir <- paths$resultados_panel
+data_output_dir <- paths$bases_derivadas_panel
 
 # Se prueban rutas candidatas para mantener compatibilidad con versiones previas
 # del flujo.
-macro_candidates <- c(
-  here::here("1. DATOS", "5. MACROBASE", "macro_base_eam.rds"),
-  here::here("4. RESULTADOS", "macro_base_eam.rds")
-)
-
-macro_path <- macro_candidates[file.exists(macro_candidates)][1]
-
-if (is.na(macro_path) || !nzchar(macro_path)) {
-  stop(
-    "No se encontro macro_base_eam.rds en rutas candidatas:\n",
-    paste0("- ", macro_candidates, collapse = "\n")
-  )
-}
+macro_candidates <- c(paths$macro_base_eam, here::here("4. RESULTADOS", "macro_base_eam.rds"))
+macro_path <- find_existing_path(macro_candidates, "macro_base_eam.rds")
 
 message("Leyendo macrobase desde: ", macro_path)
 
@@ -43,13 +33,7 @@ message("Leyendo macrobase desde: ", macro_path)
 # -----------------------------
 
 macro_base <- readr::read_rds(macro_path)
-
-required_cols <- c("NORDEMP", "ANIO")
-missing_cols <- setdiff(required_cols, names(macro_base))
-
-if (length(missing_cols) > 0) {
-  stop("Faltan columnas requeridas en macro_base: ", paste(missing_cols, collapse = ", "))
-}
+check_required_vars(macro_base, c("NORDEMP", "ANIO"))
 
 panel <- macro_base %>%
   mutate(

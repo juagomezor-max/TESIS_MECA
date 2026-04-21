@@ -5,6 +5,8 @@ suppressPackageStartupMessages({
   library(scales)
 })
 
+source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
+
 # ============================================================
 # Analisis descriptivo preliminar de exposicion a choques laborales
 # Macrobase EAM
@@ -30,38 +32,22 @@ suppressPackageStartupMessages({
 # 1) Rutas
 # -----------------------------
 
-plot_dir <- here::here("4. RESULTADOS", "descriptivos_exposicion")
-data_output_dir <- here::here("1. DATOS", "6. BASES_DERIVADAS", "descriptivos_exposicion")
-dir.create(plot_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(data_output_dir, recursive = TRUE, showWarnings = FALSE)
+paths <- ensure_project_structure()
+plot_dir <- paths$resultados_exposicion
+data_output_dir <- paths$bases_derivadas_exposicion
 
 macro_candidates <- c(
-  here::here("1. DATOS", "5. MACROBASE", "macro_base_eam.rds"),
+  paths$macro_base_eam,
   here::here("4. RESULTADOS", "macro_base_eam.rds")
 )
 
-macro_path <- macro_candidates[file.exists(macro_candidates)][1]
-
-if (is.na(macro_path) || !nzchar(macro_path)) {
-  stop(
-    "No se encontro macro_base_eam.rds en rutas candidatas:\n",
-    paste0("- ", macro_candidates, collapse = "\n")
-  )
-}
+macro_path <- find_existing_path(macro_candidates, "macro_base_eam.rds")
 
 message("Leyendo macrobase desde: ", macro_path)
 
 # -----------------------------
 # 2) Utilidades
 # -----------------------------
-
-# Valida columnas estrictamente necesarias antes de correr el analisis.
-check_required_vars <- function(data, vars) {
-  missing_vars <- setdiff(vars, names(data))
-  if (length(missing_vars) > 0) {
-    stop("Faltan columnas requeridas: ", paste(missing_vars, collapse = ", "))
-  }
-}
 
 first_existing_var <- function(data, candidates, label = NULL) {
   match <- candidates[candidates %in% names(data)][1]

@@ -5,27 +5,17 @@
 # - 1. DATOS/5. MACROBASE/macro_base_eam_codebook.csv
 # - 1. DATOS/5. MACROBASE/macro_base_eam_resumen.csv
 
+source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
+
 required_packages <- c("dplyr", "purrr", "stringr", "readr", "haven", "tibble", "janitor")
-
-install_if_missing <- function(pkgs) {
-  missing <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-  if (length(missing) > 0) {
-    install.packages(missing, repos = "https://cloud.r-project.org")
-  }
-}
-
-install_if_missing(required_packages)
-invisible(lapply(required_packages, library, character.only = TRUE))
+load_project_packages(required_packages)
 
 # Rutas principales del flujo de construccion.
-root_dir <- normalizePath(".", winslash = "/", mustWork = TRUE)
-data_dir <- file.path(root_dir, "1. DATOS", "1. EAM")
-dictionary_path <- file.path(root_dir, "1. DATOS", "3. DICCIONARIOS", "diccionario_maestro_variables.csv")
-tmp_dir <- file.path(root_dir, "2. PROCESAMIENTO", "_tmp_macro_base_eam")
-macrobase_dir <- file.path(root_dir, "1. DATOS", "5. MACROBASE")
-
-dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(macrobase_dir, recursive = TRUE, showWarnings = FALSE)
+paths <- ensure_project_structure()
+data_dir <- paths$datos_eam
+dictionary_path <- paths$diccionario_maestro
+tmp_dir <- paths$tmp_macrobase
+macrobase_dir <- paths$macrobase
 
 if (!file.exists(dictionary_path)) {
   stop("No se encontro el diccionario maestro en: ", dictionary_path)

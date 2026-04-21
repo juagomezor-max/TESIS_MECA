@@ -1,140 +1,220 @@
-# TESIS_MECA - README Descriptivo del Proceso
+# TESIS_MECA - Guia Descriptiva Del Flujo
 
-Este documento complementa el README principal con una descripcion integral de lo construido hasta ahora en el proyecto: organizacion, entorno reproducible, scripts implementados, resultados generados, decisiones de control de versiones y validaciones aplicadas.
+Este documento explica con mas detalle como esta organizado el proyecto, que hace cada script y como interpretar las carpetas y salidas.
 
-## 1. Objetivo del trabajo realizado
+## 1. Logica general del proyecto
 
-El objetivo fue dejar un flujo reproducible en R para trabajar con microdatos de encuestas economicas (enfasis inicial en EAM), desde la lectura de fuentes comprimidas hasta la construccion de una macrobase consolidada y su diccionario tecnico.
+El repositorio esta organizado como un pipeline reproducible en R:
 
-De forma paralela, se implemento una estrategia de higiene de repositorio para evitar subir datos crudos y artefactos pesados o temporales a Git.
+1. inspeccion de archivos fuente
+2. construccion de metadatos
+3. consolidacion de la macrobase EAM
+4. diagnostico longitudinal del identificador empresarial
+5. analisis descriptivo preliminar de exposicion a choques laborales
 
-## 2. Estructura del proyecto
+La idea es que cualquier persona pueda restaurar el entorno, correr el flujo desde la raiz y regenerar tanto las bases derivadas como los graficos.
 
-Se organizo el repositorio con carpetas numeradas y en mayusculas para facilitar replicabilidad:
+## 2. Estructura de carpetas
 
-- 0. PREPARACION: insumos de preparacion y metadatos integrados.
-- 1. DATOS: fuentes originales y artefactos derivados pesados (no versionados).
-- 2. PROCESAMIENTO: temporales de descompresion y transformacion.
-- 3. SCRIPTS: logica de procesamiento y analisis en R.
-- 4. RESULTADOS: salidas analiticas ligeras (tablas, resumenes y graficos).
+### `0. PREPARACION`
 
-## 3. Entorno reproducible con renv
+Carpeta para notas y material metodologico liviano.
 
-Se inicializo el proyecto con renv para garantizar reproducibilidad de paquetes y versiones.
+Hoy ya no almacena las tablas del diccionario maestro; esas pasan a `1. DATOS/3. DICCIONARIOS/`.
 
-Elementos clave:
+### `1. DATOS`
 
-- renv.lock: congelacion de dependencias.
-- .Rprofile con activacion de renv al abrir el proyecto.
+Carpeta no versionada donde viven:
 
-Resultado: el entorno queda restaurable en otra maquina con renv::restore().
+- fuentes originales EAM y EAC
+- diccionarios construidos
+- inventarios tabulares
+- macrobase EAM
+- bases derivadas y tablas auxiliares
 
-## 4. Scripts creados y su funcion
+Subcarpetas esperadas:
 
-### 4.1 analisis_eam_eac.R
+- `1. EAM/`: ZIP y documentos fuente de la EAM
+- `2. EAC/`: ZIP fuente de la EAC
+- `3. DICCIONARIOS/`: salidas del diccionario maestro
+- `4. ANALISIS_INICIAL/`: inventarios y resumentes tabulares del barrido inicial
+- `5. MACROBASE/`: macrobase consolidada EAM y sus tablas asociadas
+- `6. BASES_DERIVADAS/`: salidas tabulares posteriores a la macrobase
 
-Script de exploracion y resumen de archivos por fuente/anio.
+### `2. PROCESAMIENTO`
 
-Capacidades principales:
+Temporales regenerables del pipeline. No deben tratarse como salidas finales.
 
-- Lectura de ZIP por encuesta.
-- Inventario de archivos por anio.
-- Resumen por fuente/anio.
-- Conteo de variables comunes.
-- Generacion de grafico de cobertura.
+Subcarpetas temporales:
 
-Se ajusto para priorizar EAM por defecto y admitir argumentos EAM, EAC o ALL.
+- `_tmp_unzip/`
+- `_tmp_diccionario/`
+- `_tmp_macro_base_eam/`
 
-### 4.2 construir_diccionario_maestro.R
+### `3. SCRIPTS`
 
-Script para integrar metadatos de variables desde varias fuentes:
+Contiene toda la logica del proyecto.
 
-- Diccionario en Word (DOCX).
-- Metadatos de variables en archivos Stata (DTA).
-- Integracion final en una tabla maestra.
+Scripts clave:
 
-Salidas en 0. PREPARACION:
+- `_utils_proyecto.R`
+- `00_ejecutar_flujo_eam.R`
+- `00_limpiar_temporales.R`
+- `analisis_eam_eac.R`
+- `construir_diccionario_maestro.R`
+- `construir_macro_base_eam.R`
+- `diagnostico_panel_nordemp_eam.R`
+- `descriptivo_exposicion_eam.R`
 
-- 1. DATOS/3. DICCIONARIOS/diccionario_maestro_variables.csv
-- 1. DATOS/3. DICCIONARIOS/diccionario_word_extraido.csv
-- 1. DATOS/3. DICCIONARIOS/metadatos_dta_variables.csv
-- 1. DATOS/3. DICCIONARIOS/variables_sin_descripcion.csv
+### `4. RESULTADOS`
 
-### 4.3 construir_macro_base_eam.R
+Contiene principalmente graficos y otras salidas visuales ligeras.
 
-Script para consolidar anualmente la base EAM desde ZIP con DTA:
+Subcarpetas activas:
 
-- Extrae y lee DTA por anio.
-- Estandariza nombres de variables (mayusculas).
-- Anexa columnas de trazabilidad: FUENTE, ANIO, ARCHIVO_ORIGEN.
-- Consolida en una unica macrobase.
-- Genera codebook y resumen de cobertura.
+- `panel_diagnostico/`
+- `descriptivos_exposicion/`
 
-Ubicacion actual de salidas:
+## 3. Script maestro del flujo
 
-- Macrobase pesada: 1. DATOS/5. MACROBASE/macro_base_eam.rds
-- Salidas tabulares: 1. DATOS/5. MACROBASE/macro_base_eam_codebook.csv y 1. DATOS/5. MACROBASE/macro_base_eam_resumen.csv
+El punto de entrada recomendado es:
 
-## 5. Resultados principales alcanzados
+```powershell
+Rscript "3. SCRIPTS/00_ejecutar_flujo_eam.R"
+```
 
-### 5.1 Diccionario maestro
+Ese script:
 
-Se consolidaron metadatos de variables EAM/EAC en un unico archivo maestro, combinando descripcion tecnica (DTA) y descripcion semantica (diccionario documental).
+1. verifica y crea la estructura esperada de carpetas
+2. ejecuta el analisis inicial de archivos EAM
+3. construye el diccionario maestro
+4. construye la macrobase EAM
+5. corre el diagnostico de panel
+6. corre el descriptivo de exposicion
 
-### 5.2 Macrobase EAM
+Con esto queda regenerado el flujo principal de EAM.
 
-La macrobase consolidada EAM se construyo con cobertura anual completa disponible en el proyecto.
+## 4. Que hace cada script
 
-Validacion realizada:
+### `analisis_eam_eac.R`
 
-- 140835 filas
-- 398 columnas totales
-- 395 columnas de datos (sin metacampos)
-- Cobertura de anios: 2008 a 2024
-- Variables del codebook: 395
-- Variables sin descripcion_final: 0
+Hace un barrido de archivos comprimidos por fuente y anio.
 
-## 6. Decisiones de Git y manejo de archivos pesados
+Produce:
 
-Se reforzo .gitignore para impedir versionar:
+- inventario de archivos
+- resumen por fuente/anio
+- tabla de variables mas comunes
+- grafico de cobertura por anio
 
-- Datos crudos y derivados pesados dentro de 1. DATOS.
-- Temporales de procesamiento (_tmp_*).
-- Artefactos locales de R/RStudio.
-- Temporales comunes de sistema/editor.
-- Archivo legado de macrobase en resultados (4. RESULTADOS/macro_base_eam.rds).
+Salidas:
 
-Adicionalmente:
+- tablas en `1. DATOS/4. ANALISIS_INICIAL/`
+- grafico en `4. RESULTADOS/`
 
-- Se limpio historial local cuando se detecto un intento de commit con archivo pesado.
-- Se reconstruyo un commit limpio sin el .rds pesado.
-- Se elimino la copia pesada en 4. RESULTADOS para evitar duplicidad.
+### `construir_diccionario_maestro.R`
 
-## 7. Estado actual del flujo
+Integra dos fuentes de metadatos:
 
-El flujo esta operativo para:
+- el diccionario documental en Word
+- los labels/nombres de variables observados en DTA
 
-- Reproducir entorno con renv.
-- Regenerar diccionario maestro.
-- Regenerar macrobase EAM y su codebook.
-- Mantener el repositorio liviano y controlado.
+Produce:
 
-## 8. Proximos pasos recomendados
+- `diccionario_word_extraido.csv`
+- `metadatos_dta_variables.csv`
+- `diccionario_maestro_variables.csv`
+- `variables_sin_descripcion.csv`
 
-- Construir macrobase EAC con el mismo patron de trazabilidad.
-- Definir una capa de estandarizacion de variables comparables EAM/EAC.
-- Implementar controles de calidad adicionales (duplicados por llave, tipos esperados, rangos plausibles).
-- Agregar un script de chequeo automatizado posterior a la construccion de macrobases.
+Salidas:
 
-## 9. Guion minimo de ejecucion
+- `1. DATOS/3. DICCIONARIOS/`
 
-Desde la raiz del proyecto:
+### `construir_macro_base_eam.R`
 
-1. Restaurar entorno:
-   renv::restore()
-2. Construir diccionario:
-   Rscript "3. SCRIPTS/construir_diccionario_maestro.R"
-3. Construir macrobase EAM:
-   Rscript "3. SCRIPTS/construir_macro_base_eam.R"
+Lee los ZIP anuales de EAM, extrae el DTA principal de cada anio, estandariza nombres y consolida una sola macrobase con trazabilidad.
 
-Con esto quedan actualizados metadatos en 0. PREPARACION, la macrobase pesada en 1. DATOS/5. MACROBASE y salidas ligeras en 4. RESULTADOS.
+Produce:
+
+- `macro_base_eam.rds`
+- `macro_base_eam_codebook.csv`
+- `macro_base_eam_resumen.csv`
+
+Salidas:
+
+- `1. DATOS/5. MACROBASE/`
+
+### `diagnostico_panel_nordemp_eam.R`
+
+Evalua si `NORDEMP` es una llave razonable para analisis panel:
+
+- duplicados por empresa-anio
+- cantidad de firmas por anio
+- permanencia por firma
+- discontinuidades temporales
+
+Salidas:
+
+- tablas en `1. DATOS/6. BASES_DERIVADAS/panel_diagnostico/`
+- grafico en `4. RESULTADOS/panel_diagnostico/`
+
+### `descriptivo_exposicion_eam.R`
+
+Construye variables laborales y productivas, define proxies de exposicion y genera descriptivos previos a cualquier estimacion econometrica.
+
+Choques considerados:
+
+- reforma tributaria de 2012
+- aumento fuerte del salario minimo en 2023
+
+Salidas:
+
+- base reducida y tablas en `1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/`
+- graficos en `4. RESULTADOS/descriptivos_exposicion/`
+
+## 5. Flujo recomendado de ejecucion manual
+
+Si no quieres usar el script maestro, el orden recomendado es:
+
+1. `Rscript "3. SCRIPTS/construir_diccionario_maestro.R"`
+2. `Rscript "3. SCRIPTS/construir_macro_base_eam.R"`
+3. `Rscript "3. SCRIPTS/diagnostico_panel_nordemp_eam.R"`
+4. `Rscript "3. SCRIPTS/descriptivo_exposicion_eam.R"`
+
+Opcionalmente, antes de eso:
+
+`Rscript "3. SCRIPTS/analisis_eam_eac.R" EAM`
+
+Y cuando quieras limpiar temporales:
+
+`Rscript "3. SCRIPTS/00_limpiar_temporales.R"`
+
+## 6. Convenciones de reproducibilidad
+
+- El proyecto usa `renv`; la primera accion debe ser `renv::restore()`.
+- Los scripts asumen ejecucion desde la raiz del repositorio.
+- Las salidas de datos van a `1. DATOS/`.
+- Las figuras van a `4. RESULTADOS/`.
+- Los temporales van a `2. PROCESAMIENTO/`.
+- `_utils_proyecto.R` centraliza rutas y utilidades comunes para reducir inconsistencias.
+
+## 7. Control de versiones y limites del repo
+
+`1. DATOS/` esta ignorada en git. Eso significa:
+
+- las bases y tablas derivadas no se versionan
+- si quieres compartir resultados tabulares, debes regenerarlos localmente
+- lo que si queda versionado es la logica para reconstruirlos
+
+Tambien estan ignorados los temporales de `2. PROCESAMIENTO/_tmp_*`.
+
+## 8. Estado actual del flujo
+
+Hoy el proyecto queda listo para:
+
+- reconstruir el diccionario maestro
+- regenerar la macrobase EAM
+- diagnosticar la estructura panel por `NORDEMP`
+- producir descriptivos exploratorios de exposicion para EAM
+
+La extension natural a futuro es agregar una macrobase EAC y, mas adelante, una capa comun de variables homologadas entre EAM y EAC.

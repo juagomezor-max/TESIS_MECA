@@ -8,31 +8,27 @@
 # - CSV de inventario y resumen en 1. DATOS/4. ANALISIS_INICIAL/
 # - Grafico de cobertura anual por fuente en 4. RESULTADOS/
 
+source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
+
 required_packages <- c(
   "dplyr", "purrr", "stringr", "readr", "haven", "readxl", "janitor", "ggplot2", "tibble", "tidyr", "scales"
 )
 
-install_if_missing <- function(pkgs) {
-  missing <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-  if (length(missing) > 0) {
-    install.packages(missing, repos = "https://cloud.r-project.org")
-  }
-}
-
-install_if_missing(required_packages)
-invisible(lapply(required_packages, library, character.only = TRUE))
+load_project_packages(required_packages)
 
 # Rutas base del proyecto y carpeta temporal para extraer ZIP.
-root_dir <- normalizePath(".", winslash = "/", mustWork = TRUE)
-data_dir <- file.path(root_dir, "1. DATOS")
-extract_root <- file.path(root_dir, "2. PROCESAMIENTO", "_tmp_unzip")
-output_dir <- file.path(root_dir, "4. RESULTADOS")
-data_output_dir <- file.path(root_dir, "1. DATOS", "4. ANALISIS_INICIAL")
+paths <- ensure_project_structure()
+root_dir <- paths$root
+data_dir <- paths$datos
+extract_root <- paths$tmp_unzip
+output_dir <- paths$resultados
+data_output_dir <- paths$analisis_inicial
 
 # Se admite la fuente como argumento para reutilizar el mismo script
 # en EAM, EAC o una corrida conjunta.
 args <- commandArgs(trailingOnly = TRUE)
-target_source <- if (length(args) >= 1) toupper(args[[1]]) else "EAM"
+target_source_raw <- if (length(args) >= 1) args[[1]] else Sys.getenv("TARGET_SOURCE", unset = "EAM")
+target_source <- toupper(target_source_raw)
 
 if (!target_source %in% c("EAM", "EAC", "ALL")) {
   stop("Parametro invalido. Usa: EAM, EAC o ALL.")

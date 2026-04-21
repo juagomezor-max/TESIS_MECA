@@ -1,76 +1,108 @@
 # TESIS_MECA
 
-Repositorio para analisis reproducible de microdatos EAM y EAC en R.
+Repositorio para construir, diagnosticar y analizar de forma reproducible microdatos de la EAM y, en una capa exploratoria, de la EAC.
+
+## Objetivo
+
+El flujo actual permite:
+
+- inventariar y revisar archivos fuente EAM/EAC
+- construir un diccionario maestro de variables
+- consolidar una macrobase anual de la EAM
+- diagnosticar si `NORDEMP` funciona como identificador panel
+- producir descriptivos exploratorios de exposicion a choques laborales
 
 ## Estructura del proyecto
 
-- `0. PREPARACION/`: notas y material de preparacion del proyecto.
-- `1. DATOS/`: fuentes originales (no se versionan en Git).
-- `2. PROCESAMIENTO/`: archivos temporales e intermedios del pipeline.
-- `3. SCRIPTS/`: scripts de analisis en R.
-- `4. RESULTADOS/`: salidas del analisis (tablas, graficos, reportes).
+- `0. PREPARACION/`: notas y documentacion metodologica liviana
+- `1. DATOS/`: insumos crudos y bases derivadas no versionadas
+- `2. PROCESAMIENTO/`: temporales regenerables del pipeline
+- `3. SCRIPTS/`: scripts ejecutables del proyecto
+- `4. RESULTADOS/`: graficos y salidas visuales
 
 ## Requisitos
 
-- R 4.5+ recomendado.
-- Paquete `renv` para restaurar el entorno.
+- R 4.5 o superior
+- `renv` para restaurar el entorno del proyecto
 
-## Configuracion del entorno reproducible
+## Restaurar el entorno
 
-En la raiz del proyecto:
+Desde la raiz del repositorio:
 
 ```r
 renv::restore()
 ```
 
-Este comando instala las versiones registradas en `renv.lock`.
+Esto instala las versiones registradas en `renv.lock`.
 
-## Ejecucion del analisis principal
+## Flujo recomendado
 
-Script principal:
-
-- `3. SCRIPTS/analisis_eam_eac.R`
-
-Primera base a analizar (EAM, por defecto):
+La forma mas simple de correr el pipeline EAM completo es:
 
 ```powershell
-Rscript "3. SCRIPTS/analisis_eam_eac.R"
+Rscript "3. SCRIPTS/00_ejecutar_flujo_eam.R"
 ```
 
-Ejecucion explicita por fuente:
+Ese script ejecuta, en orden:
+
+1. `analisis_eam_eac.R` con fuente `EAM`
+2. `construir_diccionario_maestro.R`
+3. `construir_macro_base_eam.R`
+4. `diagnostico_panel_nordemp_eam.R`
+5. `descriptivo_exposicion_eam.R`
+
+## Ejecucion por etapas
+
+Si quieres correr partes del flujo por separado:
 
 ```powershell
 Rscript "3. SCRIPTS/analisis_eam_eac.R" EAM
-Rscript "3. SCRIPTS/analisis_eam_eac.R" EAC
-Rscript "3. SCRIPTS/analisis_eam_eac.R" ALL
+Rscript "3. SCRIPTS/construir_diccionario_maestro.R"
+Rscript "3. SCRIPTS/construir_macro_base_eam.R"
+Rscript "3. SCRIPTS/diagnostico_panel_nordemp_eam.R"
+Rscript "3. SCRIPTS/descriptivo_exposicion_eam.R"
 ```
 
-## Macro base EAM
-
-Para construir la base consolidada anual de la EAM:
+Tambien puedes usar:
 
 ```powershell
-Rscript "3. SCRIPTS/construir_macro_base_eam.R"
+Rscript "3. SCRIPTS/00_limpiar_temporales.R"
 ```
 
-Salidas generadas:
+para reiniciar temporales regenerables en `2. PROCESAMIENTO/`.
 
-- `1. DATOS/5. MACROBASE/macro_base_eam.rds`
-- `1. DATOS/5. MACROBASE/macro_base_eam_codebook.csv`
-- `1. DATOS/5. MACROBASE/macro_base_eam_resumen.csv`
+## Donde queda cada salida
 
-## Salidas esperadas
+### Datos derivados
 
-El script genera en `4. RESULTADOS/`:
+Estas salidas viven en `1. DATOS/` y no se versionan en Git:
 
-- `inventario_archivos_eam.csv` (u otro sufijo segun fuente)
-- `resumen_por_fuente_anio_eam.csv` (u otro sufijo segun fuente)
-- `variables_mas_comunes_eam.csv` (u otro sufijo segun fuente)
-- `plot_archivos_por_anio_eam.png` (u otro sufijo segun fuente)
+- `1. DATOS/3. DICCIONARIOS/`: diccionario maestro y metadatos extraidos
+- `1. DATOS/4. ANALISIS_INICIAL/`: inventarios y tablas del barrido inicial
+- `1. DATOS/5. MACROBASE/`: macrobase EAM, codebook y resumen
+- `1. DATOS/6. BASES_DERIVADAS/panel_diagnostico/`: tablas del chequeo de panel
+- `1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/`: base reducida y tablas resumen del descriptivo
 
-Tambien utiliza `2. PROCESAMIENTO/_tmp_unzip` para descompresion temporal.
+### Resultados graficos
 
-## Notas de versionamiento
+Las figuras se guardan en `4. RESULTADOS/`:
 
-- `1. DATOS/` esta excluida del control de versiones en `.gitignore`.
-- `renv.lock` debe versionarse para garantizar replicabilidad.
+- `4. RESULTADOS/panel_diagnostico/`
+- `4. RESULTADOS/descriptivos_exposicion/`
+
+## Convenciones del flujo
+
+- `1. DATOS/` contiene insumos y bases derivadas pesadas
+- `2. PROCESAMIENTO/` contiene solo temporales regenerables
+- `4. RESULTADOS/` se reserva principalmente para salidas visuales
+- los scripts suponen que se ejecutan desde la raiz del proyecto
+
+## Control de versiones
+
+- `1. DATOS/` esta ignorada en `.gitignore`
+- `2. PROCESAMIENTO/_tmp_*` tambien esta ignorada
+- `renv.lock` y los scripts/documentacion si deben versionarse
+
+## Documentacion adicional
+
+Para una explicacion mas detallada del flujo, revisa `README_DESCRIPTIVO.md`.

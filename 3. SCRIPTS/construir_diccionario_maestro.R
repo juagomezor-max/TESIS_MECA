@@ -6,28 +6,17 @@
 # - 1. DATOS/3. DICCIONARIOS/diccionario_word_extraido.csv
 # - 1. DATOS/3. DICCIONARIOS/metadatos_dta_variables.csv
 
+source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
+
 required_packages <- c("dplyr", "purrr", "stringr", "readr", "haven", "tibble")
-
-install_if_missing <- function(pkgs) {
-  missing <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-  if (length(missing) > 0) {
-    install.packages(missing, repos = "https://cloud.r-project.org")
-  }
-}
-
-install_if_missing(required_packages)
-invisible(lapply(required_packages, library, character.only = TRUE))
+load_project_packages(required_packages)
 
 # Carpeta temporal para extraer DTA desde ZIP sin tocar los originales.
-root_dir <- normalizePath(".", winslash = "/", mustWork = TRUE)
-data_dir <- file.path(root_dir, "1. DATOS")
-out_dir <- file.path(root_dir, "1. DATOS", "3. DICCIONARIOS")
-tmp_dir <- file.path(root_dir, "2. PROCESAMIENTO", "_tmp_diccionario")
-
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
-
-docx_path <- file.path(data_dir, "Diccionarios_EAM_EAC.docx")
+paths <- ensure_project_structure()
+data_dir <- paths$datos
+out_dir <- paths$diccionarios
+tmp_dir <- paths$tmp_diccionario
+docx_path <- paths$diccionario_docx
 if (!file.exists(docx_path)) {
   stop("No se encontro el archivo de diccionario: ", docx_path)
 }
