@@ -56,8 +56,8 @@ Rscript "3. SCRIPTS/construir_macro_base_eam.R"
 Salidas generadas:
 
 - `1. DATOS/5. MACROBASE/macro_base_eam.rds`
-- `4. RESULTADOS/macro_base_eam_codebook.csv`
-- `4. RESULTADOS/macro_base_eam_resumen.csv`
+- `1. DATOS/5. MACROBASE/macro_base_eam_codebook.csv`
+- `1. DATOS/5. MACROBASE/macro_base_eam_resumen.csv`
 
 ## Salidas esperadas
 

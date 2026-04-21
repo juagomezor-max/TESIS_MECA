@@ -1,6 +1,10 @@
 # Construye una tabla maestra de variables combinando:
 # 1) Diccionario en Word (DOCX)
 # 2) Metadatos de archivos Stata (DTA) de EAM y EAC
+# Salidas principales:
+# - 1. DATOS/3. DICCIONARIOS/diccionario_maestro_variables.csv
+# - 1. DATOS/3. DICCIONARIOS/diccionario_word_extraido.csv
+# - 1. DATOS/3. DICCIONARIOS/metadatos_dta_variables.csv
 
 required_packages <- c("dplyr", "purrr", "stringr", "readr", "haven", "tibble")
 
@@ -14,9 +18,10 @@ install_if_missing <- function(pkgs) {
 install_if_missing(required_packages)
 invisible(lapply(required_packages, library, character.only = TRUE))
 
+# Carpeta temporal para extraer DTA desde ZIP sin tocar los originales.
 root_dir <- normalizePath(".", winslash = "/", mustWork = TRUE)
 data_dir <- file.path(root_dir, "1. DATOS")
-out_dir <- file.path(root_dir, "0. PREPARACION")
+out_dir <- file.path(root_dir, "1. DATOS", "3. DICCIONARIOS")
 tmp_dir <- file.path(root_dir, "2. PROCESAMIENTO", "_tmp_diccionario")
 
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
@@ -27,6 +32,8 @@ if (!file.exists(docx_path)) {
   stop("No se encontro el archivo de diccionario: ", docx_path)
 }
 
+# Extrae el texto del XML interno del DOCX para evitar depender de paquetes
+# adicionales de procesamiento de Word.
 extract_docx_lines <- function(path) {
   xml_txt <- readLines(unz(path, "word/document.xml"), warn = FALSE, encoding = "UTF-8")
   xml_one <- paste(xml_txt, collapse = "")
@@ -55,6 +62,9 @@ is_variable_token <- function(x) {
   grepl("^[A-Z][A-Z0-9_]{1,35}$", x)
 }
 
+# Recorre las lineas extraidas del Word y arma pares
+# (fuente, variable, descripcion) con una heuristica simple:
+# la descripcion suele aparecer inmediatamente antes del token.
 parse_dictionary_pairs <- function(lines) {
   current_source <- NA_character_
   out <- list()
@@ -97,6 +107,8 @@ parse_dictionary_pairs <- function(lines) {
 }
 
 extract_dta_metadata <- function(data_root, tmp_root) {
+  # Se inspecciona unicamente la primera observacion de cada DTA porque
+  # aqui solo interesan nombres de variables y labels, no los datos.
   zip_files <- list.files(data_root, pattern = "\\.zip$", recursive = TRUE, full.names = TRUE, ignore.case = TRUE)
   zip_files <- zip_files[grepl("EAM|EAC", toupper(zip_files))]
 
@@ -159,6 +171,8 @@ if (nrow(meta_dta) == 0) {
 }
 
 meta_dta_unique <- meta_dta %>%
+  # Si una variable aparece en varios anios, se toma el primer label no vacio
+  # y se contabiliza en cuantos anios estuvo presente.
   dplyr::group_by(fuente, variable) %>%
   dplyr::summarise(
     label_dta = dplyr::first(label_dta[label_dta != ""], default = ""),
@@ -169,6 +183,8 @@ meta_dta_unique <- meta_dta %>%
 maestro <- meta_dta_unique %>%
   dplyr::left_join(dict_doc, by = c("fuente", "variable")) %>%
   dplyr::mutate(
+    # Se prioriza la descripcion del diccionario documental y, si no existe,
+    # se usa el label tecnico del DTA.
     descripcion_final = dplyr::case_when(
       !is.na(descripcion_diccionario) & descripcion_diccionario != "" ~ descripcion_diccionario,
       label_dta != "" ~ label_dta,

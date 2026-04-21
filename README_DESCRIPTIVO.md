@@ -55,10 +55,10 @@ Script para integrar metadatos de variables desde varias fuentes:
 
 Salidas en 0. PREPARACION:
 
-- diccionario_maestro_variables.csv
-- diccionario_word_extraido.csv
-- metadatos_dta_variables.csv
-- variables_sin_descripcion.csv
+- 1. DATOS/3. DICCIONARIOS/diccionario_maestro_variables.csv
+- 1. DATOS/3. DICCIONARIOS/diccionario_word_extraido.csv
+- 1. DATOS/3. DICCIONARIOS/metadatos_dta_variables.csv
+- 1. DATOS/3. DICCIONARIOS/variables_sin_descripcion.csv
 
 ### 4.3 construir_macro_base_eam.R
 
@@ -73,7 +73,7 @@ Script para consolidar anualmente la base EAM desde ZIP con DTA:
 Ubicacion actual de salidas:
 
 - Macrobase pesada: 1. DATOS/5. MACROBASE/macro_base_eam.rds
-- Salidas ligeras: 4. RESULTADOS/macro_base_eam_codebook.csv y 4. RESULTADOS/macro_base_eam_resumen.csv
+- Salidas tabulares: 1. DATOS/5. MACROBASE/macro_base_eam_codebook.csv y 1. DATOS/5. MACROBASE/macro_base_eam_resumen.csv
 
 ## 5. Resultados principales alcanzados
 

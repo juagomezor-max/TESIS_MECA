@@ -2,7 +2,9 @@
 #
 # Este script valida si NORDEMP puede usarse como identificador de empresa en
 # un panel anual (2008-2024), y genera salidas tabulares y graficas en:
-# 4. RESULTADOS/panel_diagnostico/
+# - Tablas en 1. DATOS/6. BASES_DERIVADAS/panel_diagnostico/
+# - Graficas en 4. RESULTADOS/panel_diagnostico/
+# El foco no es econometrico sino de calidad de identificacion longitudinal.
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -13,8 +15,10 @@ suppressPackageStartupMessages({
 # 1) Configuracion de rutas
 # -----------------------------
 
-output_dir <- here::here("4. RESULTADOS", "panel_diagnostico")
-dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+plot_dir <- here::here("4. RESULTADOS", "panel_diagnostico")
+data_output_dir <- here::here("1. DATOS", "6. BASES_DERIVADAS", "panel_diagnostico")
+dir.create(plot_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(data_output_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Se prueban rutas candidatas para mantener compatibilidad con versiones previas
 # del flujo.
@@ -52,6 +56,8 @@ panel <- macro_base %>%
     NORDEMP = as.character(NORDEMP),
     ANIO = suppressWarnings(as.integer(ANIO))
   ) %>%
+  # Se excluyen identificadores vacios para no inflar artificialmente duplicados
+  # o trayectorias incompletas.
   filter(!is.na(NORDEMP), NORDEMP != "", !is.na(ANIO))
 
 if (nrow(panel) == 0) {
@@ -66,6 +72,8 @@ total_expected_years <- length(expected_years)
 # -----------------------------
 
 duplicados_nordemp_anio <- panel %>%
+  # Este es el chequeo minimo de llave panel: una firma no deberia repetirse
+  # dentro del mismo anio si NORDEMP identifica empresa-anio de forma unica.
   count(NORDEMP, ANIO, name = "n_obs") %>%
   filter(n_obs > 1) %>%
   arrange(desc(n_obs), NORDEMP, ANIO)
@@ -115,6 +123,8 @@ discontinuidades_por_empresa <- panel %>%
     .groups = "drop"
   ) %>%
   mutate(
+    # Se comparan anios observados contra el intervalo continuo entre el minimo
+    # y el maximo de cada firma, no contra todo el panel 2008-2024.
     anios_esperados_intervalo = map2(anio_min, anio_max, ~seq(.x, .y)),
     anios_faltantes_intervalo = map2(anios_esperados_intervalo, anios_observados, ~setdiff(.x, .y)),
     tiene_discontinuidad = lengths(anios_faltantes_intervalo) > 0,
@@ -154,20 +164,21 @@ resumen_panel <- tibble(
 # 8) Exportacion de tablas
 # -----------------------------
 
-readr::write_csv(duplicados_nordemp_anio, file.path(output_dir, "duplicados_nordemp_anio.csv"))
-readr::write_csv(empresas_con_discontinuidad, file.path(output_dir, "empresas_con_discontinuidades.csv"))
-readr::write_csv(distribucion_permanencia, file.path(output_dir, "resumen_permanencia_empresas.csv"))
+readr::write_csv(duplicados_nordemp_anio, file.path(data_output_dir, "duplicados_nordemp_anio.csv"))
+readr::write_csv(empresas_con_discontinuidad, file.path(data_output_dir, "empresas_con_discontinuidades.csv"))
+readr::write_csv(distribucion_permanencia, file.path(data_output_dir, "resumen_permanencia_empresas.csv"))
 
 # Exportaciones adicionales utiles para auditoria
-readr::write_csv(empresas_unicas_por_anio, file.path(output_dir, "empresas_unicas_por_anio.csv"))
-readr::write_csv(anios_por_empresa, file.path(output_dir, "anios_observados_por_empresa.csv"))
-readr::write_csv(resumen_panel, file.path(output_dir, "resumen_panel_general.csv"))
+readr::write_csv(empresas_unicas_por_anio, file.path(data_output_dir, "empresas_unicas_por_anio.csv"))
+readr::write_csv(anios_por_empresa, file.path(data_output_dir, "anios_observados_por_empresa.csv"))
+readr::write_csv(resumen_panel, file.path(data_output_dir, "resumen_panel_general.csv"))
 
 # -----------------------------
 # 9) Grafico de permanencia
 # -----------------------------
 
 plot_permanencia <- distribucion_permanencia %>%
+  # Este grafico resume cuantas firmas aparecen 1, 2, ..., 17 anios.
   ggplot(aes(x = n_anios, y = n_empresas)) +
   geom_col(fill = "#1f77b4", width = 0.8) +
   scale_x_continuous(breaks = seq(min(distribucion_permanencia$n_anios), max(distribucion_permanencia$n_anios), by = 1)) +
@@ -180,7 +191,7 @@ plot_permanencia <- distribucion_permanencia %>%
   theme_minimal(base_size = 12)
 
 ggsave(
-  filename = file.path(output_dir, "distribucion_permanencia_empresas.png"),
+  filename = file.path(plot_dir, "distribucion_permanencia_empresas.png"),
   plot = plot_permanencia,
   width = 10,
   height = 6,
@@ -197,4 +208,5 @@ message("Empresas unicas: ", total_empresas)
 message("Duplicados NORDEMP-ANIO: ", nrow(duplicados_nordemp_anio))
 message("Empresas con discontinuidad: ", empresas_discontinuas)
 message("Promedio de anios observados: ", round(mean(anios_por_empresa$n_anios), 3))
-message("Salidas en: ", output_dir)
+message("Tablas en: ", data_output_dir)
+message("Grafico en: ", plot_dir)
