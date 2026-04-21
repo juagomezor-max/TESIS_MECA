@@ -2,6 +2,19 @@
 1. DATOS/
 DATOS/
 
+# Blindaje adicional para paquetes de datos crudos.
+# Esto evita subir ZIP u otros contenedores pesados aunque en el futuro
+# se relajen reglas sobre subcarpetas de 1. DATOS/ para compartir
+# metadatos, diccionarios o documentacion del proyecto.
+1. DATOS/**/*.zip
+1. DATOS/**/*.7z
+1. DATOS/**/*.rar
+1. DATOS/**/*.tar
+1. DATOS/**/*.tar.gz
+1. DATOS/**/*.gz
+1. DATOS/**/*.bz2
+1. DATOS/**/*.xz
+
 # Temporales de procesamiento
 2. PROCESAMIENTO/_tmp_unzip/
 2. PROCESAMIENTO/_tmp_macro_base_eam/
