@@ -20,6 +20,20 @@ data_dir <- file.path(root_dir, "1. DATOS")
 extract_root <- file.path(root_dir, "2. PROCESAMIENTO", "_tmp_unzip")
 output_dir <- file.path(root_dir, "4. RESULTADOS")
 
+args <- commandArgs(trailingOnly = TRUE)
+target_source <- if (length(args) >= 1) toupper(args[[1]]) else "EAM"
+
+if (!target_source %in% c("EAM", "EAC", "ALL")) {
+  stop("Parametro invalido. Usa: EAM, EAC o ALL.")
+}
+
+output_tag <- if (target_source == "ALL") "all" else tolower(target_source)
+
+source_matches <- function(path, target) {
+  if (target == "ALL") return(TRUE)
+  stringr::str_detect(toupper(path), target)
+}
+
 if (!dir.exists(data_dir)) {
   stop("No se encontro la carpeta de datos en: ", data_dir)
 }
@@ -27,9 +41,15 @@ if (!dir.exists(data_dir)) {
 dir.create(extract_root, recursive = TRUE, showWarnings = FALSE)
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
-zip_files <- list.files(data_dir, pattern = "\\.zip$", recursive = TRUE, full.names = TRUE, ignore.case = TRUE)
-if (length(zip_files) == 0) {
+all_zip_files <- list.files(data_dir, pattern = "\\.zip$", recursive = TRUE, full.names = TRUE, ignore.case = TRUE)
+zip_files <- all_zip_files[source_matches(all_zip_files, target_source)]
+
+if (length(all_zip_files) == 0) {
   stop("No se encontraron archivos ZIP en la carpeta de datos.")
+}
+
+if (length(zip_files) == 0) {
+  stop("No se encontraron ZIP para la fuente seleccionada: ", target_source)
 }
 
 # Descomprime cada ZIP en su propia subcarpeta para evitar colisiones de nombres.
@@ -121,9 +141,9 @@ variables_common <- inventory %>%
   dplyr::summarise(presencia_en_archivos = dplyr::n(), .groups = "drop") %>%
   dplyr::arrange(fuente, dplyr::desc(presencia_en_archivos), variable)
 
-readr::write_csv(inventory, file.path(output_dir, "inventario_archivos.csv"))
-readr::write_csv(summary_year, file.path(output_dir, "resumen_por_fuente_anio.csv"))
-readr::write_csv(variables_common, file.path(output_dir, "variables_mas_comunes.csv"))
+readr::write_csv(inventory, file.path(output_dir, paste0("inventario_archivos_", output_tag, ".csv")))
+readr::write_csv(summary_year, file.path(output_dir, paste0("resumen_por_fuente_anio_", output_tag, ".csv")))
+readr::write_csv(variables_common, file.path(output_dir, paste0("variables_mas_comunes_", output_tag, ".csv")))
 
 plot_df <- summary_year %>% dplyr::filter(!is.na(anio))
 
@@ -141,7 +161,7 @@ if (nrow(plot_df) > 0) {
     ggplot2::theme_minimal(base_size = 12)
 
   ggplot2::ggsave(
-    filename = file.path(output_dir, "plot_archivos_por_anio.png"),
+    filename = file.path(output_dir, paste0("plot_archivos_por_anio_", output_tag, ".png")),
     plot = p,
     width = 10,
     height = 6,
@@ -149,4 +169,4 @@ if (nrow(plot_df) > 0) {
   )
 }
 
-message("Analisis completado. Revisa la carpeta: ", output_dir)
+message("Analisis completado para ", target_source, ". Revisa la carpeta: ", output_dir)

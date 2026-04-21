@@ -4,9 +4,23 @@ DATOS/
 
 # Temporales de procesamiento
 2. PROCESAMIENTO/_tmp_unzip/
+2. PROCESAMIENTO/_tmp_macro_base_eam/
+2. PROCESAMIENTO/_tmp_*/
+
+# Macrobase pesada como artefacto derivado de datos
+4. RESULTADOS/macro_base_eam.rds
 
 # Archivos locales de R/RStudio
 .Rhistory
 .RData
 .Ruserdata
 .Rproj.user/
+
+# Temporales comunes de sistema y editores
+*.tmp
+*.temp
+*.bak
+*~
+\#*
+.DS_Store
+Thumbs.db

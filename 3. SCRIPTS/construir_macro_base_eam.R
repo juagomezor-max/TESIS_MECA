@@ -1,0 +1,119 @@
+# Construye la macro base de la Encuesta Anual Manufacturera (EAM)
+# a partir de los archivos DTA anuales.
+
+required_packages <- c("dplyr", "purrr", "stringr", "readr", "haven", "tibble", "janitor")
+
+install_if_missing <- function(pkgs) {
+  missing <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
+  if (length(missing) > 0) {
+    install.packages(missing, repos = "https://cloud.r-project.org")
+  }
+}
+
+install_if_missing(required_packages)
+invisible(lapply(required_packages, library, character.only = TRUE))
+
+root_dir <- normalizePath(".", winslash = "/", mustWork = TRUE)
+data_dir <- file.path(root_dir, "1. DATOS", "1. EAM")
+dictionary_path <- file.path(root_dir, "0. PREPARACION", "diccionario_maestro_variables.csv")
+tmp_dir <- file.path(root_dir, "2. PROCESAMIENTO", "_tmp_macro_base_eam")
+macrobase_dir <- file.path(root_dir, "1. DATOS", "5. MACROBASE")
+output_dir <- file.path(root_dir, "4. RESULTADOS")
+
+dir.create(tmp_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(macrobase_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+
+if (!file.exists(dictionary_path)) {
+  stop("No se encontro el diccionario maestro en: ", dictionary_path)
+}
+
+dictionary <- readr::read_csv(dictionary_path, show_col_types = FALSE)
+eam_dictionary <- dictionary %>%
+  dplyr::filter(fuente == "EAM") %>%
+  dplyr::mutate(variable = toupper(variable))
+
+zip_files <- list.files(data_dir, pattern = "\\.zip$", full.names = TRUE, ignore.case = TRUE)
+if (length(zip_files) == 0) {
+  stop("No se encontraron archivos ZIP de EAM en: ", data_dir)
+}
+
+target_years <- sort(stringr::str_extract(basename(zip_files), "(19|20)[0-9]{2}"))
+
+read_eam_year <- function(zip_path) {
+  zip_list <- unzip(zip_path, list = TRUE)
+  dta_name <- zip_list$Name[grepl("\\.dta$", zip_list$Name, ignore.case = TRUE)][1]
+
+  if (is.na(dta_name) || !nzchar(dta_name)) {
+    message("Sin DTA en ZIP: ", basename(zip_path))
+    return(NULL)
+  }
+
+  year <- suppressWarnings(as.integer(stringr::str_extract(zip_path, "(19|20)[0-9]{2}")))
+  exdir <- file.path(tmp_dir, tools::file_path_sans_ext(basename(zip_path)))
+  dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
+
+  unzip(zip_path, files = dta_name, exdir = exdir, overwrite = TRUE)
+  dta_path <- file.path(exdir, dta_name)
+
+  if (!file.exists(dta_path)) {
+    message("No se pudo extraer DTA: ", basename(zip_path))
+    return(NULL)
+  }
+
+  dat <- tryCatch(haven::read_dta(dta_path), error = function(e) {
+    message("No se pudo leer DTA: ", basename(zip_path), " | ", e$message)
+    NULL
+  })
+
+  if (is.null(dat)) return(NULL)
+
+  names(dat) <- toupper(names(dat))
+
+  dat %>%
+    dplyr::mutate(
+      FUENTE = "EAM",
+      ANIO = year,
+      ARCHIVO_ORIGEN = basename(zip_path)
+    ) %>%
+    dplyr::select(FUENTE, ANIO, ARCHIVO_ORIGEN, dplyr::everything())
+}
+
+macro_base <- purrr::map_dfr(zip_files, read_eam_year)
+
+if (nrow(macro_base) == 0) {
+  stop("La macro base quedo vacia.")
+}
+
+macro_base <- macro_base %>%
+  dplyr::mutate(
+    FUENTE = as.character(FUENTE),
+    ANIO = as.integer(ANIO),
+    ARCHIVO_ORIGEN = as.character(ARCHIVO_ORIGEN)
+  )
+
+macro_cols <- names(macro_base)
+meta_cols <- c("fuente", "anio", "archivo_origen")
+data_cols <- setdiff(macro_cols, meta_cols)
+
+codebook <- eam_dictionary %>%
+  dplyr::mutate(variable = toupper(variable)) %>%
+  dplyr::filter(variable %in% toupper(data_cols)) %>%
+  dplyr::distinct(variable, .keep_all = TRUE) %>%
+  dplyr::select(variable, label_dta, descripcion_diccionario, descripcion_final, aparece_en_anios)
+
+summary_macro <- tibble::tibble(
+  fuente = "EAM",
+  archivos_procesados = length(zip_files),
+  filas = nrow(macro_base),
+  columnas = ncol(macro_base),
+  anio_min = suppressWarnings(min(macro_base$ANIO, na.rm = TRUE)),
+  anio_max = suppressWarnings(max(macro_base$ANIO, na.rm = TRUE))
+)
+
+readr::write_rds(macro_base, file.path(macrobase_dir, "macro_base_eam.rds"))
+readr::write_csv(codebook, file.path(output_dir, "macro_base_eam_codebook.csv"))
+readr::write_csv(summary_macro, file.path(output_dir, "macro_base_eam_resumen.csv"))
+
+message("Macro base EAM construida correctamente.")
+message("Filas: ", nrow(macro_base), " | Columnas: ", ncol(macro_base))

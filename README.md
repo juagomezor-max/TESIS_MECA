@@ -31,20 +31,42 @@ Script principal:
 
 - `3. SCRIPTS/analisis_eam_eac.R`
 
-Desde la raiz del proyecto:
+Primera base a analizar (EAM, por defecto):
 
 ```powershell
 Rscript "3. SCRIPTS/analisis_eam_eac.R"
 ```
 
+Ejecucion explicita por fuente:
+
+```powershell
+Rscript "3. SCRIPTS/analisis_eam_eac.R" EAM
+Rscript "3. SCRIPTS/analisis_eam_eac.R" EAC
+Rscript "3. SCRIPTS/analisis_eam_eac.R" ALL
+```
+
+## Macro base EAM
+
+Para construir la base consolidada anual de la EAM:
+
+```powershell
+Rscript "3. SCRIPTS/construir_macro_base_eam.R"
+```
+
+Salidas generadas:
+
+- `1. DATOS/5. MACROBASE/macro_base_eam.rds`
+- `4. RESULTADOS/macro_base_eam_codebook.csv`
+- `4. RESULTADOS/macro_base_eam_resumen.csv`
+
 ## Salidas esperadas
 
 El script genera en `4. RESULTADOS/`:
 
-- `inventario_archivos.csv`
-- `resumen_por_fuente_anio.csv`
-- `variables_mas_comunes.csv`
-- `plot_archivos_por_anio.png`
+- `inventario_archivos_eam.csv` (u otro sufijo segun fuente)
+- `resumen_por_fuente_anio_eam.csv` (u otro sufijo segun fuente)
+- `variables_mas_comunes_eam.csv` (u otro sufijo segun fuente)
+- `plot_archivos_por_anio_eam.png` (u otro sufijo segun fuente)
 
 Tambien utiliza `2. PROCESAMIENTO/_tmp_unzip` para descompresion temporal.
 
