@@ -35,6 +35,14 @@ renv::restore()
 
 Esto instala las versiones registradas en `renv.lock`.
 
+## Archivo de datos en Zenodo
+
+El paquete comprimido de datos del proyecto se distribuye externamente a traves de Zenodo:
+
+- `https://zenodo.org/records/19675205`
+
+Esto permite mantener el repositorio liviano en Git y, al mismo tiempo, preservar un punto de acceso estable para el archivo `.zip` que acompana la replicacion.
+
 ## Flujo recomendado
 
 La forma mas simple de correr el pipeline EAM completo es:
@@ -102,6 +110,7 @@ Las figuras se guardan en `4. RESULTADOS/`:
 - `1. DATOS/` esta ignorada en `.gitignore`
 - `2. PROCESAMIENTO/_tmp_*` tambien esta ignorada
 - `renv.lock` y los scripts/documentacion si deben versionarse
+- los paquetes comprimidos de datos se preservan en Zenodo y no deben subirse al repositorio
 
 ## Documentacion adicional
 

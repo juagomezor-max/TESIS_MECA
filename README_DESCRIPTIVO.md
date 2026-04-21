@@ -14,6 +14,17 @@ El repositorio esta organizado como un pipeline reproducible en R:
 
 La idea es que cualquier persona pueda restaurar el entorno, correr el flujo desde la raiz y regenerar tanto las bases derivadas como los graficos.
 
+## 1.1 Archivo externo de datos
+
+El archivo comprimido del dataset se deposita externamente en Zenodo:
+
+- `https://zenodo.org/records/19675205`
+
+La decision de separar el `.zip` del repositorio responde a dos objetivos:
+
+- evitar subir insumos pesados al historial de Git
+- dejar un punto de acceso citable y persistente para la replicacion
+
 ## 2. Estructura de carpetas
 
 ### `0. PREPARACION`
@@ -207,6 +218,8 @@ Y cuando quieras limpiar temporales:
 - lo que si queda versionado es la logica para reconstruirlos
 
 Tambien estan ignorados los temporales de `2. PROCESAMIENTO/_tmp_*`.
+
+Adicionalmente, los paquetes comprimidos de datos crudos quedan excluidos del repositorio y deben distribuirse via Zenodo, no via GitHub.
 
 ## 8. Estado actual del flujo
 
