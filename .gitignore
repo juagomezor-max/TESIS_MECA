@@ -1,3 +1,12 @@
 # Ignorar carpeta de datos
 1. DATOS/
 DATOS/
+
+# Temporales de procesamiento
+2. PROCESAMIENTO/_tmp_unzip/
+
+# Archivos locales de R/RStudio
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
