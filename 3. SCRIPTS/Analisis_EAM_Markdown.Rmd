@@ -1,0 +1,41 @@
+---
+title: "Analisis EAM Markdown"
+output: html_document
+date: "2026-04-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+source("3. SCRIPTS/analisis_eam_eac.R")
+```
+
+```{r}
+head(inventory)
+head(summary_year)
+head(variables_common)
+```
+
+```{r}
+# filtrar archivos buenos (.dta)
+archivos_buenos <- inventory$archivo[inventory$extension == "dta"]
+
+# escoger uno (el primero)
+archivo <- archivos_buenos[1]
+
+# cargarlo
+library(haven)
+base <- read_dta(archivo)
+
+# verla
+View(base)
+```
+
