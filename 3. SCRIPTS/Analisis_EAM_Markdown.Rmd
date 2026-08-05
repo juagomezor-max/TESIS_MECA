@@ -45,6 +45,39 @@ View(base)
 
 
 ```{r}
+# 1. Identificar exactamente qué archivo se cargó
+archivo
+basename(archivo)
+
+# 2. Dimensiones de la base
+dim(base)
+
+# 3. Años contenidos en el archivo
+table(base$periodo, useNA = "ifany")
+
+# 4. Ver los primeros nombres de variables
+names(base)[1:50]
+
+# 5. Revisar variables identificadoras
+base |>
+  dplyr::select(
+    dplyr::any_of(c(
+      "nordemp", "nordest", "DPTO",
+      "CIIU3", "periodo"
+    ))
+  ) |>
+  head(10)
+```
+
+```{r}
+inventory |>
+  dplyr::filter(extension == "dta") |>
+  dplyr::select(dplyr::everything())
+```
+
+
+
+```{r}
 # Variables
 summary(base$c4r5c1)   # operarios mujeres
 summary(base$c4r5c2)   # operarios hombres
