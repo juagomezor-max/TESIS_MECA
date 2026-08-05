@@ -76,6 +76,426 @@ inventory |>
 ```
 
 
+```{r}
+inventory |>
+  dplyr::filter(extension == "dta") |>
+  dplyr::select(archivo, dplyr::everything()) |>
+  dplyr::mutate(nombre_archivo = basename(archivo)) |>
+  dplyr::select(nombre_archivo, dplyr::everything())
+```
+
+
+```{r}
+library(dplyr)
+library(stringr)
+library(purrr)
+library(haven)
+
+archivos_2017_2023 <- inventory |>
+  filter(extension == "dta") |>
+  mutate(
+    anio_archivo = as.integer(
+      str_extract(basename(archivo), "20\\d{2}")
+    )
+  ) |>
+  filter(between(anio_archivo, 2017, 2023)) |>
+  arrange(anio_archivo) |>
+  pull(archivo)
+
+tibble(archivo = basename(archivos_2017_2023))
+```
+
+
+```{r}
+# ============================================================
+# UNIR BASES EAM 2017-2023
+# ============================================================
+
+base_eam_2017_2023 <- purrr::map_dfr(
+  archivos_2017_2023,
+  function(ruta) {
+    
+    message("Cargando: ", basename(ruta))
+    
+    haven::read_dta(ruta) |>
+      dplyr::mutate(
+        archivo_origen = basename(ruta)
+      )
+  }
+)
+```
+
+
+```{r}
+# Dimensiones de la base consolidada
+dim(base_eam_2017_2023)
+
+# Número de observaciones por año
+base_eam_2017_2023 |>
+  dplyr::count(periodo, name = "observaciones") |>
+  dplyr::arrange(periodo)
+
+# Años presentes
+sort(unique(base_eam_2017_2023$periodo))
+```
+
+
+```{r}
+# ============================================================
+# DIAGNÓSTICO INICIAL DE LA BASE CONSOLIDADA
+# ============================================================
+
+library(dplyr)
+library(tidyr)
+
+# 1. Cantidad de variables efectivamente disponibles en cada año
+disponibilidad_anual <- base_eam_2017_2023 |>
+  group_by(periodo) |>
+  summarise(
+    across(
+      everything(),
+      ~ any(!is.na(.))
+    )
+  ) |>
+  pivot_longer(
+    cols = -periodo,
+    names_to = "variable",
+    values_to = "disponible"
+  ) |>
+  group_by(periodo) |>
+  summarise(
+    variables_con_datos = sum(disponible),
+    .groups = "drop"
+  )
+
+disponibilidad_anual
+```
+
+
+```{r}
+# 2. Presencia y tipo de posibles identificadores
+base_eam_2017_2023 |>
+  select(any_of(c("periodo", "nordemp", "nordest"))) |>
+  glimpse()
+
+# 3. Registros, empresas y establecimientos por año
+base_eam_2017_2023 |>
+  group_by(periodo) |>
+  summarise(
+    observaciones = n(),
+    empresas = n_distinct(nordemp, na.rm = TRUE),
+    establecimientos = n_distinct(nordest, na.rm = TRUE),
+    faltantes_nordemp = sum(is.na(nordemp)),
+    faltantes_nordest = sum(is.na(nordest)),
+    .groups = "drop"
+  )
+```
+
+
+```{r}
+# ============================================================
+# 1. VARIABLES DISPONIBLES EN 2019 PERO NO DESDE 2020
+# ============================================================
+
+variables_por_anio <- base_eam_2017_2023 |>
+  group_by(periodo) |>
+  summarise(
+    across(
+      -archivo_origen,
+      ~ any(!is.na(.))
+    ),
+    .groups = "drop"
+  ) |>
+  pivot_longer(
+    cols = -periodo,
+    names_to = "variable",
+    values_to = "disponible"
+  )
+
+variables_por_anio |>
+  filter(periodo %in% c(2019, 2020)) |>
+  pivot_wider(
+    names_from = periodo,
+    values_from = disponible,
+    names_prefix = "anio_"
+  ) |>
+  filter(anio_2019 != anio_2020)
+```
+
+
+```{r}
+# ============================================================
+# 2. GRADO DE BALANCE DEL PANEL DE ESTABLECIMIENTOS
+# ============================================================
+
+presencia_establecimientos <- base_eam_2017_2023 |>
+  distinct(nordest, periodo) |>
+  count(nordest, name = "anios_observados")
+
+presencia_establecimientos |>
+  count(anios_observados, name = "establecimientos") |>
+  mutate(
+    porcentaje = 100 * establecimientos / sum(establecimientos)
+  ) |>
+  arrange(anios_observados)
+```
+
+```{r}
+presencia_establecimientos |>
+  summarise(
+    establecimientos_totales = n(),
+    presentes_7_anios = sum(anios_observados == 7),
+    porcentaje_panel_balanceado =
+      100 * mean(anios_observados == 7)
+  )
+```
+
+
+```{r}
+# ============================================================
+# COMPROBAR CAMBIOS REALES ENTRE 2019 Y 2020,
+# IGNORANDO MAYÚSCULAS Y MINÚSCULAS
+# ============================================================
+
+comparacion_normalizada_19_20 <- variables_por_anio |>
+  filter(periodo %in% c(2019, 2020)) |>
+  mutate(
+    variable_normalizada = toupper(variable)
+  ) |>
+  group_by(periodo, variable_normalizada) |>
+  summarise(
+    disponible = any(disponible),
+    nombres_encontrados = paste(unique(variable), collapse = " / "),
+    .groups = "drop"
+  ) |>
+  pivot_wider(
+    names_from = periodo,
+    values_from = c(disponible, nombres_encontrados),
+    names_prefix = "anio_"
+  ) |>
+  mutate(
+    across(starts_with("disponible_"), ~ replace_na(.x, FALSE))
+  )
+
+# Solamente diferencias reales de disponibilidad
+comparacion_normalizada_19_20 |>
+  filter(disponible_anio_2019 != disponible_anio_2020)
+```
+
+
+```{r}
+# Disponibilidad de las cuatro variables durante 2017-2023
+
+variables_por_anio |>
+  mutate(variable_normalizada = toupper(variable)) |>
+  filter(
+    variable_normalizada %in%
+      c("C3R1C1", "C3R1C2", "C3R1C3", "C3R1PT")
+  ) |>
+  group_by(periodo, variable_normalizada) |>
+  summarise(
+    disponible = any(disponible),
+    nombres_encontrados = paste(unique(variable), collapse = " / "),
+    .groups = "drop"
+  ) |>
+  arrange(variable_normalizada, periodo)
+```
+
+
+```{r}
+base_eam_2017_2023 |>
+  group_by(periodo) |>
+  summarise(
+    across(
+      any_of(c(
+        "C3R1C1", "C3R1C2", "C3R1C3", "C3R1PT",
+        "c3r1c1", "c3r1c2", "c3r1c3", "c3r1pt"
+      )),
+      ~ sum(!is.na(.)),
+      .names = "{.col}"
+    ),
+    .groups = "drop"
+  )
+```
+
+
+```{r}
+# ============================================================
+# IDENTIFICAR QUÉ MIDEN LAS CUATRO VARIABLES
+# ============================================================
+
+diagnostico_c3r1 <- purrr::map_dfr(
+  archivos_2017_2023,
+  function(ruta) {
+
+    datos <- haven::read_dta(ruta)
+
+    nombres_reales <- names(datos)
+    nombres_objetivo <- nombres_reales[
+      toupper(nombres_reales) %in%
+        c("C3R1C1", "C3R1C2", "C3R1C3", "C3R1PT")
+    ]
+
+    purrr::map_dfr(
+      nombres_objetivo,
+      function(variable) {
+        tibble::tibble(
+          archivo = basename(ruta),
+          variable = variable,
+          etiqueta = attr(datos[[variable]], "label"),
+          valores_validos = sum(!is.na(datos[[variable]])),
+          valores_unicos = dplyr::n_distinct(
+            datos[[variable]],
+            na.rm = TRUE
+          )
+        )
+      }
+    )
+  }
+)
+
+diagnostico_c3r1
+```
+
+
+```{r}
+# ============================================================
+# BUSCAR POSIBLES REEMPLAZOS DE LAS VARIABLES DE SALARIO INTEGRAL
+# ============================================================
+
+diccionario_2017_2023 <- purrr::map_dfr(
+  archivos_2017_2023,
+  function(ruta) {
+
+    datos <- haven::read_dta(ruta)
+
+    tibble::tibble(
+      archivo = basename(ruta),
+      variable = names(datos),
+      etiqueta = purrr::map_chr(
+        datos,
+        ~ {
+          etiqueta <- attr(.x, "label")
+
+          if (is.null(etiqueta)) {
+            NA_character_
+          } else {
+            as.character(etiqueta)
+          }
+        }
+      )
+    )
+  }
+)
+
+# Buscar cualquier variable relacionada con salario integral
+busqueda_salario_integral <- diccionario_2017_2023 |>
+  dplyr::filter(
+    stringr::str_detect(
+      stringr::str_to_lower(
+        dplyr::coalesce(etiqueta, "")
+      ),
+      "salario integral"
+    )
+  ) |>
+  dplyr::arrange(archivo, variable)
+
+View(busqueda_salario_integral)
+```
+
+
+```{r}
+busqueda_salarios <- diccionario_2017_2023 |>
+  dplyr::filter(
+    stringr::str_detect(
+      stringr::str_to_lower(
+        dplyr::coalesce(etiqueta, "")
+      ),
+      "salario|remuneraci|prestacion"
+    )
+  ) |>
+  dplyr::arrange(archivo, variable)
+
+View(busqueda_salarios)
+```
+
+
+```{r}
+# Variables disponibles en TODOS los años 2017-2023,
+# ignorando mayúsculas y minúsculas
+
+variables_comunes_2017_2023 <- variables_por_anio |>
+  mutate(variable_normalizada = tolower(variable)) |>
+  group_by(periodo, variable_normalizada) |>
+  summarise(
+    disponible = any(disponible),
+    .groups = "drop"
+  ) |>
+  group_by(variable_normalizada) |>
+  summarise(
+    anios_disponibles = sum(disponible),
+    .groups = "drop"
+  ) |>
+  filter(anios_disponibles == 7)
+
+# Número exacto
+nrow(variables_comunes_2017_2023)
+```
+
+```{r}
+View(variables_comunes_2017_2023)
+```
+
+
+```{r}
+# ============================================================
+# BASE DEFINITIVA EAM 2017-2023 CON LAS 385 VARIABLES COMUNES
+# ============================================================
+
+library(dplyr)
+library(purrr)
+library(haven)
+
+# Vector con los nombres de las 385 variables comunes
+nombres_comunes <- variables_comunes_2017_2023 |>
+  pull(variable_normalizada)
+
+length(nombres_comunes)  # Debe dar 385
+
+
+# Leer cada archivo, normalizar nombres y conservar las 385
+base_analisis <- map_dfr(
+  archivos_2017_2023,
+  function(ruta) {
+
+    message("Cargando: ", basename(ruta))
+
+    datos <- read_dta(ruta)
+
+    # Unificar todos los nombres en minúsculas
+    names(datos) <- tolower(names(datos))
+
+    # Verificación de seguridad
+    if (anyDuplicated(names(datos)) > 0) {
+      stop(
+        "Hay nombres duplicados después de normalizar en: ",
+        basename(ruta)
+      )
+    }
+
+    # Conservar únicamente las variables comunes
+    datos |>
+      select(all_of(nombres_comunes))
+  }
+)
+```
+
+
+```{r}
+dim(base_analisis)
+```
+
+
 
 ```{r}
 # Variables
