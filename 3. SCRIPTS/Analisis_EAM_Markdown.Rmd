@@ -15,7 +15,11 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r}
+
+setwd("C:/Users/njaco/OneDrive/Documentos/Mestría en Economía Aplicada/Semestre 3/Big Data y Machine Learning/Repositorios/TESIS_MECA")
+
 source("3. SCRIPTS/analisis_eam_eac.R")
+
 ```
 
 ```{r}
@@ -37,5 +41,284 @@ base <- read_dta(archivo)
 
 # verla
 View(base)
+```
+
+
+```{r}
+# Variables
+summary(base$c4r5c1)   # operarios mujeres
+summary(base$c4r5c2)   # operarios hombres
+summary(base$PERTOTAL) # empleo total
+```
+
+```{r}
+# Ver distribución de valores únicos
+table(base$c4r5c1)
+
+table(base$c4r5c2)
+
+table(base$PERTOTAL)
+```
+
+```{r}
+base$operarios_total <- base$c4r5c1 + base$c4r5c2
+
+base$exposure_operarios <- base$operarios_total / base$PERTOTAL
+```
+
+
+```{r}
+summary(base$exposure_operarios)
+
+hist(base$exposure_operarios)
+```
+
+
+```{r}
+# Crear variable skill total
+base$skill_total <- 
+  base$c4r1c9n +
+  base$c4r1c10n +
+  base$c4r2c9e +
+  base$c4r2c10e
+
+# Crear share de skill
+base$skill_share <- ifelse(
+  base$PERTOTAL > 0,
+  base$skill_total / base$PERTOTAL,
+  NA
+)
+
+# Resumen estadístico
+summary(base$skill_share)
+
+# Percentiles
+quantile(
+  base$skill_share,
+  probs = c(0, .01, .05, .1, .25, .5, .75, .9, .95, .99, 1),
+  na.rm = TRUE
+)
+
+# Histograma
+hist(
+  base$skill_share,
+  breaks = 20,
+  main = "Distribución de intensidad de trabajo técnico/profesional",
+  xlab = "Skill Share"
+)
+
+# Ver algunos valores
+head(base$skill_share, 20)
+
+# Revisar missing
+sum(is.na(base$skill_share))
+```
+
+
+```{r}
+# Ver resumen de variables salariales
+summary(base$c3r2c1)
+summary(base$c3r2pt)
+summary(base$c3r2c2)
+summary(base$c3r2c3)
+
+# Ver cuantiles
+quantile(base$c3r2c1,
+         probs = c(0, .01, .05, .1, .25, .5, .75, .9, .95, .99, 1),
+         na.rm = TRUE)
+
+# Histograma salarios operarios
+hist(base$c3r2c1,
+     breaks = 30,
+     main = "Distribución masa salarial operarios",
+     xlab = "c3r2c1")
+
+# Ver algunos valores
+head(base$c3r2c1, 20)
+
+# Revisar missing
+sum(is.na(base$c3r2c1))
+```
+
+```{r}
+base$operarios_total <- base$c4r5c1 + base$c4r5c2
+
+base$salario_prom_operario <- ifelse(
+  base$operarios_total > 0,
+  base$c3r2c1 / base$operarios_total,
+  NA
+)
+```
+
+
+```{r}
+summary(base$salario_prom_operario)
+
+quantile(base$salario_prom_operario,
+         probs = c(0, .01, .05, .1, .25, .5, .75, .9, .95, .99, 1),
+         na.rm = TRUE)
+
+hist(base$salario_prom_operario,
+     breaks = 30,
+     main = "Salario promedio operario",
+     xlab = "Salario promedio")
+```
+
+
+```{r}
+# =========================
+# 1. Revisar missing values
+# =========================
+
+# Missing values
+sum(is.na(base$c3r2c1))
+sum(is.na(base$c3r2c3))
+
+# Porcentaje missing
+mean(is.na(base$c3r2c1)) * 100
+mean(is.na(base$c3r2c3)) * 100
+
+
+# =========================
+# 2. Estadísticas descriptivas
+# =========================
+
+summary(base$c3r2c1)
+
+summary(base$c3r2c3)
+
+# Percentiles
+quantile(base$c3r2c1,
+         probs = c(0, .01, .05, .1, .25, .5, .75, .9, .95, .99, 1),
+         na.rm = TRUE)
+
+quantile(base$c3r2c3,
+         probs = c(0, .01, .05, .1, .25, .5, .75, .9, .95, .99, 1),
+         na.rm = TRUE)
+
+# Histogramas
+hist(base$c3r2c1,
+     breaks = 30,
+     main = "Masa salarial operarios",
+     xlab = "c3r2c1")
+
+hist(base$c3r2c3,
+     breaks = 30,
+     main = "Masa salarial total",
+     xlab = "c3r2c3")
+```
+
+
+```{r}
+# =========================
+# Construcción exposure
+# =========================
+
+base$exposure_salarios <- ifelse(
+  base$c3r2c3 > 0,
+  base$c3r2c1 / base$c3r2c3,
+  NA
+)
+
+# Revisar distribución
+summary(base$exposure_salarios)
+
+quantile(base$exposure_salarios,
+         probs = c(0, .01, .05, .1, .25, .5, .75, .9, .95, .99, 1),
+         na.rm = TRUE)
+
+hist(base$exposure_salarios,
+     breaks = 30,
+     main = "Exposure salarial operarios",
+     xlab = "Exposure (0-1)")
+```
+
+
+```{r}
+# =====================================================
+# 1. Construir número de trabajadores por categoría
+# =====================================================
+
+# Operarios permanentes
+base$n_operarios <- base$c4r2c1 + base$c4r2c2
+
+# Profesionales / técnicos permanentes
+base$n_tecnicos <- base$c4r1c3n + base$c4r1c4n
+
+# Directivos / administración permanentes
+base$n_admin <- base$c4r2c3 + base$c4r2c4
+
+
+# =====================================================
+# 2. Construir salario promedio anual por categoría
+# =====================================================
+
+base$salario_operarios <- ifelse(
+  base$n_operarios > 0,
+  base$c3r2c1 / base$n_operarios,
+  NA
+)
+
+base$salario_tecnicos <- ifelse(
+  base$n_tecnicos > 0,
+  base$c3r2pt / base$n_tecnicos,
+  NA
+)
+
+base$salario_admin <- ifelse(
+  base$n_admin > 0,
+  base$c3r2c2 / base$n_admin,
+  NA
+)
+
+
+# =====================================================
+# 3. Estadísticas descriptivas
+# =====================================================
+
+summary(base$salario_operarios)
+summary(base$salario_tecnicos)
+summary(base$salario_admin)
+
+quantile(base$salario_operarios,
+         probs = c(.01,.05,.1,.25,.5,.75,.9,.95,.99),
+         na.rm = TRUE)
+
+quantile(base$salario_tecnicos,
+         probs = c(.01,.05,.1,.25,.5,.75,.9,.95,.99),
+         na.rm = TRUE)
+
+quantile(base$salario_admin,
+         probs = c(.01,.05,.1,.25,.5,.75,.9,.95,.99),
+         na.rm = TRUE)
+
+
+# =====================================================
+# 4. Histogramas
+# =====================================================
+
+hist(base$salario_operarios,
+     breaks = 40,
+     main = "Salario promedio anual - Operarios",
+     xlab = "Salario promedio")
+
+hist(base$salario_tecnicos,
+     breaks = 40,
+     main = "Salario promedio anual - Técnicos/Profesionales",
+     xlab = "Salario promedio")
+
+hist(base$salario_admin,
+     breaks = 40,
+     main = "Salario promedio anual - Administrativos/Directivos",
+     xlab = "Salario promedio")
+
+
+# =====================================================
+# 5. Comparación relativa simple
+# =====================================================
+
+mean(base$salario_operarios, na.rm = TRUE)
+mean(base$salario_tecnicos, na.rm = TRUE)
+mean(base$salario_admin, na.rm = TRUE)
 ```
 
