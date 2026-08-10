@@ -498,13 +498,6 @@ dim(base_analisis)
 
 
 ```{r}
-# Variables
-summary(base$c4r5c1)   # operarios mujeres
-summary(base$c4r5c2)   # operarios hombres
-summary(base$PERTOTAL) # empleo total
-```
-
-```{r}
 # Ver distribución de valores únicos
 table(base$c4r5c1)
 
