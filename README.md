@@ -22,12 +22,20 @@ El flujo actual permite:
 
 ## Requisitos
 
-- R 4.5 o superior
+- R **4.5.2 exacto** (la version fijada en `renv.lock`)
+- Rtools (compatible con la serie 4.5, ej. Rtools45) para instalar paquetes que requieren compilacion
 - `renv` para restaurar el entorno del proyecto
+
+> **Importante:** usa exactamente R 4.5.2, no una version mas nueva. Se probo con R 4.6.1 y
+> `renv::restore()` falla al compilar el paquete `S7` (dependencia de `ggplot2`) porque los headers
+> internos de R 4.6.x ya no exponen `R_NamespaceRegistry`, que esa version de `S7` necesita. Si ya
+> tienes una version distinta instalada, instala 4.5.2 desde el archivo historico de CRAN
+> (`https://cran.r-project.org/bin/windows/base/old/4.5.2/`) sin desinstalar la otra; ambas coexisten
+> en Windows.
 
 ## Restaurar el entorno
 
-Desde la raiz del repositorio:
+Desde la raiz del repositorio, con R 4.5.2 activo:
 
 ```r
 renv::restore()
