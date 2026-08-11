@@ -160,3 +160,62 @@ de libertad lo permiten). **No deben combinarse en un indice compuesto**:
 promediarlas o combinarlas en un solo indice destruiria la señal especifica
 de cada una, dado que estan midiendo mecanismos distintos y casi
 ortogonales de exposicion al choque de salario minimo.
+
+## Diagnostico de tendencias paralelas 2015-2019
+
+Scripts: `diagnostico_preliminar_tendencias_2015_2019.R`,
+`investigar_divergencia_pretendencias_2018_2019.R`,
+`investigar_validez_test_pretendencias.R`. Panel 2015-2019, sin las 24 firmas
+atipicas identificadas por cambio absoluto extremo 2017->2019 (ver
+`divergencia_firmas_q4_top.csv`). Test F formal:
+`Y ~ anio_lineal + i(quintil_exposure2022_obreros, anio_lineal, ref=Q1) | FE`,
+con `fixest`, hipotesis nula = pendientes 2015-2019 iguales entre quintiles.
+
+### costo_laboral_total: nivel agregado vs. per-capita
+
+| Variable | F | p-value |
+|---|---|---|
+| costo_laboral_total (nivel agregado) | 18.7 | 2.18e-15 |
+| salario_promedio (costo_laboral_total / empleo_total, per-capita) | 10.8 | 8.82e-9 |
+
+Al pasar a terminos per-capita la significancia baja pero **no desaparece**.
+No es enteramente un artefacto mecanico de solapamiento con `Exposure_f`
+(`costo_laboral_total` viene del capitulo C3R en pesos, `Exposure2022_obreros`
+del capitulo C4R en personas — no comparten ninguna celda cruda). La
+explicacion mas plausible: el salario minimo colombiano sube todos los anios,
+no solo en 2023, asi que el "pre-periodo" 2015-2019 no esta libre de
+tratamiento — las firmas con mas obreros ya absorbian incrementos anuales del
+minimo antes de 2023, en menor escala. Esto no invalida el diseño, pero
+implica que `costo_laboral_total` no debe tratarse como outcome estandar del
+DiD sin ese matiz.
+
+### empleo_total y produccion: con y sin controles de sector*anio y tamano*anio
+
+| Variable | Sin controles | Con sector(CIIU4)\*anio + tamano_empresa\*anio |
+|---|---|---|
+| empleo_total | F=3.87, p=0.0038 | F=1.97, p=0.096 |
+| produccion (base_resultado) | F=2.68, p=0.030 | F=1.20, p=0.306 |
+
+Ambas variables **dejan de ser significativas al 5%** al agregar estos
+controles. La divergencia pre-tratamiento en los outcomes principales de la
+tesis se explica por composicion sectorial/tamano correlacionada con
+exposicion, no por una violacion estructural del supuesto de tendencias
+paralelas.
+
+### Conclusiones
+
+1. **Los outcomes principales (`empleo_total`, `produccion`) son defendibles
+   bajo tendencias paralelas SI el modelo final incluye `sector(CIIU4)*anio`
+   y `tamano_empresa*anio` como controles** — no opcionales, sino necesarios
+   para que el supuesto se sostenga.
+2. **`costo_laboral_total`/salario promedio requiere tratamiento aparte**: no
+   como outcome estandar del DiD 2023, sino como evidencia descriptiva del
+   mecanismo, o con un control explicito por crecimiento acumulado del
+   salario minimo nominal en el pre-periodo. Decision pendiente para mas
+   adelante.
+3. **Pendientes abiertos para la siguiente sesion**:
+   - Construir el panel formal 2015-2019 + 2021-2022 para el event study, ya
+     con `sector*anio` y `tamano*anio` incluidos desde el diseño (no
+     agregados post-hoc).
+   - Decidir el tratamiento de `costo_laboral_total` (outcome descriptivo vs.
+     control por crecimiento acumulado del salario minimo pre-periodo).
