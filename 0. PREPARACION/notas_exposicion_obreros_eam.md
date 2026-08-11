@@ -35,3 +35,86 @@ La macrobase EAM cubre **2008-2024** (no 2016-2025 como se asumia al inicio, y *
 2. **Caida sostenida de empresas en el panel**: de ~9,468 (2010) a ~5,973 (2024), -37%. No esta claro si es atricion real de firmas o cambios en el marco muestral de la EAM a lo largo del tiempo; puede afectar la interpretacion de tendencias temporales de exposicion.
 3. **Que medida de exposicion usar en la estimacion econometrica**: `Exposure2022` (nivel salarial) y `Exposure2022_obreros` (composicion ocupacional) no son intercambiables (correlacion 0.36). La eleccion entre una, otra, o ambas como robustez, es una decision de la tesis, no tecnica.
 4. **CIIU3 vs CIIU4**: si mas adelante se necesita sector de forma longitudinal en todo el panel 2008-2024, CIIU3 y CIIU4 deben tratarse como variables categoricas distintas (no concatenarse).
+
+## Bite2022_obreros (indice de Kaitz)
+
+Rama: `feature/postpandemia-descartar-2012`. Scripts:
+
+1. `verificar_exclusion_prestaciones_salario_obrero_eam.R` (Paso 1b)
+2. `construir_bite_obreros_eam.R` (Paso 2)
+3. `diagnosticos_validacion_bite_obreros_eam.R` (Paso 3)
+
+### Que representa
+
+`Bite2022_obreros` es un indice de Kaitz: cuanto tuvo que subir el salario base
+promedio de los obreros de una firma para llegar al salario minimo legal de
+2023. Se calcula como:
+
+```
+Bite2022_obreros = (SM_2023 x 12) / salario_promedio_obrero_f_2022
+```
+
+- `SM_2023` = $1.160.000 COP mensual (Decreto 2613 de 2022, Ministerio del
+  Trabajo), verificado via busqueda web, no asumido de memoria.
+- `salario_promedio_obrero_f_2022` (fuente: `C3R2C1`) es una cifra **anual, en
+  miles de pesos**, confirmada empiricamente comparando su magnitud contra
+  SM_2023 mensual (razon 13.93x, implausible) vs. SM_2023 anualizado (razon
+  1.16x, plausible).
+
+### Verificacion de escala y contenido (Paso 1 y 1b)
+
+- **Periodicidad y unidad (Paso 1)**: confirmada por magnitud empirica, no por
+  texto explicito del diccionario (el diccionario oficial no declara
+  periodicidad/unidad para `C3R2C1` especificamente, aunque si lo hace para
+  otras variables de la EAM, ej. `C3R19C3` dice literalmente "en miles de
+  pesos").
+- **Exclusion de prestaciones sociales (C3R3)**: **confirmada numericamente**.
+  `C3R2` (salario) vs. `C3R2+C3R3` (salario+prestaciones, ambas filas
+  explicitamente "personal permanente" en el diccionario oficial): `C3R2 <
+  C3R2+C3R3` en el 100% de las firmas (n=5,108). Las prestaciones representan
+  una mediana de 19.1% de (salario+prestaciones), ~23-24% sobre el salario
+  base, coherente con la carga prestacional legal colombiana.
+- **Exclusion de cotizaciones patronales y aportes sobre nomina (C3R5/C3R6)**:
+  **solo inferida por estructura del formulario** (son filas separadas de
+  C3R2), **NO confirmada numericamente**. Se intento reconciliar contra
+  `C3R10` (fila oficial "Total sueldos/salarios/prestaciones/cotizaciones/
+  aportes"), pero `C3R10` no es comparable 1 a 1: cubre TODAS las
+  vinculaciones (permanente + temporal directo + temporal agencia), no solo
+  permanente, y `C3R5`/`C3R6` ya reflejan personal ocupado completo. La suma
+  parcial `C3R2+C3R3+C3R5+C3R6` quedo en una mediana de 76.4% de `C3R10`, con
+  rango muy amplio (p10=12.9%, p90=97.1%): no reconcilia bien, y no se forzo
+  esa aproximacion.
+- **Por esta razon se omitio el Paso 2b** (variante de robustez con costo
+  laboral total `Bite2022_obreros_costo_total`): no hay forma limpia de aislar
+  un costo laboral total solo-personal-permanente con las variables
+  disponibles en la EAM. Queda como pendiente documentado, no como tarea
+  completada de esta rama.
+
+### Diagnosticos (Paso 3)
+
+- **Percentiles**: mediana = 0.861 (la firma mediana pagaba a sus obreros
+  ~86% de lo que seria el salario minimo de 2023).
+- **Correlacion con Exposure2022_obreros**: Pearson = 0.124, Spearman = 0.159
+  (n=5,099). Positiva, como se esperaba, pero **debil**, no solo "no
+  perfecta" — se reporta tal cual, no se minimiza.
+- **Relacion con atributos** (R2 de ANOVA): tamano de empresa R2=0.116
+  (Spearman=-0.399, firmas mas grandes tienden a pagar mas por encima del
+  minimo), sector (CIIU4) R2=0.092, DPTO R2=0.026.
+- **Fraccion de firmas con Bite > 1** (el minimo de 2023 ya superaba lo que
+  pagaban a sus obreros en 2022): **29.4%** (1,499 de 5,099 firmas). Con
+  Bite < 1: 70.2%.
+
+### Nota metodologica sobre exposicion pre-choque (parrafo acordado, sin reformular)
+
+> Bite_f es una medida de exposición pre-choque (2022), no una medida de lo
+> ocurrido después del choque. En particular, un valor bajo de Bite_f (firma ya
+> pagaba por encima del mínimo) no implica ni asume que la firma haya comprimido
+> su estructura salarial tras el aumento del salario mínimo. La compresión
+> salarial —definida como el estrechamiento de la brecha entre categorías
+> ocupacionales tras el choque— es una hipótesis de mecanismo que debe evaluarse
+> empíricamente comparando outcomes (por ejemplo, la evolución de la razón
+> salario_administrativo / salario_obrero por nivel de exposición o bite, antes y
+> después de 2023), no una propiedad asumida en la construcción de la variable de
+> tratamiento. Confundir ambas cosas equivaldría a dar por probado, en la
+> construcción de una variable explicativa, el resultado que la tesis debe
+> demostrar.
