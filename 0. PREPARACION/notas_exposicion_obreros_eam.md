@@ -118,3 +118,45 @@ Bite2022_obreros = (SM_2023 x 12) / salario_promedio_obrero_f_2022
 > tratamiento. Confundir ambas cosas equivaldría a dar por probado, en la
 > construcción de una variable explicativa, el resultado que la tesis debe
 > demostrar.
+
+### Robustez de la correlacion debil Bite-Exposure (Paso 5)
+
+Script: `diagnostico_robustez_correlacion_bite_exposure_eam.R`. La correlacion
+debil reportada arriba (Pearson=0.124, Spearman=0.159) se sometio a tres
+chequeos de robustez, para descartar que fuera un artefacto de outliers,
+forma funcional o composicion sectorial no tratados:
+
+1. **Winsorizacion**: `salario_promedio_obrero_f` no habia pasado por el mismo
+   criterio de winsorizacion (1%-99%) que usa `descriptivo_exposicion_eam.R`
+   para `Exposure2022`. Al aplicarlo y recalcular `Bite2022_obreros_winsorizado`,
+   la correlacion **no cambia de forma material**: Pearson pasa de 0.124 a
+   0.149, Spearman se mantiene exactamente en 0.159 (n=5,103 vs. 5,099; la
+   winsorizacion "rescata" 4 firmas con salario=0 que antes daban NA por
+   division entre cero, al reemplazar ese 0 por el limite p1).
+2. **Scatter (Bite vs Exposure, n=5,099)**: nube muy dispersa en todo el rango
+   de exposicion. La curva loess practicamente coincide con la linea de
+   tendencia lineal — no hay ningun patron no lineal oculto que el
+   coeficiente de correlacion lineal este pasando por alto. Ver
+   `4. RESULTADOS/descriptivos_exposicion/scatter_bite_vs_exposure.png`.
+3. **Correlacion por sector (CIIU4, los 6 sectores con mas observaciones)**:
+   rango 0.039-0.272 (Pearson), todas del mismo orden que la agregada (0.124)
+   o apenas superiores. La heterogeneidad sectorial en niveles salariales
+   **no** esta enmascarando una relacion firma-a-firma mucho mas fuerte.
+
+**Conclusion**: la correlacion debil entre `Bite2022_obreros` y
+`Exposure2022_obreros` es un **hallazgo robusto, no un artefacto
+metodologico**. Es consistente con que ambas variables capturan dimensiones
+genuinamente distintas de exposicion: `Exposure2022_obreros` mide composicion
+ocupacional (cuanto pesan los obreros en el empleo total), mientras que
+`Bite2022_obreros` mide nivel salarial relativo al minimo (cuanto tuvo que
+subir el salario para llegar al minimo de 2023). Una firma puede tener pocos
+obreros pero pagarles muy cerca del minimo, o muchos obreros bien pagados por
+encima del minimo — son ejes distintos de exposicion al choque.
+
+**Implicacion para la estrategia de estimacion**: dada la correlacion debil
+(r² ≈ 0.02), `Exposure_f` y `Bite_f` deben usarse como **especificaciones
+separadas** del modelo DiD (o con interacciones independientes si los grados
+de libertad lo permiten). **No deben combinarse en un indice compuesto**:
+promediarlas o combinarlas en un solo indice destruiria la señal especifica
+de cada una, dado que estan midiendo mecanismos distintos y casi
+ortogonales de exposicion al choque de salario minimo.
