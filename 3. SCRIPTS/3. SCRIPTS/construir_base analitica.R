@@ -159,3 +159,91 @@ base_analitica |>
   ) |>
   head()
 
+# ============================================================
+# 6. VALIDAR EMPLEO CONTRA EL TOTAL OFICIAL DEL DANE
+# ============================================================
+
+cols_propietarios <- c(
+  "C4R1C1", "C4R1C2",
+  "C4R1C3", "C4R1C4",
+  "C4R1C1N", "C4R1C2N",
+  "C4R2C1E", "C4R2C2E"
+)
+
+base_analitica$total_propietarios <-
+  sumar_componentes(base_analitica, cols_propietarios)
+
+base_analitica <- base_analitica |>
+  dplyr::mutate(
+    empleo_total_con_propietarios =
+      empleo_total_categorias + total_propietarios,
+    
+    empleo_total_oficial =
+      as.numeric(C4R4C9T) + as.numeric(C4R4C10T)
+  )
+
+validacion_empleo <- base_analitica |>
+  dplyr::summarise(
+    pct_coincide_sin_propietarios = round(
+      100 * mean(
+        empleo_total_categorias == empleo_total_oficial,
+        na.rm = TRUE
+      ),
+      2
+    ),
+    pct_coincide_con_propietarios = round(
+      100 * mean(
+        empleo_total_con_propietarios == empleo_total_oficial,
+        na.rm = TRUE
+      ),
+      2
+    )
+  )
+
+validacion_empleo
+
+
+# ============================================================
+# 7. CONSTRUIR EXPOSICIÓN DE OBREROS EN 2022
+# ============================================================
+
+exposicion_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::transmute(
+    NORDEST,
+    Exposure2022_obreros = dplyr::if_else(
+      !is.na(empleo_total_categorias) &
+        empleo_total_categorias > 0,
+      total_obreros / empleo_total_categorias,
+      NA_real_
+    )
+  )
+
+base_analitica <- base_analitica |>
+  dplyr::left_join(exposicion_2022, by = "NORDEST")
+
+base_analitica |>
+  dplyr::summarise(
+    establecimientos_con_exposicion =
+      dplyr::n_distinct(
+        NORDEST[!is.na(Exposure2022_obreros)]
+      ),
+    exposicion_minima = min(Exposure2022_obreros, na.rm = TRUE),
+    exposicion_maxima = max(Exposure2022_obreros, na.rm = TRUE)
+  )
+
+
+# ============================================================
+# 8. REVISAR EXPOSICIONES NO CALCULABLES EN 2022
+# ============================================================
+
+base_analitica |>
+  dplyr::filter(
+    ANIO == 2022,
+    is.na(Exposure2022_obreros)
+  ) |>
+  dplyr::count(
+    sin_datos = is.na(empleo_total_categorias),
+    empleo_cero = empleo_total_categorias == 0,
+    name = "establecimientos"
+  )
