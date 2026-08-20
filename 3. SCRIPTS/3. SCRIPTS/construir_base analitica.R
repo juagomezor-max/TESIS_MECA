@@ -247,3 +247,322 @@ base_analitica |>
     empleo_cero = empleo_total_categorias == 0,
     name = "establecimientos"
   )
+
+
+# ============================================================
+# 9. DISTRIBUCIÓN DE LA EXPOSICIÓN EN 2022
+# ============================================================
+
+resumen_exposicion <- exposicion_2022 |>
+  dplyr::filter(!is.na(Exposure2022_obreros)) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    promedio = mean(Exposure2022_obreros),
+    p10 = quantile(Exposure2022_obreros, 0.10),
+    p25 = quantile(Exposure2022_obreros, 0.25),
+    mediana = median(Exposure2022_obreros),
+    p75 = quantile(Exposure2022_obreros, 0.75),
+    p90 = quantile(Exposure2022_obreros, 0.90),
+    proporcion_en_cero = mean(Exposure2022_obreros == 0),
+    proporcion_en_uno = mean(Exposure2022_obreros == 1)
+  )
+
+resumen_exposicion
+
+# ============================================================
+# 10. EMPLEO POR TIPO DE VINCULACIÓN
+# ============================================================
+
+cols_permanentes <- c(
+  "C4R2C1", "C4R2C2", "C4R2C3", "C4R2C4",
+  "C4R1C3N", "C4R1C4N", "C4R2C3E", "C4R2C4E"
+)
+
+cols_temporales_directos <- c(
+  "C4R3C1", "C4R3C2", "C4R3C3", "C4R3C4",
+  "C4R1C5N", "C4R1C6N", "C4R2C5E", "C4R2C6E"
+)
+
+cols_temporales_agencia <- c(
+  "C4R4C1", "C4R4C2", "C4R4C3", "C4R4C4",
+  "C4R1C7N", "C4R1C8N", "C4R2C7E", "C4R2C8E"
+)
+
+cols_aprendices <- c(
+  "C4R6OM", "C4R6OH",
+  "C4R6DM", "C4R6DH",
+  "C4R6MN", "C4R6HN",
+  "C4R6ME", "C4R6HE"
+)
+
+base_analitica$empleo_permanente <-
+  sumar_componentes(base_analitica, cols_permanentes)
+
+base_analitica$empleo_temporal_directo <-
+  sumar_componentes(base_analitica, cols_temporales_directos)
+
+base_analitica$empleo_temporal_agencia <-
+  sumar_componentes(base_analitica, cols_temporales_agencia)
+
+base_analitica$empleo_aprendices <-
+  sumar_componentes(base_analitica, cols_aprendices)
+
+validacion_vinculacion <- base_analitica |>
+  dplyr::mutate(
+    suma_vinculaciones =
+      empleo_permanente +
+      empleo_temporal_directo +
+      empleo_temporal_agencia +
+      empleo_aprendices
+  ) |>
+  dplyr::summarise(
+    pct_coincide = round(
+      100 * mean(
+        suma_vinculaciones == empleo_total_categorias,
+        na.rm = TRUE
+      ),
+      2
+    )
+  )
+
+validacion_vinculacion
+
+# ============================================================
+# 12. SALARIO PROMEDIO POR CATEGORÍA
+# ============================================================
+
+cols_permanentes_obreros <- c(
+  "C4R2C1", "C4R2C2"
+)
+
+cols_permanentes_administrativos <- c(
+  "C4R2C3", "C4R2C4"
+)
+
+cols_permanentes_prof_tecnico <- c(
+  "C4R1C3N", "C4R1C4N",
+  "C4R2C3E", "C4R2C4E"
+)
+
+base_analitica$personal_permanente_obrero <-
+  sumar_componentes(base_analitica, cols_permanentes_obreros)
+
+base_analitica$personal_permanente_administrativo <-
+  sumar_componentes(base_analitica, cols_permanentes_administrativos)
+
+base_analitica$personal_permanente_prof_tecnico <-
+  sumar_componentes(base_analitica, cols_permanentes_prof_tecnico)
+
+base_analitica <- base_analitica |>
+  dplyr::mutate(
+    salario_promedio_obrero =
+      dividir_seguro(
+        as.numeric(C3R2C1),
+        personal_permanente_obrero
+      ),
+    
+    salario_promedio_administrativo =
+      dividir_seguro(
+        as.numeric(C3R2C2),
+        personal_permanente_administrativo
+      ),
+    
+    salario_promedio_prof_tecnico =
+      dividir_seguro(
+        as.numeric(C3R2PT),
+        personal_permanente_prof_tecnico
+      )
+  )
+
+base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::summarise(
+    mediana_obreros =
+      median(salario_promedio_obrero, na.rm = TRUE),
+    
+    mediana_administrativos =
+      median(salario_promedio_administrativo, na.rm = TRUE),
+    
+    mediana_prof_tecnico =
+      median(salario_promedio_prof_tecnico, na.rm = TRUE)
+  )
+
+# ============================================================
+# 13. COBERTURA DE SALARIOS EN 2022
+# ============================================================
+
+base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    con_salario_obrero = sum(!is.na(salario_promedio_obrero)),
+    con_salario_administrativo =
+      sum(!is.na(salario_promedio_administrativo)),
+    con_salario_prof_tecnico =
+      sum(!is.na(salario_promedio_prof_tecnico))
+  )
+
+# ============================================================
+# 14. COBERTURA DE RESULTADOS ECONÓMICOS
+# ============================================================
+
+variables_economicas <- c(
+  "VALAGRI",   # Valor agregado
+  "PRODBIND",  # Producción bruta industrial
+  "VALORVEN",  # Ventas
+  "VALVFAB"    # Ventas de productos fabricados
+)
+
+setdiff(variables_economicas, names(base_analitica))
+
+cobertura_variables_economicas <- base_analitica |>
+  dplyr::group_by(ANIO) |>
+  dplyr::summarise(
+    dplyr::across(
+      dplyr::all_of(variables_economicas),
+      ~ round(100 * mean(!is.na(.x)), 2)
+    ),
+    .groups = "drop"
+  ) |>
+  tidyr::pivot_longer(
+    cols = -ANIO,
+    names_to = "variable",
+    values_to = "porcentaje_con_datos"
+  )
+
+print(cobertura_variables_economicas, n = Inf)
+
+# ============================================================
+# 15. DIAGNÓSTICO DE RESULTADOS ECONÓMICOS
+# ============================================================
+
+diagnostico_economico <- base_analitica |>
+  dplyr::select(
+    ANIO,
+    VALAGRI,
+    PRODBIND,
+    VALORVEN
+  ) |>
+  tidyr::pivot_longer(
+    cols = -ANIO,
+    names_to = "variable",
+    values_to = "valor"
+  ) |>
+  dplyr::group_by(ANIO, variable) |>
+  dplyr::summarise(
+    porcentaje_ceros =
+      round(100 * mean(valor == 0, na.rm = TRUE), 2),
+    
+    porcentaje_negativos =
+      round(100 * mean(valor < 0, na.rm = TRUE), 2),
+    
+    mediana =
+      median(valor, na.rm = TRUE),
+    
+    percentil_99 =
+      quantile(valor, 0.99, na.rm = TRUE),
+    
+    .groups = "drop"
+  )
+
+print(diagnostico_economico, n = Inf)
+
+# ============================================================
+# 16. CASOS ECONÓMICOS NO POSITIVOS
+# ============================================================
+
+casos_no_positivos <- base_analitica |>
+  dplyr::select(
+    NORDEST,
+    ANIO,
+    VALAGRI,
+    PRODBIND,
+    VALORVEN
+  ) |>
+  tidyr::pivot_longer(
+    cols = c(VALAGRI, PRODBIND, VALORVEN),
+    names_to = "variable",
+    values_to = "valor"
+  ) |>
+  dplyr::filter(valor <= 0) |>
+  dplyr::group_by(ANIO, variable) |>
+  dplyr::summarise(
+    casos = dplyr::n(),
+    valor_minimo = min(valor),
+    .groups = "drop"
+  )
+
+print(casos_no_positivos, n = Inf)
+
+
+# ============================================================
+# 17. INVENTARIO DE POSIBLES RESULTADOS Y CONTROLES
+# ============================================================
+
+ruta_codebook <- file.path(
+  dirname(paths$macro_base_eam),
+  "macro_base_eam_codebook.csv"
+)
+
+diccionario <- readr::read_csv(
+  ruta_codebook,
+  show_col_types = FALSE
+) |>
+  dplyr::mutate(
+    variable = toupper(variable),
+    descripcion = dplyr::coalesce(
+      descripcion_final,
+      descripcion_diccionario,
+      label_dta
+    )
+  )
+
+# Resultados que ya identificamos
+resultados_identificados <- diccionario |>
+  dplyr::filter(
+    variable %in% c(
+      "VALAGRI",
+      "PRODBIND",
+      "VALORVEN",
+      "C3R10C3"
+    )
+  ) |>
+  dplyr::select(
+    variable,
+    descripcion,
+    aparece_en_anios
+  )
+
+resultados_identificados
+
+# Buscar posibles controles
+posibles_controles <- diccionario |>
+  dplyr::filter(
+    stringr::str_detect(
+      stringr::str_to_lower(
+        dplyr::coalesce(descripcion, "")
+      ),
+      paste(
+        c(
+          "export",
+          "invers",
+          "activo",
+          "capital",
+          "energ",
+          "import",
+          "materia prima",
+          "departamento",
+          "ciiu"
+        ),
+        collapse = "|"
+      )
+    )
+  ) |>
+  dplyr::select(
+    variable,
+    descripcion,
+    aparece_en_anios
+  ) |>
+  dplyr::distinct()
+
+View(posibles_controles)
