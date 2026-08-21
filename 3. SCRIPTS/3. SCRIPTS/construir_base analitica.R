@@ -1070,3 +1070,193 @@ base_analitica |>
       ~round(100 * mean(!is.na(.x)), 2)
     )
   )
+
+# ============================================================
+# 26. CONSTRUIR IPC ANUAL CON BASE 2022 = 100
+# ============================================================
+
+ipc_mensual <- readr::read_csv2(
+  file.path("1. DATOS", "7. DEFLACTORES", "anex-IPC-historicos-BanRep.csv"),
+  show_col_types = FALSE
+) |>
+  dplyr::rename(
+    fecha = DateTime,
+    ipc = `Índice de Precios al Consumidor (IPC)`
+  ) |>
+  dplyr::mutate(
+    fecha = as.Date(fecha, format = "%Y/%m/%d"),
+    ANIO = as.integer(format(fecha, "%Y")),
+    ipc = as.numeric(ipc)
+  )
+
+ipc_anual <- ipc_mensual |>
+  dplyr::filter(dplyr::between(ANIO, 2008, 2024)) |>
+  dplyr::group_by(ANIO) |>
+  dplyr::summarise(
+    meses_disponibles = dplyr::n(),
+    ipc_promedio = mean(ipc, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(
+    ipc_2022 = 100 * ipc_promedio / ipc_promedio[ANIO == 2022]
+  )
+
+print(ipc_anual, n = Inf)
+
+# ============================================================
+# 27. CONSTRUIR SALARIOS REALES CON IPC BASE 2022
+# ============================================================
+
+base_analitica <- base_analitica |>
+  dplyr::left_join(
+    ipc_anual |>
+      dplyr::select(ANIO, ipc_2022),
+    by = "ANIO"
+  ) |>
+  dplyr::mutate(
+    salario_obrero_real_ipc =
+      salario_obrero_valido / (ipc_2022 / 100),
+    
+    salario_administrativo_real_ipc =
+      salario_administrativo_valido / (ipc_2022 / 100),
+    
+    salario_prof_tecnico_real_ipc =
+      salario_prof_tecnico_valido / (ipc_2022 / 100),
+    
+    log_salario_obrero_real_ipc =
+      dplyr::if_else(
+        salario_obrero_real_ipc > 0,
+        log(salario_obrero_real_ipc),
+        NA_real_
+      ),
+    
+    log_salario_administrativo_real_ipc =
+      dplyr::if_else(
+        salario_administrativo_real_ipc > 0,
+        log(salario_administrativo_real_ipc),
+        NA_real_
+      ),
+    
+    log_salario_prof_tecnico_real_ipc =
+      dplyr::if_else(
+        salario_prof_tecnico_real_ipc > 0,
+        log(salario_prof_tecnico_real_ipc),
+        NA_real_
+      )
+  )
+
+base_analitica |>
+  dplyr::summarise(
+    obreros_con_salario_real =
+      sum(!is.na(salario_obrero_real_ipc)),
+    
+    administrativos_con_salario_real =
+      sum(!is.na(salario_administrativo_real_ipc)),
+    
+    profesionales_con_salario_real =
+      sum(!is.na(salario_prof_tecnico_real_ipc))
+  )
+
+# ============================================================
+# PASO 28. CONSTRUIR CARACTERÍSTICAS PRECHOQUE (2022)
+# ============================================================
+
+# Número de establecimientos que tiene cada empresa en 2022
+estructura_empresa_2022 <- macro_base |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::group_by(NORDEMP) |>
+  dplyr::summarise(
+    numero_establecimientos_empresa_2022 =
+      dplyr::n_distinct(NORDEST),
+    empresa_multiestablecimiento_2022 =
+      as.integer(numero_establecimientos_empresa_2022 > 1),
+    .groups = "drop"
+  )
+
+# Características del establecimiento antes del choque
+caracteristicas_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::left_join(
+    estructura_empresa_2022,
+    by = "NORDEMP"
+  ) |>
+  dplyr::transmute(
+    NORDEST,
+    NORDEMP,
+    
+    tamano_2022 = empleo_total_categorias,
+    asinh_tamano_2022 = asinh(empleo_total_categorias),
+    
+    activos_fijos_2022 =
+      suppressWarnings(as.numeric(ACTIVFI)),
+    asinh_activos_fijos_2022 =
+      asinh(suppressWarnings(as.numeric(ACTIVFI))),
+    
+    inversion_bruta_2022 =
+      suppressWarnings(as.numeric(INVEBRTA)),
+    asinh_inversion_bruta_2022 =
+      asinh(suppressWarnings(as.numeric(INVEBRTA))),
+    
+    usa_insumos_importados_2022 =
+      as.integer(suppressWarnings(as.numeric(VALORCX)) > 0),
+    
+    proporcion_insumos_importados_2022 =
+      dplyr::if_else(
+        suppressWarnings(as.numeric(VALORCOM)) > 0,
+        suppressWarnings(as.numeric(VALORCX)) /
+          suppressWarnings(as.numeric(VALORCOM)),
+        NA_real_
+      ),
+    
+    numero_establecimientos_empresa_2022,
+    empresa_multiestablecimiento_2022
+  )
+
+caracteristicas_2022 |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    cobertura_tamano = mean(!is.na(tamano_2022)) * 100,
+    cobertura_activos = mean(!is.na(activos_fijos_2022)) * 100,
+    cobertura_inversion = mean(!is.na(inversion_bruta_2022)) * 100,
+    porcentaje_usa_insumos_importados =
+      mean(usa_insumos_importados_2022, na.rm = TRUE) * 100,
+    porcentaje_multiestablecimiento =
+      mean(empresa_multiestablecimiento_2022, na.rm = TRUE) * 100
+  )
+
+
+# ============================================================
+# PASO 29. DIAGNOSTICAR LAS X PRECHOQUE
+# ============================================================
+
+diagnostico_x_2022 <- caracteristicas_2022 |>
+  dplyr::select(
+    tamano_2022,
+    activos_fijos_2022,
+    inversion_bruta_2022,
+    proporcion_insumos_importados_2022,
+    numero_establecimientos_empresa_2022
+  ) |>
+  tidyr::pivot_longer(
+    cols = dplyr::everything(),
+    names_to = "variable",
+    values_to = "valor"
+  ) |>
+  dplyr::group_by(variable) |>
+  dplyr::summarise(
+    observaciones = dplyr::n(),
+    porcentaje_con_datos =
+      round(100 * mean(!is.na(valor)), 2),
+    porcentaje_ceros =
+      round(100 * mean(valor == 0, na.rm = TRUE), 2),
+    porcentaje_negativos =
+      round(100 * mean(valor < 0, na.rm = TRUE), 2),
+    minimo = min(valor, na.rm = TRUE),
+    percentil_1 = quantile(valor, 0.01, na.rm = TRUE),
+    mediana = median(valor, na.rm = TRUE),
+    percentil_99 = quantile(valor, 0.99, na.rm = TRUE),
+    maximo = max(valor, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+print(diagnostico_x_2022, n = Inf, width = Inf)
