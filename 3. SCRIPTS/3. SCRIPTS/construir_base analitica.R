@@ -807,3 +807,266 @@ base_analitica <- base_analitica |>
       NA_real_
     )
   )
+
+# Crear carpeta de deflactores
+carpeta_deflactores <- file.path(
+  "1. DATOS",
+  "7. DEFLACTORES"
+)
+
+dir.create(
+  carpeta_deflactores,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+# Elegir el Excel desde Descargas
+archivo_seleccionado <- file.choose()
+
+# Copiarlo dentro del proyecto
+ruta_ipp <- file.path(
+  carpeta_deflactores,
+  "anex-IPP-historicos-jul2026.xlsx"
+)
+
+file.copy(
+  from = archivo_seleccionado,
+  to = ruta_ipp,
+  overwrite = FALSE
+)
+
+file.exists(ruta_ipp)
+
+# ============================================================
+# 22. CONSTRUIR DEFLACTOR IPP INDUSTRIAL ANUAL
+# ============================================================
+
+dir.create(
+  file.path("1. DATOS", "7. DEFLACTORES"),
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+ruta_ipp <- file.path(
+  "1. DATOS",
+  "7. DEFLACTORES",
+  "anex-IPP-historicos-jul2026.xlsx"
+)
+
+if (!file.exists(ruta_ipp)) {
+  stop("No se encontró el archivo IPP en: ", ruta_ipp)
+}
+
+ipp_mensual <- readxl::read_excel(
+  ruta_ipp,
+  sheet = "IPP Histórico",
+  skip = 5,
+  col_names = FALSE
+) |>
+  dplyr::select(1:6) |>
+  rlang::set_names(
+    c(
+      "ANIO",
+      "MES",
+      "ipp_produccion_nacional",
+      "ipp_agricultura",
+      "ipp_mineria",
+      "ipp_industria"
+    )
+  ) |>
+  tidyr::fill(ANIO) |>
+  dplyr::mutate(
+    ANIO = suppressWarnings(as.integer(ANIO)),
+    ipp_industria =
+      suppressWarnings(as.numeric(ipp_industria))
+  ) |>
+  dplyr::filter(ANIO %in% 2008:2024)
+
+ipp_industrial_anual <- ipp_mensual |>
+  dplyr::group_by(ANIO) |>
+  dplyr::summarise(
+    meses_disponibles = sum(!is.na(ipp_industria)),
+    ipp_industria_promedio = mean(
+      ipp_industria,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(
+    ipp_industria_2022 = 100 *
+      ipp_industria_promedio /
+      ipp_industria_promedio[ANIO == 2022]
+  )
+
+print(ipp_industrial_anual, n = Inf)
+
+# ============================================================
+# 23. CONSTRUIR RESULTADOS ECONÓMICOS REALES
+# ============================================================
+
+# Guardar la serie anual ya validada
+readr::write_csv(
+  ipp_industrial_anual,
+  file.path(
+    "1. DATOS",
+    "7. DEFLACTORES",
+    "ipp_industrial_anual_base_2022.csv"
+  )
+)
+
+# Incorporar el IPP por año
+base_analitica <- base_analitica |>
+  dplyr::left_join(
+    ipp_industrial_anual |>
+      dplyr::select(
+        ANIO,
+        ipp_industria_2022
+      ),
+    by = "ANIO"
+  ) |>
+  dplyr::mutate(
+    valor_agregado_real =
+      VALAGRI / (ipp_industria_2022 / 100),
+    
+    produccion_industrial_real =
+      PRODBIND / (ipp_industria_2022 / 100),
+    
+    ventas_reales =
+      VALORVEN / (ipp_industria_2022 / 100),
+    
+    productividad_laboral_real =
+      division_segura(
+        valor_agregado_real,
+        empleo_total_categorias
+      )
+  )
+
+# Verificar que todas las observaciones recibieron deflactor
+base_analitica |>
+  dplyr::summarise(
+    observaciones = dplyr::n(),
+    sin_deflactor = sum(is.na(ipp_industria_2022)),
+    con_valor_agregado_real =
+      sum(!is.na(valor_agregado_real)),
+    con_productividad_real =
+      sum(!is.na(productividad_laboral_real))
+  )
+
+# ============================================================
+# 24. TRANSFORMACIONES PARA LOS RESULTADOS ECONÓMICOS
+# ============================================================
+
+log_si_positivo <- function(x) {
+  resultado <- rep(NA_real_, length(x))
+  
+  validos <- !is.na(x) &
+    is.finite(x) &
+    x > 0
+  
+  resultado[validos] <- log(x[validos])
+  resultado
+}
+
+base_analitica <- base_analitica |>
+  dplyr::mutate(
+    # Transformaciones principales
+    log_productividad_laboral =
+      log_si_positivo(productividad_laboral_real),
+    
+    log_valor_agregado_real =
+      log_si_positivo(valor_agregado_real),
+    
+    log_produccion_industrial_real =
+      log_si_positivo(produccion_industrial_real),
+    
+    log_ventas_reales =
+      log_si_positivo(ventas_reales),
+    
+    # Empleo: versión logarítmica tradicional
+    log_empleo_total =
+      log_si_positivo(empleo_total_categorias),
+    
+    # Transformaciones que conservan ceros y negativos
+    asinh_empleo_total =
+      asinh(empleo_total_categorias),
+    
+    asinh_valor_agregado_real =
+      asinh(valor_agregado_real)
+  )
+
+variables_transformadas <- c(
+  "log_productividad_laboral",
+  "log_valor_agregado_real",
+  "log_produccion_industrial_real",
+  "log_ventas_reales",
+  "log_empleo_total",
+  "asinh_empleo_total",
+  "asinh_valor_agregado_real"
+)
+
+cobertura_transformaciones <- base_analitica |>
+  dplyr::summarise(
+    dplyr::across(
+      dplyr::all_of(variables_transformadas),
+      list(
+        con_datos = ~sum(!is.na(.x)),
+        porcentaje = ~round(100 * mean(!is.na(.x)), 2)
+      )
+    )
+  ) |>
+  tidyr::pivot_longer(
+    cols = dplyr::everything(),
+    names_to = "medida",
+    values_to = "valor"
+  )
+
+print(cobertura_transformaciones, n = Inf)
+
+
+# ============================================================
+# 25. TRANSFORMAR LOS MECANISMOS LABORALES
+# ============================================================
+
+base_analitica <- base_analitica |>
+  dplyr::mutate(
+    # Empleo por categoría ocupacional
+    asinh_empleo_obreros =
+      asinh(total_obreros),
+    
+    asinh_empleo_prof_tecnico =
+      asinh(total_prof_tecnico),
+    
+    asinh_empleo_administrativos =
+      asinh(total_administrativos),
+    
+    # Empleo por tipo de contratación
+    asinh_empleo_permanente =
+      asinh(empleo_permanente),
+    
+    asinh_empleo_temporal_directo =
+      asinh(empleo_temporal_directo),
+    
+    asinh_empleo_temporal_agencia =
+      asinh(empleo_temporal_agencia),
+    
+    asinh_empleo_aprendices =
+      asinh(empleo_aprendices),
+    
+    # Indicadores binarios: 1 tiene la categoría, 0 no la tiene
+    tiene_obreros_permanentes =
+      as.integer(tiene_obreros_permanentes),
+    
+    tiene_administrativos_permanentes =
+      as.integer(tiene_administrativos_permanentes),
+    
+    tiene_prof_tecnico_permanentes =
+      as.integer(tiene_prof_tecnico_permanentes)
+  )
+
+base_analitica |>
+  dplyr::summarise(
+    dplyr::across(
+      dplyr::starts_with("asinh_empleo_"),
+      ~round(100 * mean(!is.na(.x)), 2)
+    )
+  )
