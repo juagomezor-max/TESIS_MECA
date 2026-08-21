@@ -566,3 +566,244 @@ posibles_controles <- diccionario |>
   dplyr::distinct()
 
 View(posibles_controles)
+
+
+# ============================================================
+# 18. INVENTARIO DE VARIABLES DE RESULTADO DISPONIBLES
+# ============================================================
+
+# Busca resultados económicos, empleo, composición y salarios
+variables_y_disponibles <- names(base_analitica)[
+  stringr::str_detect(
+    stringr::str_to_lower(names(base_analitica)),
+    paste(
+      "valagri",
+      "prodbind",
+      "valorven",
+      "empleo",
+      "obrero",
+      "prof_tecnico",
+      "administrativo",
+      "permanente",
+      "temporal",
+      "agencia",
+      "aprendiz",
+      "salario_promedio",
+      sep = "|"
+    )
+  )
+]
+
+tibble::tibble(variable = variables_y_disponibles)
+
+print(
+  tibble::tibble(variable = variables_y_disponibles),
+  n = Inf
+)
+
+# ============================================================
+# 19. COBERTURA DE LAS VARIABLES DE RESULTADO (Y)
+# ============================================================
+
+division_segura <- function(numerador, denominador) {
+  ifelse(
+    is.na(numerador) | is.na(denominador) | denominador <= 0,
+    NA_real_,
+    numerador / denominador
+  )
+}
+
+base_analitica <- base_analitica |>
+  dplyr::mutate(
+    # Productividad provisional: todavía en valores nominales
+    productividad_valor_agregado =
+      division_segura(VALAGRI, empleo_total_categorias),
+    
+    produccion_por_trabajador =
+      division_segura(PRODBIND, empleo_total_categorias),
+    
+    # Composición ocupacional
+    participacion_obreros =
+      division_segura(total_obreros, empleo_total_categorias),
+    
+    participacion_prof_tecnico =
+      division_segura(total_prof_tecnico, empleo_total_categorias),
+    
+    participacion_administrativos =
+      division_segura(total_administrativos, empleo_total_categorias),
+    
+    # Participación de aprendices, que faltaba construir
+    participacion_aprendices =
+      division_segura(empleo_aprendices, empleo_total_categorias)
+  )
+
+nombres_y <- c(
+  productividad_valor_agregado = "Productividad: valor agregado por trabajador",
+  produccion_por_trabajador = "Producción industrial por trabajador",
+  VALAGRI = "Valor agregado total",
+  PRODBIND = "Producción industrial total",
+  VALORVEN = "Ventas totales",
+  empleo_total_categorias = "Empleo total sin propietarios",
+  total_obreros = "Empleo de obreros",
+  total_prof_tecnico = "Empleo profesional y técnico",
+  total_administrativos = "Empleo administrativo",
+  empleo_permanente = "Empleo permanente",
+  empleo_temporal_directo = "Empleo temporal directo",
+  empleo_temporal_agencia = "Empleo temporal por agencia",
+  empleo_aprendices = "Aprendices",
+  participacion_obreros = "Participación de obreros",
+  participacion_prof_tecnico = "Participación profesional y técnica",
+  participacion_administrativos = "Participación administrativa",
+  participacion_permanentes = "Participación de permanentes",
+  participacion_temporales_directos = "Participación temporal directa",
+  participacion_temporales_agencia = "Participación temporal por agencia",
+  participacion_aprendices = "Participación de aprendices",
+  salario_promedio_obrero = "Salario promedio de obreros",
+  salario_promedio_administrativo = "Salario promedio administrativo",
+  salario_promedio_prof_tecnico = "Salario promedio profesional y técnico"
+)
+
+cobertura_y_anual <- base_analitica |>
+  dplyr::select(
+    ANIO,
+    dplyr::all_of(names(nombres_y))
+  ) |>
+  tidyr::pivot_longer(
+    cols = -ANIO,
+    names_to = "variable",
+    values_to = "valor"
+  ) |>
+  dplyr::group_by(ANIO, variable) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    con_datos = sum(!is.na(valor)),
+    porcentaje_con_datos =
+      round(100 * mean(!is.na(valor)), 2),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(
+    descripcion = unname(nombres_y[variable])
+  )
+
+resumen_cobertura_y <- cobertura_y_anual |>
+  dplyr::group_by(variable, descripcion) |>
+  dplyr::summarise(
+    cobertura_minima = min(porcentaje_con_datos),
+    anio_cobertura_minima = ANIO[which.min(porcentaje_con_datos)],
+    cobertura_2022 = porcentaje_con_datos[ANIO == 2022],
+    anios_con_cobertura_completa =
+      sum(porcentaje_con_datos == 100),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(cobertura_minima)
+
+print(resumen_cobertura_y, n = Inf)
+
+cobertura_y_anual |>
+  dplyr::filter(
+    variable %in% c(
+      "salario_promedio_obrero",
+      "salario_promedio_administrativo",
+      "salario_promedio_prof_tecnico"
+    )
+  ) |>
+  dplyr::select(
+    ANIO,
+    descripcion,
+    porcentaje_con_datos
+  ) |>
+  tidyr::pivot_wider(
+    names_from = descripcion,
+    values_from = porcentaje_con_datos
+  ) |>
+  print(n = Inf, width = Inf)
+
+# ============================================================
+# 20. CAUSA DE LA MENOR COBERTURA SALARIAL
+# ============================================================
+
+diagnostico_salarios <- dplyr::bind_rows(
+  base_analitica |>
+    dplyr::transmute(
+      ANIO,
+      categoria = "Obreros",
+      personal = personal_permanente_obrero,
+      costo_salarial = suppressWarnings(as.numeric(C3R2C1))
+    ),
+  
+  base_analitica |>
+    dplyr::transmute(
+      ANIO,
+      categoria = "Administrativos",
+      personal = personal_permanente_administrativo,
+      costo_salarial = suppressWarnings(as.numeric(C3R2C2))
+    ),
+  
+  base_analitica |>
+    dplyr::transmute(
+      ANIO,
+      categoria = "Profesionales y técnicos",
+      personal = personal_permanente_prof_tecnico,
+      costo_salarial = suppressWarnings(as.numeric(C3R2PT))
+    )
+) |>
+  dplyr::mutate(
+    estado = dplyr::case_when(
+      is.na(personal) ~ "Personal no reportado",
+      personal == 0 ~ "Sin trabajadores de la categoría",
+      personal > 0 & is.na(costo_salarial) ~ "Con trabajadores, salario faltante",
+      personal > 0 & costo_salarial <= 0 ~ "Con trabajadores, salario cero o negativo",
+      personal > 0 & costo_salarial > 0 ~ "Salario calculable",
+      TRUE ~ "Otro caso"
+    )
+  )
+
+resumen_diagnostico_salarios <- diagnostico_salarios |>
+  dplyr::count(ANIO, categoria, estado, name = "establecimientos") |>
+  dplyr::group_by(ANIO, categoria) |>
+  dplyr::mutate(
+    porcentaje = round(
+      100 * establecimientos / sum(establecimientos),
+      2
+    )
+  ) |>
+  dplyr::ungroup() |>
+  dplyr::arrange(categoria, ANIO, estado)
+
+print(resumen_diagnostico_salarios, n = Inf, width = Inf)
+
+# ============================================================
+# 21. SALARIOS VÁLIDOS Y PRESENCIA DE CADA CATEGORÍA
+# ============================================================
+
+base_analitica <- base_analitica |>
+  dplyr::mutate(
+    # Indica si el establecimiento tiene personal permanente
+    tiene_obreros_permanentes =
+      personal_permanente_obrero > 0,
+    
+    tiene_administrativos_permanentes =
+      personal_permanente_administrativo > 0,
+    
+    tiene_prof_tecnico_permanentes =
+      personal_permanente_prof_tecnico > 0,
+    
+    # Salarios válidos: requieren personal y gasto salarial positivo
+    salario_obrero_valido = dplyr::if_else(
+      personal_permanente_obrero > 0 & C3R2C1 > 0,
+      C3R2C1 / personal_permanente_obrero,
+      NA_real_
+    ),
+    
+    salario_administrativo_valido = dplyr::if_else(
+      personal_permanente_administrativo > 0 & C3R2C2 > 0,
+      C3R2C2 / personal_permanente_administrativo,
+      NA_real_
+    ),
+    
+    salario_prof_tecnico_valido = dplyr::if_else(
+      personal_permanente_prof_tecnico > 0 & C3R2PT > 0,
+      C3R2PT / personal_permanente_prof_tecnico,
+      NA_real_
+    )
+  )
