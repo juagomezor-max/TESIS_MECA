@@ -1260,3 +1260,167 @@ diagnostico_x_2022 <- caracteristicas_2022 |>
   )
 
 print(diagnostico_x_2022, n = Inf, width = Inf)
+
+# ============================================================
+# PASO 30. REVISAR VALORES NEGATIVOS DE INVERSIÓN BRUTA
+# ============================================================
+
+diagnostico_inversion_por_anio <- base_analitica |>
+  dplyr::mutate(
+    inversion_bruta =
+      suppressWarnings(as.numeric(INVEBRTA))
+  ) |>
+  dplyr::group_by(ANIO) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    
+    casos_negativos =
+      sum(inversion_bruta < 0, na.rm = TRUE),
+    
+    porcentaje_negativos =
+      round(100 * mean(inversion_bruta < 0, na.rm = TRUE), 2),
+    
+    casos_en_cero =
+      sum(inversion_bruta == 0, na.rm = TRUE),
+    
+    porcentaje_en_cero =
+      round(100 * mean(inversion_bruta == 0, na.rm = TRUE), 2),
+    
+    valor_minimo =
+      min(inversion_bruta, na.rm = TRUE),
+    
+    mediana =
+      median(inversion_bruta, na.rm = TRUE),
+    
+    .groups = "drop"
+  )
+
+print(diagnostico_inversion_por_anio, n = Inf, width = Inf)
+
+
+# ============================================================
+# PASO 31. VALIDAR LA FÓRMULA DE INVERSIÓN BRUTA
+# ============================================================
+
+columnas_inversion <- c(
+  "INVEBRTA",
+  "C7C7R2",   # Compras de activos nuevos
+  "C7C7R3",   # Compras de activos usados
+  "C7C7R7",   # Mejoras y reformas
+  "C7C7R12"   # Valor en libros de activos vendidos
+)
+
+faltantes_inversion <- setdiff(
+  columnas_inversion,
+  names(base_analitica)
+)
+
+if (length(faltantes_inversion) > 0) {
+  stop(
+    "Faltan estas columnas: ",
+    paste(faltantes_inversion, collapse = ", ")
+  )
+}
+
+validacion_inversion <- base_analitica |>
+  dplyr::mutate(
+    dplyr::across(
+      dplyr::all_of(columnas_inversion),
+      ~ suppressWarnings(as.numeric(.x))
+    ),
+    
+    inversion_calculada =
+      C7C7R2 +
+      C7C7R3 +
+      C7C7R7 -
+      C7C7R12,
+    
+    diferencia_inversion =
+      INVEBRTA - inversion_calculada
+  ) |>
+  dplyr::group_by(ANIO) |>
+  dplyr::summarise(
+    casos_comparables =
+      sum(!is.na(INVEBRTA) & !is.na(inversion_calculada)),
+    
+    casos_coincidentes =
+      sum(
+        abs(diferencia_inversion) < 1,
+        na.rm = TRUE
+      ),
+    
+    porcentaje_coincide =
+      round(
+        100 * casos_coincidentes / casos_comparables,
+        2
+      ),
+    
+    diferencia_mediana =
+      median(diferencia_inversion, na.rm = TRUE),
+    
+    .groups = "drop"
+  )
+
+print(validacion_inversion, n = Inf, width = Inf)
+
+# ============================================================
+# PASO 32. COMPARAR FÓRMULAS ALTERNATIVAS DE INVERSIÓN
+# ============================================================
+
+columnas_formula_inversion <- c(
+  "INVEBRTA",
+  "C7C7R2", "C7C7R3", "C7C7R7", "C7C7R12",
+  "C7R10C2",
+  "C7R17C7", "C7R18C7"
+)
+
+comparacion_formulas_inversion <- base_analitica |>
+  dplyr::mutate(
+    dplyr::across(
+      dplyr::all_of(columnas_formula_inversion),
+      ~ suppressWarnings(as.numeric(.x))
+    ),
+    
+    formula_1 =
+      C7C7R2 + C7C7R3 + C7C7R7 - C7C7R12,
+    
+    formula_2 =
+      C7R10C2 - C7C7R12,
+    
+    formula_3 =
+      C7C7R2 + C7C7R3 + C7C7R7 -
+      C7C7R12 + C7R18C7 - C7R17C7
+  ) |>
+  dplyr::select(
+    INVEBRTA,
+    dplyr::starts_with("formula_")
+  ) |>
+  tidyr::pivot_longer(
+    cols = dplyr::starts_with("formula_"),
+    names_to = "formula",
+    values_to = "inversion_calculada"
+  ) |>
+  dplyr::group_by(formula) |>
+  dplyr::summarise(
+    casos_comparables =
+      sum(!is.na(INVEBRTA) & !is.na(inversion_calculada)),
+    
+    porcentaje_coincide =
+      round(
+        100 * mean(
+          abs(INVEBRTA - inversion_calculada) < 1,
+          na.rm = TRUE
+        ),
+        2
+      ),
+    
+    diferencia_mediana =
+      median(
+        INVEBRTA - inversion_calculada,
+        na.rm = TRUE
+      ),
+    
+    .groups = "drop"
+  )
+
+print(comparacion_formulas_inversion, n = Inf)
