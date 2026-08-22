@@ -1536,3 +1536,216 @@ caracteristicas_2022 |>
         2
       )
   )
+
+# ============================================================
+# PASO 35. CONSTRUIR SECTOR Y DEPARTAMENTO PRECHOQUE
+# ============================================================
+
+columnas_geograficas_sectoriales <- c(
+  "NORDEST",
+  "ANIO",
+  "CIIU4",
+  "DPTO"
+)
+
+faltantes <- setdiff(
+  columnas_geograficas_sectoriales,
+  names(base_analitica)
+)
+
+if (length(faltantes) > 0) {
+  stop(
+    "Faltan estas columnas: ",
+    paste(faltantes, collapse = ", ")
+  )
+}
+
+sector_departamento_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::transmute(
+    NORDEST,
+    
+    ciiu4_2022 =
+      as.character(CIIU4),
+    
+    division_ciiu_2022 =
+      substr(as.character(CIIU4), 1, 2),
+    
+    departamento_2022 =
+      as.character(DPTO)
+  )
+
+caracteristicas_2022 <- caracteristicas_2022 |>
+  dplyr::left_join(
+    sector_departamento_2022,
+    by = "NORDEST"
+  )
+
+caracteristicas_2022 |>
+  dplyr::summarise(
+    cobertura_ciiu4 =
+      round(100 * mean(!is.na(ciiu4_2022)), 2),
+    
+    actividades_ciiu4 =
+      dplyr::n_distinct(ciiu4_2022, na.rm = TRUE),
+    
+    divisiones_industriales =
+      dplyr::n_distinct(division_ciiu_2022, na.rm = TRUE),
+    
+    cobertura_departamento =
+      round(100 * mean(!is.na(departamento_2022)), 2),
+    
+    departamentos =
+      dplyr::n_distinct(departamento_2022, na.rm = TRUE)
+  )
+
+
+# ============================================================
+# 36. ASIGNAR NOMBRES OFICIALES A LAS DIVISIONES CIIU
+# ============================================================
+# Fuente: DANE, CIIU Rev. 4 A.C. (2022).
+# La división corresponde a los primeros dos dígitos de la clase CIIU4.
+
+nombres_divisiones_ciiu <- tibble::tribble(
+  ~division_ciiu_2022, ~nombre_division,
+  "10", "Elaboración de productos alimenticios",
+  "11", "Elaboración de bebidas",
+  "12", "Elaboración de productos de tabaco",
+  "13", "Fabricación de productos textiles",
+  "14", "Confección de prendas de vestir",
+  "15", "Curtido y recurtido de cueros; fabricación de calzado; fabricación de artículos de viaje, maletas, bolsos de mano y artículos similares, y fabricación de artículos de talabartería y guarnicionería; adobo y teñido de pieles",
+  "16", "Transformación de la madera y fabricación de productos de madera y de corcho, excepto muebles; fabricación de artículos de cestería y espartería",
+  "17", "Fabricación de papel, cartón y productos de papel y cartón",
+  "18", "Actividades de impresión y de producción de copias a partir de grabaciones originales",
+  "19", "Coquización, fabricación de productos de la refinación del petróleo y actividad de mezcla de combustibles",
+  "20", "Fabricación de sustancias y productos químicos",
+  "21", "Fabricación de productos farmacéuticos, sustancias químicas medicinales y productos botánicos de uso farmacéutico",
+  "22", "Fabricación de productos de caucho y de plástico",
+  "23", "Fabricación de otros productos minerales no metálicos",
+  "24", "Fabricación de productos metalúrgicos básicos",
+  "25", "Fabricación de productos elaborados de metal, excepto maquinaria y equipo",
+  "26", "Fabricación de productos informáticos, electrónicos y ópticos",
+  "27", "Fabricación de aparatos y equipo eléctrico",
+  "28", "Fabricación de maquinaria y equipo n.c.p.",
+  "29", "Fabricación de vehículos automotores, remolques y semirremolques",
+  "30", "Fabricación de otros tipos de equipo de transporte",
+  "31", "Fabricación de muebles, colchones y somieres",
+  "32", "Otras industrias manufactureras",
+  "33", "Instalación, mantenimiento y reparación especializado de maquinaria y equipo"
+)
+
+# Elimina la etiqueta anterior, si ya se había creado, y agrega la oficial.
+caracteristicas_2022 <- caracteristicas_2022 |>
+  dplyr::select(-dplyr::any_of("nombre_division")) |>
+  dplyr::left_join(
+    nombres_divisiones_ciiu,
+    by = "division_ciiu_2022"
+  )
+
+# Distribución y verificación
+distribucion_divisiones <- caracteristicas_2022 |>
+  dplyr::count(
+    division_ciiu_2022,
+    nombre_division,
+    name = "establecimientos"
+  ) |>
+  dplyr::mutate(
+    porcentaje = round(
+      100 * establecimientos / sum(establecimientos),
+      2
+    )
+  ) |>
+  dplyr::arrange(dplyr::desc(establecimientos))
+
+print(distribucion_divisiones, n = Inf)
+
+sum(is.na(caracteristicas_2022$nombre_division))
+
+# ============================================================
+# 37. REVISAR CÓDIGOS DE DEPARTAMENTO EN 2022
+# ============================================================
+# Objetivo: identificar los códigos realmente presentes antes
+# de relacionarlos con los nombres oficiales del DIVIPOLA.
+
+distribucion_codigos_departamento <- caracteristicas_2022 |>
+  dplyr::count(
+    departamento_2022,
+    name = "establecimientos"
+  ) |>
+  dplyr::mutate(
+    porcentaje = round(
+      100 * establecimientos / sum(establecimientos),
+      2
+    )
+  ) |>
+  dplyr::arrange(departamento_2022)
+
+print(distribucion_codigos_departamento, n = Inf)
+
+# ============================================================
+# 38. ASIGNAR NOMBRES OFICIALES A LOS DEPARTAMENTOS
+# ============================================================
+# Objetivo: normalizar los códigos DPTO a dos dígitos y
+# relacionarlos con los nombres oficiales de DIVIPOLA.
+
+nombres_departamentos <- tibble::tribble(
+  ~codigo_departamento, ~nombre_departamento,
+  "05", "Antioquia",
+  "08", "Atlántico",
+  "11", "Bogotá, D. C.",
+  "13", "Bolívar",
+  "15", "Boyacá",
+  "17", "Caldas",
+  "19", "Cauca",
+  "20", "Cesar",
+  "23", "Córdoba",
+  "25", "Cundinamarca",
+  "41", "Huila",
+  "47", "Magdalena",
+  "50", "Meta",
+  "52", "Nariño",
+  "54", "Norte de Santander",
+  "63", "Quindío",
+  "66", "Risaralda",
+  "68", "Santander",
+  "70", "Sucre",
+  "73", "Tolima",
+  "76", "Valle del Cauca",
+  "85", "Casanare",
+  "99", "Vichada"
+)
+
+caracteristicas_2022 <- caracteristicas_2022 |>
+  dplyr::mutate(
+    codigo_departamento_2022 =
+      stringr::str_pad(
+        departamento_2022,
+        width = 2,
+        side = "left",
+        pad = "0"
+      )
+  ) |>
+  dplyr::left_join(
+    nombres_departamentos,
+    by = c(
+      "codigo_departamento_2022" = "codigo_departamento"
+    )
+  )
+
+distribucion_departamentos <- caracteristicas_2022 |>
+  dplyr::count(
+    codigo_departamento_2022,
+    nombre_departamento,
+    name = "establecimientos"
+  ) |>
+  dplyr::mutate(
+    porcentaje = round(
+      100 * establecimientos / sum(establecimientos),
+      2
+    )
+  ) |>
+  dplyr::arrange(dplyr::desc(establecimientos))
+
+print(distribucion_departamentos, n = Inf)
+
+sum(is.na(caracteristicas_2022$nombre_departamento))
