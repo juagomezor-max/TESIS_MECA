@@ -1424,3 +1424,115 @@ comparacion_formulas_inversion <- base_analitica |>
   )
 
 print(comparacion_formulas_inversion, n = Inf)
+
+# ============================================================
+# PASO 33. VERIFICAR LA VARIABLE DE VENTAS AL EXTERIOR
+# ============================================================
+
+if (!"PORCVT" %in% names(base_analitica)) {
+  stop("PORCVT no está presente en la macrobase.")
+}
+
+diagnostico_exportaciones_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::mutate(
+    ventas_exterior =
+      suppressWarnings(as.numeric(PORCVT))
+  ) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    
+    cobertura =
+      round(100 * mean(!is.na(ventas_exterior)), 2),
+    
+    porcentaje_en_cero =
+      round(100 * mean(ventas_exterior == 0, na.rm = TRUE), 2),
+    
+    porcentaje_positivo =
+      round(100 * mean(ventas_exterior > 0, na.rm = TRUE), 2),
+    
+    porcentaje_negativo =
+      round(100 * mean(ventas_exterior < 0, na.rm = TRUE), 2),
+    
+    minimo =
+      min(ventas_exterior, na.rm = TRUE),
+    
+    mediana_positivos =
+      median(
+        ventas_exterior[ventas_exterior > 0],
+        na.rm = TRUE
+      ),
+    
+    percentil_99 =
+      quantile(ventas_exterior, 0.99, na.rm = TRUE),
+    
+    maximo =
+      max(ventas_exterior, na.rm = TRUE)
+  )
+
+print(diagnostico_exportaciones_2022, width = Inf)
+
+# ============================================================
+# PASO 34. CONSTRUIR CONDICIÓN E INTENSIDAD EXPORTADORA
+# ============================================================
+
+exportaciones_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::transmute(
+    NORDEST,
+    
+    ventas_exterior_2022 =
+      suppressWarnings(as.numeric(PORCVT)),
+    
+    exportador_2022 =
+      as.integer(ventas_exterior_2022 > 0),
+    
+    participacion_exportaciones_2022 =
+      dplyr::if_else(
+        suppressWarnings(as.numeric(VALORVEN)) > 0,
+        ventas_exterior_2022 /
+          suppressWarnings(as.numeric(VALORVEN)),
+        NA_real_
+      )
+  )
+
+caracteristicas_2022 <- caracteristicas_2022 |>
+  dplyr::left_join(
+    exportaciones_2022,
+    by = "NORDEST"
+  )
+
+caracteristicas_2022 |>
+  dplyr::summarise(
+    porcentaje_exportadores =
+      round(100 * mean(exportador_2022, na.rm = TRUE), 2),
+    
+    cobertura_participacion =
+      round(
+        100 * mean(!is.na(participacion_exportaciones_2022)),
+        2
+      ),
+    
+    participacion_mediana_exportadores =
+      median(
+        participacion_exportaciones_2022[
+          exportador_2022 == 1
+        ],
+        na.rm = TRUE
+      ),
+    
+    participacion_maxima =
+      max(
+        participacion_exportaciones_2022,
+        na.rm = TRUE
+      ),
+    
+    porcentaje_superior_a_uno =
+      round(
+        100 * mean(
+          participacion_exportaciones_2022 > 1,
+          na.rm = TRUE
+        ),
+        2
+      )
+  )
