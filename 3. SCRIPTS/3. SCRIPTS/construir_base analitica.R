@@ -328,6 +328,48 @@ validacion_vinculacion <- base_analitica |>
 validacion_vinculacion
 
 # ============================================================
+# 11. PARTICIPACIÓN POR TIPO DE VINCULACIÓN
+# ============================================================
+
+dividir_seguro <- function(numerador, denominador) {
+  dplyr::if_else(
+    !is.na(numerador) &
+      !is.na(denominador) &
+      denominador > 0,
+    numerador / denominador,
+    NA_real_
+  )
+}
+
+base_analitica <- base_analitica |>
+  dplyr::mutate(
+    participacion_permanentes =
+      dividir_seguro(empleo_permanente, empleo_total_categorias),
+    
+    participacion_temporales_directos =
+      dividir_seguro(empleo_temporal_directo, empleo_total_categorias),
+    
+    participacion_temporales_agencia =
+      dividir_seguro(empleo_temporal_agencia, empleo_total_categorias),
+    
+    participacion_aprendices =
+      dividir_seguro(empleo_aprendices, empleo_total_categorias)
+  )
+
+base_analitica |>
+  dplyr::filter(empleo_total_categorias > 0) |>
+  dplyr::summarise(
+    suma_promedio_participaciones = mean(
+      participacion_permanentes +
+        participacion_temporales_directos +
+        participacion_temporales_agencia +
+        participacion_aprendices,
+      na.rm = TRUE
+    )
+  )
+
+
+# ============================================================
 # 12. SALARIO PROMEDIO POR CATEGORÍA
 # ============================================================
 
@@ -1749,3 +1791,341 @@ distribucion_departamentos <- caracteristicas_2022 |>
 print(distribucion_departamentos, n = Inf)
 
 sum(is.na(caracteristicas_2022$nombre_departamento))
+
+# ============================================================
+# 39. CONSOLIDAR LAS X PRECHOQUE DE 2022
+# ============================================================
+# Objetivo: crear una tabla única por establecimiento con la
+# exposición principal y las características prechoque.
+
+variables_controles_2022 <- c(
+  "NORDEST",
+  "tamano_2022",
+  "asinh_tamano_2022",
+  "activos_fijos_2022",
+  "asinh_activos_fijos_2022",
+  "inversion_bruta_2022",
+  "asinh_inversion_bruta_2022",
+  "usa_insumos_importados_2022",
+  "proporcion_insumos_importados_2022",
+  "numero_establecimientos_empresa_2022",
+  "empresa_multiestablecimiento_2022",
+  "ventas_exterior_2022",
+  "exportador_2022",
+  "participacion_exportaciones_2022",
+  "ciiu4_2022",
+  "division_ciiu_2022",
+  "nombre_division",
+  "codigo_departamento_2022",
+  "nombre_departamento"
+)
+
+# Verificar que no estemos usando nombres inexistentes.
+faltantes_controles <- setdiff(
+  variables_controles_2022,
+  names(caracteristicas_2022)
+)
+
+if (length(faltantes_controles) > 0) {
+  stop(
+    "Faltan variables en caracteristicas_2022: ",
+    paste(faltantes_controles, collapse = ", ")
+  )
+}
+
+# Extraer la exposición directamente de la observación de 2022.
+exposicion_establecimiento_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::select(
+    NORDEST,
+    Exposure2022_obreros
+  )
+
+# No escoger arbitrariamente una fila si hubiera duplicados.
+duplicados_exposicion <- exposicion_establecimiento_2022 |>
+  dplyr::count(NORDEST) |>
+  dplyr::filter(n > 1)
+
+if (nrow(duplicados_exposicion) > 0) {
+  stop("Hay establecimientos duplicados en la exposición de 2022.")
+}
+
+# Tabla maestra de X prechoque.
+x_prechoque_2022 <- exposicion_establecimiento_2022 |>
+  dplyr::left_join(
+    caracteristicas_2022 |>
+      dplyr::select(dplyr::all_of(variables_controles_2022)),
+    by = "NORDEST"
+  )
+
+# Diagnóstico general.
+resumen_x_prechoque <- x_prechoque_2022 |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    establecimientos_unicos = dplyr::n_distinct(NORDEST),
+    cobertura_exposicion = round(
+      100 * mean(!is.na(Exposure2022_obreros)), 2
+    ),
+    cobertura_tamano = round(
+      100 * mean(!is.na(tamano_2022)), 2
+    ),
+    cobertura_activos = round(
+      100 * mean(!is.na(activos_fijos_2022)), 2
+    ),
+    cobertura_inversion = round(
+      100 * mean(!is.na(inversion_bruta_2022)), 2
+    ),
+    cobertura_sector = round(
+      100 * mean(!is.na(nombre_division)), 2
+    ),
+    cobertura_departamento = round(
+      100 * mean(!is.na(nombre_departamento)), 2
+    ),
+    cobertura_exportador = round(
+      100 * mean(!is.na(exportador_2022)), 2
+    ),
+    cobertura_insumos_importados = round(
+      100 * mean(!is.na(usa_insumos_importados_2022)), 2
+    )
+  )
+
+print(resumen_x_prechoque)
+
+# ============================================================
+# 40. COBERTURA COMPLETA DE LAS X PRECHOQUE
+# ============================================================
+
+variables_x_diagnostico <- c(
+  "Exposure2022_obreros",
+  "tamano_2022",
+  "activos_fijos_2022",
+  "inversion_bruta_2022",
+  "usa_insumos_importados_2022",
+  "proporcion_insumos_importados_2022",
+  "empresa_multiestablecimiento_2022",
+  "exportador_2022",
+  "participacion_exportaciones_2022",
+  "division_ciiu_2022",
+  "codigo_departamento_2022"
+)
+
+cobertura_x_prechoque <- x_prechoque_2022 |>
+  dplyr::summarise(
+    dplyr::across(
+      dplyr::all_of(variables_x_diagnostico),
+      list(
+        con_datos = ~sum(!is.na(.x)),
+        cobertura = ~round(100 * mean(!is.na(.x)), 2)
+      ),
+      .names = "{.col}__{.fn}"
+    )
+  ) |>
+  tidyr::pivot_longer(
+    cols = dplyr::everything(),
+    names_to = c("variable", ".value"),
+    names_pattern = "(.*)__(con_datos|cobertura)"
+  ) |>
+  dplyr::mutate(
+    sin_datos = nrow(x_prechoque_2022) - con_datos
+  ) |>
+  dplyr::select(
+    variable,
+    con_datos,
+    sin_datos,
+    cobertura
+  )
+
+print(cobertura_x_prechoque, n = Inf)
+
+# ============================================================
+# 41. UNIR LAS X PRECHOQUE AL PANEL ESTABLECIMIENTO-AÑO
+# ============================================================
+
+# Verificar nuevamente que la tabla de X sea única.
+duplicados_x_2022 <- x_prechoque_2022 |>
+  dplyr::count(NORDEST) |>
+  dplyr::filter(n > 1)
+
+if (nrow(duplicados_x_2022) > 0) {
+  stop("La tabla de X contiene establecimientos duplicados.")
+}
+
+# Variables que se agregarán desde la tabla prechoque.
+variables_x_2022 <- setdiff(
+  names(x_prechoque_2022),
+  "NORDEST"
+)
+
+filas_antes_union <- nrow(base_analitica)
+
+base_panel_modelo <- base_analitica |>
+  dplyr::mutate(
+    NORDEST = as.character(NORDEST)
+  ) |>
+  # Evita crear columnas .x y .y si alguna X ya estaba en la base.
+  dplyr::select(
+    -dplyr::any_of(variables_x_2022)
+  ) |>
+  dplyr::left_join(
+    x_prechoque_2022 |>
+      dplyr::mutate(NORDEST = as.character(NORDEST)),
+    by = "NORDEST"
+  )
+
+# La unión no debe modificar el número original de filas.
+if (nrow(base_panel_modelo) != filas_antes_union) {
+  stop("La unión modificó el número de filas del panel.")
+}
+
+# Identificar observaciones que tienen todas las X principales.
+base_panel_modelo <- base_panel_modelo |>
+  dplyr::mutate(
+    muestra_x_principal =
+      !is.na(Exposure2022_obreros) &
+      !is.na(asinh_tamano_2022) &
+      !is.na(asinh_activos_fijos_2022) &
+      !is.na(asinh_inversion_bruta_2022) &
+      !is.na(usa_insumos_importados_2022) &
+      !is.na(empresa_multiestablecimiento_2022) &
+      !is.na(exportador_2022) &
+      !is.na(division_ciiu_2022) &
+      !is.na(codigo_departamento_2022)
+  )
+
+# Cobertura potencial del modelo por año.
+cobertura_panel_modelo <- base_panel_modelo |>
+  dplyr::group_by(ANIO) |>
+  dplyr::summarise(
+    observaciones_totales = dplyr::n(),
+    con_exposicion_2022 = sum(
+      !is.na(Exposure2022_obreros)
+    ),
+    muestra_x_principal = sum(
+      muestra_x_principal
+    ),
+    porcentaje_muestra_principal = round(
+      100 * mean(muestra_x_principal),
+      2
+    ),
+    .groups = "drop"
+  )
+
+print(cobertura_panel_modelo, n = Inf)
+
+# ============================================================
+# 41B. CORREGIR PORCENTAJES DE COBERTURA DEL PANEL
+# ============================================================
+
+cobertura_panel_modelo <- base_panel_modelo |>
+  dplyr::group_by(ANIO) |>
+  dplyr::summarise(
+    observaciones_totales = dplyr::n(),
+    con_exposicion_2022 = sum(
+      !is.na(Exposure2022_obreros)
+    ),
+    n_muestra_x_principal = sum(
+      muestra_x_principal
+    ),
+    porcentaje_muestra_principal = round(
+      100 * sum(muestra_x_principal) / dplyr::n(),
+      2
+    ),
+    .groups = "drop"
+  )
+
+print(cobertura_panel_modelo, n = Inf)
+
+# ============================================================
+# 42. COMPARAR PERMANENCIA EN DISTINTAS VENTANAS
+# ============================================================
+
+evaluar_ventana <- function(anio_inicio, anio_fin = 2024) {
+  
+  anios_ventana <- anio_inicio:anio_fin
+  numero_anios <- length(anios_ventana)
+  
+  presencia <- base_panel_modelo |>
+    dplyr::filter(
+      muestra_x_principal,
+      ANIO %in% anios_ventana
+    ) |>
+    dplyr::distinct(NORDEST, ANIO) |>
+    dplyr::count(
+      NORDEST,
+      name = "anios_observados"
+    )
+  
+  tibble::tibble(
+    ventana = paste0(anio_inicio, "-", anio_fin),
+    numero_anios = numero_anios,
+    establecimientos_con_alguna_observacion = nrow(presencia),
+    establecimientos_todos_los_anios =
+      sum(presencia$anios_observados == numero_anios),
+    porcentaje_balanceado = round(
+      100 * mean(presencia$anios_observados == numero_anios),
+      2
+    )
+  )
+}
+
+comparacion_ventanas <- purrr::map_dfr(
+  2017:2020,
+  evaluar_ventana
+)
+
+print(comparacion_ventanas, n = Inf)
+
+# ============================================================
+# 43. PERMANENCIA POSTCHOQUE SEGÚN EXPOSICIÓN
+# ============================================================
+
+presencia_post <- base_panel_modelo |>
+  dplyr::filter(
+    ANIO %in% c(2023, 2024)
+  ) |>
+  dplyr::distinct(NORDEST, ANIO) |>
+  dplyr::mutate(presente = 1L) |>
+  tidyr::pivot_wider(
+    names_from = ANIO,
+    values_from = presente,
+    names_prefix = "presente_",
+    values_fill = 0L
+  )
+
+permanencia_por_exposicion <- x_prechoque_2022 |>
+  dplyr::filter(
+    !is.na(Exposure2022_obreros)
+  ) |>
+  dplyr::left_join(
+    presencia_post,
+    by = "NORDEST"
+  ) |>
+  dplyr::mutate(
+    dplyr::across(
+      c(presente_2023, presente_2024),
+      ~tidyr::replace_na(.x, 0L)
+    ),
+    quintil_exposicion = dplyr::ntile(
+      Exposure2022_obreros,
+      5
+    )
+  ) |>
+  dplyr::group_by(quintil_exposicion) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    exposicion_promedio = round(
+      mean(Exposure2022_obreros),
+      3
+    ),
+    porcentaje_presente_2023 = round(
+      100 * mean(presente_2023),
+      2
+    ),
+    porcentaje_presente_2024 = round(
+      100 * mean(presente_2024),
+      2
+    ),
+    .groups = "drop"
+  )
+
+print(permanencia_por_exposicion, n = Inf)
