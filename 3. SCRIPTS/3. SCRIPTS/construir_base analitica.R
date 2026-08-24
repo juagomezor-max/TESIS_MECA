@@ -2297,3 +2297,393 @@ perfil_prechoque <- panel_principal |>
   )
 
 print(perfil_prechoque, n = Inf, width = Inf)
+
+# ============================================================
+# 46. COBERTURA DE LAS Y PRINCIPALES EN AMBAS MUESTRAS
+# ============================================================
+
+variables_y_principales <- c(
+  "log_productividad_laboral",
+  "asinh_empleo_total",
+  "log_valor_agregado_real"
+)
+
+# Verificación para no utilizar variables inexistentes
+variables_faltantes <- setdiff(
+  variables_y_principales,
+  names(panel_principal)
+)
+
+if (length(variables_faltantes) > 0) {
+  stop(
+    "Faltan estas variables: ",
+    paste(variables_faltantes, collapse = ", ")
+  )
+}
+
+cobertura_y_principales <- dplyr::bind_rows(
+  
+  panel_principal |>
+    dplyr::mutate(muestra = "Principal desbalanceada"),
+  
+  panel_balanceado |>
+    dplyr::mutate(muestra = "Balanceada")
+  
+) |>
+  dplyr::group_by(muestra, ANIO) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    
+    cobertura_productividad = round(
+      100 * mean(!is.na(log_productividad_laboral)), 2
+    ),
+    
+    cobertura_empleo = round(
+      100 * mean(!is.na(asinh_empleo_total)), 2
+    ),
+    
+    cobertura_valor_agregado = round(
+      100 * mean(!is.na(log_valor_agregado_real)), 2
+    ),
+    
+    .groups = "drop"
+  )
+
+print(cobertura_y_principales, n = Inf)
+
+# ============================================================
+# 47. TENDENCIAS DE LAS Y POR QUINTIL DE EXPOSICIÓN
+# ============================================================
+
+variables_necesarias <- c(
+  "ANIO",
+  "quintil_exposicion_2022",
+  "log_productividad_laboral",
+  "asinh_empleo_total",
+  "log_valor_agregado_real"
+)
+
+faltantes <- setdiff(variables_necesarias, names(panel_principal))
+
+if (length(faltantes) > 0) {
+  stop("Faltan estas variables: ", paste(faltantes, collapse = ", "))
+}
+
+tendencias_y <- panel_principal |>
+  dplyr::select(dplyr::all_of(variables_necesarias)) |>
+  tidyr::pivot_longer(
+    cols = c(
+      log_productividad_laboral,
+      asinh_empleo_total,
+      log_valor_agregado_real
+    ),
+    names_to = "resultado",
+    values_to = "valor"
+  ) |>
+  dplyr::group_by(
+    ANIO,
+    quintil_exposicion_2022,
+    resultado
+  ) |>
+  dplyr::summarise(
+    promedio = mean(valor, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(
+    resultado = dplyr::recode(
+      resultado,
+      log_productividad_laboral = "Productividad laboral",
+      asinh_empleo_total = "Empleo total",
+      log_valor_agregado_real = "Valor agregado real"
+    ),
+    quintil_exposicion_2022 = factor(
+      quintil_exposicion_2022,
+      levels = 1:5,
+      labels = paste0("Q", 1:5)
+    )
+  )
+
+grafico_tendencias_y <- ggplot2::ggplot(
+  tendencias_y,
+  ggplot2::aes(
+    x = ANIO,
+    y = promedio,
+    color = quintil_exposicion_2022,
+    group = quintil_exposicion_2022
+  )
+) +
+  ggplot2::geom_line(linewidth = 0.9) +
+  ggplot2::geom_point(size = 1.8) +
+  ggplot2::geom_vline(
+    xintercept = 2023,
+    linetype = "dashed"
+  ) +
+  ggplot2::facet_wrap(
+    ~resultado,
+    scales = "free_y"
+  ) +
+  ggplot2::scale_x_continuous(breaks = 2017:2024) +
+  ggplot2::labs(
+    title = "Evolución de los resultados por exposición obrera",
+    subtitle = "Q1 = menor exposición | Q5 = mayor exposición | Línea: choque de 2023",
+    x = "Año",
+    y = "Promedio",
+    color = "Exposición"
+  ) +
+  ggplot2::theme_minimal(base_size = 12)
+
+grafico_tendencias_y
+
+# ============================================================
+# 48. TENDENCIAS NORMALIZADAS RESPECTO A 2022
+# ============================================================
+
+tendencias_normalizadas <- tendencias_y |>
+  dplyr::group_by(
+    resultado,
+    quintil_exposicion_2022
+  ) |>
+  dplyr::mutate(
+    valor_2022 = promedio[ANIO == 2022],
+    cambio_respecto_2022 = promedio - valor_2022
+  ) |>
+  dplyr::ungroup()
+
+grafico_tendencias_normalizadas <- ggplot2::ggplot(
+  tendencias_normalizadas,
+  ggplot2::aes(
+    x = ANIO,
+    y = cambio_respecto_2022,
+    color = quintil_exposicion_2022,
+    group = quintil_exposicion_2022
+  )
+) +
+  ggplot2::geom_hline(
+    yintercept = 0,
+    color = "grey60"
+  ) +
+  ggplot2::geom_vline(
+    xintercept = 2023,
+    linetype = "dashed"
+  ) +
+  ggplot2::geom_line(linewidth = 0.9) +
+  ggplot2::geom_point(size = 1.8) +
+  ggplot2::facet_wrap(
+    ~resultado,
+    scales = "free_y"
+  ) +
+  ggplot2::scale_x_continuous(breaks = 2017:2024) +
+  ggplot2::labs(
+    title = "Cambios en los resultados respecto a 2022",
+    subtitle = "Cada quintil toma el valor cero en 2022",
+    x = "Año",
+    y = "Cambio respecto a 2022",
+    color = "Exposición"
+  ) +
+  ggplot2::theme_minimal(base_size = 12)
+
+grafico_tendencias_normalizadas
+
+# ============================================================
+# 49. ESCALERA DE MODELOS: PRODUCTIVIDAD LABORAL
+# ============================================================
+
+if (!requireNamespace("fixest", quietly = TRUE)) {
+  stop(
+    "No está instalado fixest. ",
+    "Instálalo con install.packages('fixest')."
+  )
+}
+
+variables_necesarias_49 <- c(
+  "NORDEST",
+  "NORDEMP",
+  "ANIO",
+  "log_productividad_laboral",
+  "Exposure2022_obreros",
+  "tamano_2022",
+  "activos_fijos_2022",
+  "inversion_bruta_2022",
+  "exportador_2022",
+  "usa_insumos_importados_2022",
+  "empresa_multiestablecimiento_2022",
+  "division_ciiu_2022",
+  "codigo_departamento_2022"
+)
+
+faltantes_49 <- setdiff(
+  variables_necesarias_49,
+  names(panel_principal)
+)
+
+if (length(faltantes_49) > 0) {
+  stop(
+    "Faltan estas variables: ",
+    paste(faltantes_49, collapse = ", ")
+  )
+}
+
+panel_modelos_49 <- panel_principal |>
+  dplyr::select(
+    dplyr::all_of(variables_necesarias_49)
+  ) |>
+  dplyr::mutate(
+    # Una unidad representa 10 puntos porcentuales de exposición
+    exposicion_10pp = Exposure2022_obreros * 10,
+    
+    # Periodo posterior al choque
+    post_2023 = as.integer(ANIO >= 2023),
+    
+    # Transformaciones que permiten conservar ceros y negativos
+    asinh_tamano = asinh(tamano_2022),
+    asinh_activos = asinh(activos_fijos_2022),
+    asinh_inversion = asinh(inversion_bruta_2022),
+    
+    division_ciiu_2022 = factor(division_ciiu_2022),
+    codigo_departamento_2022 = factor(codigo_departamento_2022)
+  ) |>
+  tidyr::drop_na()
+
+# ------------------------------------------------------------
+# 49.1. MODELO 1: REGRESIÓN SIMPLE
+# ------------------------------------------------------------
+#
+# Productividad laboral
+# =
+# exposición obrera
+# + periodo posterior a 2023
+# + exposición obrera × periodo posterior
+# + error.
+#
+# Todavía no incluye controles ni efectos fijos.
+
+modelo_49_1_simple <- fixest::feols(
+  log_productividad_laboral ~
+    exposicion_10pp * post_2023,
+  data = panel_modelos_49,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 49.2. MODELO 2: REGRESIÓN CON CONTROLES PRECHOQUE
+# ------------------------------------------------------------
+#
+# Al modelo simple se agregan:
+# - tamaño;
+# - activos fijos;
+# - inversión;
+# - condición exportadora;
+# - uso de insumos importados;
+# - pertenencia a una empresa con varios establecimientos;
+# - sector industrial;
+# - departamento.
+#
+# Todavía no incluye efectos fijos de establecimiento o año.
+
+modelo_49_2_controles <- fixest::feols(
+  log_productividad_laboral ~
+    exposicion_10pp * post_2023 +
+    asinh_tamano +
+    asinh_activos +
+    asinh_inversion +
+    exportador_2022 +
+    usa_insumos_importados_2022 +
+    empresa_multiestablecimiento_2022 +
+    division_ciiu_2022 +
+    codigo_departamento_2022,
+  data = panel_modelos_49,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 49.3. MODELO 3: EFECTOS FIJOS
+# ------------------------------------------------------------
+#
+# Productividad laboral
+# =
+# exposición obrera × periodo posterior
+# + efectos fijos de establecimiento
+# + efectos fijos de año
+# + error.
+#
+# Los efectos fijos de establecimiento absorben las características
+# permanentes, incluidas las diferencias iniciales de sector,
+# departamento, tamaño y exposición.
+#
+# Los efectos fijos de año absorben los choques nacionales comunes.
+
+modelo_49_3_ef <- fixest::feols(
+  log_productividad_laboral ~
+    exposicion_10pp:post_2023 |
+    NORDEST + ANIO,
+  data = panel_modelos_49,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 49.4. TABLA COMPARATIVA
+# ------------------------------------------------------------
+
+tabla_modelos_49 <- fixest::etable(
+  modelo_49_1_simple,
+  modelo_49_2_controles,
+  modelo_49_3_ef,
+  headers = c(
+    "Regresión simple",
+    "Con controles",
+    "Efectos fijos"
+  ),
+  dict = c(
+    "exposicion_10pp:post_2023" =
+      "Exposición obrera (10 pp) × Post 2023"
+  ),
+  keep = "%exposicion_10pp:post_2023",
+  fitstat = ~n + r2,
+  se.below = TRUE
+)
+
+tabla_modelos_49
+
+# ============================================================
+# 50. ESTUDIO DE EVENTO: PRODUCTIVIDAD LABORAL
+# ============================================================
+
+library(fixest)
+
+modelo_50_evento_productividad <- feols(
+  log_productividad_laboral ~
+    i(
+      ANIO,
+      exposicion_10pp,
+      ref = 2022
+    ) |
+    NORDEST + ANIO,
+  data = panel_modelos_49,
+  cluster = ~NORDEMP
+)
+
+summary(modelo_50_evento_productividad)
+
+# ------------------------------------------------------------
+# 50.1. GRÁFICA DEL ESTUDIO DE EVENTO
+# ------------------------------------------------------------
+
+iplot(
+  modelo_50_evento_productividad,
+  ref.line = 0,
+  main = "Estudio de evento: productividad laboral",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición",
+  ci_level = 0.95
+)
+
+# ------------------------------------------------------------
+# 50.2. PRUEBA CONJUNTA DE TENDENCIAS PREVIAS
+# ------------------------------------------------------------
+
+prueba_tendencias_previas <- wald(
+  modelo_50_evento_productividad,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_tendencias_previas
