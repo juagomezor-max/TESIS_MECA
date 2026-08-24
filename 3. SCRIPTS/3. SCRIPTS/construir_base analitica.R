@@ -2129,3 +2129,171 @@ permanencia_por_exposicion <- x_prechoque_2022 |>
   )
 
 print(permanencia_por_exposicion, n = Inf)
+
+# ============================================================
+# 44. CREAR MUESTRAS PRINCIPAL Y BALANCEADA
+# ============================================================
+
+ANIOS_MODELO_PRINCIPAL <- 2017:2024
+
+# Muestra principal: usa todas las observaciones disponibles
+# de establecimientos con exposición y X válidas.
+panel_principal <- base_panel_modelo |>
+  dplyr::filter(
+    ANIO %in% ANIOS_MODELO_PRINCIPAL,
+    muestra_x_principal
+  )
+
+# Identificar establecimientos presentes en los ocho años.
+establecimientos_balanceados <- panel_principal |>
+  dplyr::distinct(NORDEST, ANIO) |>
+  dplyr::count(
+    NORDEST,
+    name = "anios_observados"
+  ) |>
+  dplyr::filter(
+    anios_observados == length(ANIOS_MODELO_PRINCIPAL)
+  ) |>
+  dplyr::select(NORDEST)
+
+# Muestra de robustez: solo establecimientos presentes todos los años.
+panel_balanceado <- panel_principal |>
+  dplyr::semi_join(
+    establecimientos_balanceados,
+    by = "NORDEST"
+  )
+
+# Resumen general de ambas muestras.
+resumen_muestras <- dplyr::bind_rows(
+  panel_principal |>
+    dplyr::summarise(
+      muestra = "Principal desbalanceada",
+      observaciones = dplyr::n(),
+      establecimientos = dplyr::n_distinct(NORDEST),
+      anio_inicial = min(ANIO),
+      anio_final = max(ANIO)
+    ),
+  panel_balanceado |>
+    dplyr::summarise(
+      muestra = "Balanceada",
+      observaciones = dplyr::n(),
+      establecimientos = dplyr::n_distinct(NORDEST),
+      anio_inicial = min(ANIO),
+      anio_final = max(ANIO)
+    )
+)
+
+print(resumen_muestras)
+
+# Número de establecimientos observados cada año.
+comparacion_anual_muestras <- dplyr::bind_rows(
+  panel_principal |>
+    dplyr::count(ANIO, name = "establecimientos") |>
+    dplyr::mutate(muestra = "Principal desbalanceada"),
+  panel_balanceado |>
+    dplyr::count(ANIO, name = "establecimientos") |>
+    dplyr::mutate(muestra = "Balanceada")
+) |>
+  dplyr::select(
+    muestra,
+    ANIO,
+    establecimientos
+  )
+
+print(comparacion_anual_muestras, n = Inf)
+
+
+# ============================================================
+# 45. PERFIL PRECHOQUE POR QUINTIL DE EXPOSICIÓN
+# ============================================================
+
+# Crear los quintiles una sola vez a nivel establecimiento.
+quintiles_exposicion_2022 <- x_prechoque_2022 |>
+  dplyr::filter(
+    !is.na(Exposure2022_obreros)
+  ) |>
+  dplyr::mutate(
+    quintil_exposicion_2022 = dplyr::ntile(
+      Exposure2022_obreros,
+      5
+    )
+  ) |>
+  dplyr::select(
+    NORDEST,
+    quintil_exposicion_2022
+  )
+
+# Asignarlos a las dos muestras.
+panel_principal <- panel_principal |>
+  dplyr::select(
+    -dplyr::any_of("quintil_exposicion_2022")
+  ) |>
+  dplyr::left_join(
+    quintiles_exposicion_2022,
+    by = "NORDEST"
+  )
+
+panel_balanceado <- panel_balanceado |>
+  dplyr::select(
+    -dplyr::any_of("quintil_exposicion_2022")
+  ) |>
+  dplyr::left_join(
+    quintiles_exposicion_2022,
+    by = "NORDEST"
+  )
+
+# Perfil de los establecimientos justo antes del choque.
+perfil_prechoque <- panel_principal |>
+  dplyr::filter(
+    ANIO == 2022
+  ) |>
+  dplyr::group_by(
+    quintil_exposicion_2022
+  ) |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    
+    exposicion_promedio = round(
+      mean(Exposure2022_obreros),
+      3
+    ),
+    
+    productividad_real_mediana = round(
+      median(productividad_laboral_real, na.rm = TRUE),
+      1
+    ),
+    
+    valor_agregado_real_mediana = round(
+      median(valor_agregado_real, na.rm = TRUE),
+      1
+    ),
+    
+    empleo_mediano = median(
+      empleo_total_categorias,
+      na.rm = TRUE
+    ),
+    
+    activos_fijos_mediana = round(
+      median(activos_fijos_2022, na.rm = TRUE),
+      1
+    ),
+    
+    porcentaje_exportadores = round(
+      100 * mean(exportador_2022),
+      1
+    ),
+    
+    porcentaje_usa_insumos_importados = round(
+      100 * mean(usa_insumos_importados_2022),
+      1
+    ),
+    
+    porcentaje_multiestablecimiento = round(
+      100 * mean(empresa_multiestablecimiento_2022),
+      1
+    ),
+    
+    .groups = "drop"
+  )
+
+print(perfil_prechoque, n = Inf, width = Inf)
