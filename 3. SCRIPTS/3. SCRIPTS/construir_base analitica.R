@@ -2687,3 +2687,315 @@ prueba_tendencias_previas <- wald(
 )
 
 prueba_tendencias_previas
+
+
+# ============================================================
+# 51. MODELOS Y ESTUDIO DE EVENTO: EMPLEO TOTAL
+# ============================================================
+
+variables_necesarias_51 <- c(
+  "NORDEST", "NORDEMP", "ANIO",
+  "asinh_empleo_total",
+  "Exposure2022_obreros",
+  "tamano_2022",
+  "activos_fijos_2022",
+  "inversion_bruta_2022",
+  "exportador_2022",
+  "usa_insumos_importados_2022",
+  "empresa_multiestablecimiento_2022",
+  "division_ciiu_2022",
+  "codigo_departamento_2022"
+)
+
+faltantes_51 <- setdiff(
+  variables_necesarias_51,
+  names(panel_principal)
+)
+
+if (length(faltantes_51) > 0) {
+  stop(
+    "Faltan estas variables: ",
+    paste(faltantes_51, collapse = ", ")
+  )
+}
+
+panel_modelos_51 <- panel_principal |>
+  dplyr::select(dplyr::all_of(variables_necesarias_51)) |>
+  dplyr::mutate(
+    exposicion_10pp = Exposure2022_obreros * 10,
+    post_2023 = as.integer(ANIO >= 2023),
+    asinh_tamano = asinh(tamano_2022),
+    asinh_activos = asinh(activos_fijos_2022),
+    asinh_inversion = asinh(inversion_bruta_2022),
+    division_ciiu_2022 = factor(division_ciiu_2022),
+    codigo_departamento_2022 = factor(codigo_departamento_2022)
+  ) |>
+  tidyr::drop_na()
+
+# ------------------------------------------------------------
+# 51.1. REGRESIÓN SIMPLE
+# ------------------------------------------------------------
+#
+# Empleo total
+# =
+# exposición obrera
+# + periodo posterior
+# + exposición obrera × periodo posterior
+# + error.
+
+modelo_51_1_simple <- fixest::feols(
+  asinh_empleo_total ~
+    exposicion_10pp * post_2023,
+  data = panel_modelos_51,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 51.2. REGRESIÓN CON CONTROLES PRECHOQUE
+# ------------------------------------------------------------
+
+modelo_51_2_controles <- fixest::feols(
+  asinh_empleo_total ~
+    exposicion_10pp * post_2023 +
+    asinh_tamano +
+    asinh_activos +
+    asinh_inversion +
+    exportador_2022 +
+    usa_insumos_importados_2022 +
+    empresa_multiestablecimiento_2022 +
+    division_ciiu_2022 +
+    codigo_departamento_2022,
+  data = panel_modelos_51,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 51.3. REGRESIÓN CON EFECTOS FIJOS
+# ------------------------------------------------------------
+#
+# Empleo total
+# =
+# exposición obrera × periodo posterior
+# + efectos fijos de establecimiento
+# + efectos fijos de año
+# + error.
+
+modelo_51_3_ef <- fixest::feols(
+  asinh_empleo_total ~
+    exposicion_10pp:post_2023 |
+    NORDEST + ANIO,
+  data = panel_modelos_51,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 51.4. TABLA COMPARATIVA
+# ------------------------------------------------------------
+
+tabla_modelos_51 <- fixest::etable(
+  modelo_51_1_simple,
+  modelo_51_2_controles,
+  modelo_51_3_ef,
+  headers = c(
+    "Regresión simple",
+    "Con controles",
+    "Efectos fijos"
+  ),
+  dict = c(
+    "exposicion_10pp:post_2023" =
+      "Exposición obrera (10 pp) × Post 2023"
+  ),
+  keep = "%exposicion_10pp:post_2023",
+  fitstat = ~n + r2,
+  se.below = TRUE
+)
+
+tabla_modelos_51
+
+# ------------------------------------------------------------
+# 51.5. ESTUDIO DE EVENTO
+# ------------------------------------------------------------
+
+modelo_51_evento <- fixest::feols(
+  asinh_empleo_total ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST + ANIO,
+  data = panel_modelos_51,
+  cluster = ~NORDEMP
+)
+
+fixest::iplot(
+  modelo_51_evento,
+  ref.line = 0,
+  main = "Estudio de evento: empleo total",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición",
+  ci_level = 0.95
+)
+
+# ------------------------------------------------------------
+# 51.6. PRUEBA CONJUNTA DE TENDENCIAS PREVIAS
+# ------------------------------------------------------------
+
+prueba_previa_51 <- fixest::wald(
+  modelo_51_evento,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_previa_51
+
+
+# ============================================================
+# 52. MODELOS Y ESTUDIO DE EVENTO: VALOR AGREGADO REAL
+# ============================================================
+
+variables_necesarias_52 <- c(
+  "NORDEST", "NORDEMP", "ANIO",
+  "log_valor_agregado_real",
+  "Exposure2022_obreros",
+  "tamano_2022",
+  "activos_fijos_2022",
+  "inversion_bruta_2022",
+  "exportador_2022",
+  "usa_insumos_importados_2022",
+  "empresa_multiestablecimiento_2022",
+  "division_ciiu_2022",
+  "codigo_departamento_2022"
+)
+
+faltantes_52 <- setdiff(
+  variables_necesarias_52,
+  names(panel_principal)
+)
+
+if (length(faltantes_52) > 0) {
+  stop(
+    "Faltan estas variables: ",
+    paste(faltantes_52, collapse = ", ")
+  )
+}
+
+panel_modelos_52 <- panel_principal |>
+  dplyr::select(dplyr::all_of(variables_necesarias_52)) |>
+  dplyr::mutate(
+    exposicion_10pp = Exposure2022_obreros * 10,
+    post_2023 = as.integer(ANIO >= 2023),
+    asinh_tamano = asinh(tamano_2022),
+    asinh_activos = asinh(activos_fijos_2022),
+    asinh_inversion = asinh(inversion_bruta_2022),
+    division_ciiu_2022 = factor(division_ciiu_2022),
+    codigo_departamento_2022 = factor(codigo_departamento_2022)
+  ) |>
+  tidyr::drop_na()
+
+# ------------------------------------------------------------
+# 52.1. REGRESIÓN SIMPLE
+# ------------------------------------------------------------
+#
+# Valor agregado real
+# =
+# exposición obrera
+# + periodo posterior
+# + exposición obrera × periodo posterior
+# + error.
+
+modelo_52_1_simple <- fixest::feols(
+  log_valor_agregado_real ~
+    exposicion_10pp * post_2023,
+  data = panel_modelos_52,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 52.2. REGRESIÓN CON CONTROLES PRECHOQUE
+# ------------------------------------------------------------
+
+modelo_52_2_controles <- fixest::feols(
+  log_valor_agregado_real ~
+    exposicion_10pp * post_2023 +
+    asinh_tamano +
+    asinh_activos +
+    asinh_inversion +
+    exportador_2022 +
+    usa_insumos_importados_2022 +
+    empresa_multiestablecimiento_2022 +
+    division_ciiu_2022 +
+    codigo_departamento_2022,
+  data = panel_modelos_52,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 52.3. REGRESIÓN CON EFECTOS FIJOS
+# ------------------------------------------------------------
+#
+# Valor agregado real
+# =
+# exposición obrera × periodo posterior
+# + efectos fijos de establecimiento
+# + efectos fijos de año
+# + error.
+
+modelo_52_3_ef <- fixest::feols(
+  log_valor_agregado_real ~
+    exposicion_10pp:post_2023 |
+    NORDEST + ANIO,
+  data = panel_modelos_52,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 52.4. TABLA COMPARATIVA
+# ------------------------------------------------------------
+
+tabla_modelos_52 <- fixest::etable(
+  modelo_52_1_simple,
+  modelo_52_2_controles,
+  modelo_52_3_ef,
+  headers = c(
+    "Regresión simple",
+    "Con controles",
+    "Efectos fijos"
+  ),
+  dict = c(
+    "exposicion_10pp:post_2023" =
+      "Exposición obrera (10 pp) × Post 2023"
+  ),
+  keep = "%exposicion_10pp:post_2023",
+  fitstat = ~n + r2,
+  se.below = TRUE
+)
+
+tabla_modelos_52
+
+# ------------------------------------------------------------
+# 52.5. ESTUDIO DE EVENTO
+# ------------------------------------------------------------
+
+modelo_52_evento <- fixest::feols(
+  log_valor_agregado_real ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST + ANIO,
+  data = panel_modelos_52,
+  cluster = ~NORDEMP
+)
+
+fixest::iplot(
+  modelo_52_evento,
+  ref.line = 0,
+  main = "Estudio de evento: valor agregado real",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición",
+  ci_level = 0.95
+)
+
+# ------------------------------------------------------------
+# 52.6. PRUEBA CONJUNTA DE TENDENCIAS PREVIAS
+# ------------------------------------------------------------
+
+prueba_previa_52 <- fixest::wald(
+  modelo_52_evento,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_previa_52
