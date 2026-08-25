@@ -2999,3 +2999,204 @@ prueba_previa_52 <- fixest::wald(
 )
 
 prueba_previa_52
+
+
+# ============================================================
+# 53. DIAGNÓSTICO DE OBREROS PERMANENTES Y SALARIOS EN 2022
+# ============================================================
+
+variables_necesarias_53 <- c(
+  "NORDEST",
+  "ANIO",
+  "total_obreros",
+  "personal_permanente_obrero",
+  "salario_promedio_obrero"
+)
+
+faltantes_53 <- setdiff(
+  variables_necesarias_53,
+  names(base_analitica)
+)
+
+if (length(faltantes_53) > 0) {
+  stop(
+    "Faltan estas variables: ",
+    paste(faltantes_53, collapse = ", ")
+  )
+}
+
+base_obreros_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::select(
+    NORDEST,
+    total_obreros,
+    personal_permanente_obrero,
+    salario_promedio_obrero
+  )
+
+# Verificar que exista una sola fila por establecimiento
+duplicados_53 <- base_obreros_2022 |>
+  dplyr::count(NORDEST) |>
+  dplyr::filter(n > 1)
+
+if (nrow(duplicados_53) > 0) {
+  stop("Hay establecimientos duplicados en 2022.")
+}
+
+# ------------------------------------------------------------
+# 53.1. CLASIFICAR LA SITUACIÓN DE CADA ESTABLECIMIENTO
+# ------------------------------------------------------------
+
+base_obreros_2022 <- base_obreros_2022 |>
+  dplyr::mutate(
+    estado_obreros = dplyr::case_when(
+      
+      is.na(total_obreros) ~
+        "Sin información de obreros totales",
+      
+      total_obreros == 0 ~
+        "Sin obreros",
+      
+      total_obreros > 0 &
+        personal_permanente_obrero == 0 ~
+        "Con obreros, pero ninguno permanente",
+      
+      personal_permanente_obrero > 0 &
+        !is.na(salario_promedio_obrero) &
+        salario_promedio_obrero > 0 ~
+        "Con salario obrero calculable",
+      
+      personal_permanente_obrero > 0 &
+        is.na(salario_promedio_obrero) ~
+        "Con permanentes, salario faltante",
+      
+      personal_permanente_obrero > 0 &
+        salario_promedio_obrero <= 0 ~
+        "Con permanentes, salario cero o negativo",
+      
+      TRUE ~
+        "Otro caso"
+    )
+  )
+
+tabla_estado_obreros_2022 <- base_obreros_2022 |>
+  dplyr::count(estado_obreros, name = "establecimientos") |>
+  dplyr::mutate(
+    porcentaje = round(
+      100 * establecimientos / sum(establecimientos),
+      2
+    )
+  ) |>
+  dplyr::arrange(dplyr::desc(establecimientos))
+
+tabla_estado_obreros_2022
+
+# ------------------------------------------------------------
+# 53.2. RESUMEN GENERAL DE COBERTURA
+# ------------------------------------------------------------
+
+resumen_cobertura_obreros_2022 <- base_obreros_2022 |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    
+    porcentaje_con_obreros = round(
+      100 * mean(total_obreros > 0, na.rm = TRUE),
+      2
+    ),
+    
+    porcentaje_con_obreros_permanentes = round(
+      100 * mean(personal_permanente_obrero > 0, na.rm = TRUE),
+      2
+    ),
+    
+    porcentaje_con_salario_calculable = round(
+      100 * mean(
+        !is.na(salario_promedio_obrero) &
+          salario_promedio_obrero > 0
+      ),
+      2
+    ),
+    
+    porcentaje_salario_calculable_entre_quienes_tienen_permanentes =
+      round(
+        100 * sum(
+          personal_permanente_obrero > 0 &
+            !is.na(salario_promedio_obrero) &
+            salario_promedio_obrero > 0,
+          na.rm = TRUE
+        ) /
+          sum(personal_permanente_obrero > 0, na.rm = TRUE),
+        2
+      )
+  )
+
+resumen_cobertura_obreros_2022
+
+# ------------------------------------------------------------
+# 53.3. DISTRIBUCIÓN DEL SALARIO OBRERO CALCULABLE
+# ------------------------------------------------------------
+#
+# La EAM registra estos valores en miles de pesos anuales.
+# También presentamos una aproximación mensual dividiendo por 12.
+
+salarios_obreros_validos_2022 <- base_obreros_2022 |>
+  dplyr::filter(
+    !is.na(salario_promedio_obrero),
+    salario_promedio_obrero > 0
+  ) |>
+  dplyr::mutate(
+    salario_mensual_miles = salario_promedio_obrero / 12
+  )
+
+percentiles_salario_obrero_2022 <- salarios_obreros_validos_2022 |>
+  dplyr::summarise(
+    establecimientos = dplyr::n(),
+    minimo_mensual = min(salario_mensual_miles),
+    p1_mensual = quantile(salario_mensual_miles, 0.01),
+    p5_mensual = quantile(salario_mensual_miles, 0.05),
+    p10_mensual = quantile(salario_mensual_miles, 0.10),
+    p25_mensual = quantile(salario_mensual_miles, 0.25),
+    mediana_mensual = median(salario_mensual_miles),
+    p75_mensual = quantile(salario_mensual_miles, 0.75),
+    p90_mensual = quantile(salario_mensual_miles, 0.90),
+    p95_mensual = quantile(salario_mensual_miles, 0.95),
+    p99_mensual = quantile(salario_mensual_miles, 0.99),
+    maximo_mensual = max(salario_mensual_miles)
+  )
+
+percentiles_salario_obrero_2022
+
+# ------------------------------------------------------------
+# 53.4. CERCANÍA AL SALARIO MÍNIMO DE 2022
+# ------------------------------------------------------------
+#
+# Salario mínimo mensual de 2022:
+# $1.000.000, equivalente a 1.000 en miles de pesos.
+#
+# Esta comparación es aproximada porque el salario promedio anual
+# puede verse afectado por entradas y salidas de trabajadores.
+
+SML_2022_MILES_MENSUAL <- 1000
+
+tabla_cercania_sml_2022 <- salarios_obreros_validos_2022 |>
+  dplyr::mutate(
+    relacion_con_sml = salario_mensual_miles /
+      SML_2022_MILES_MENSUAL,
+    
+    grupo_salarial = dplyr::case_when(
+      relacion_con_sml < 1 ~ "Menor a 1 SML",
+      relacion_con_sml < 1.2 ~ "Entre 1 y 1,2 SML",
+      relacion_con_sml < 1.5 ~ "Entre 1,2 y 1,5 SML",
+      relacion_con_sml < 2 ~ "Entre 1,5 y 2 SML",
+      TRUE ~ "Mayor o igual a 2 SML"
+    )
+  ) |>
+  dplyr::count(grupo_salarial, name = "establecimientos") |>
+  dplyr::mutate(
+    porcentaje = round(
+      100 * establecimientos / sum(establecimientos),
+      2
+    )
+  )
+
+tabla_cercania_sml_2022
