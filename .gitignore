@@ -23,6 +23,13 @@ DATOS/
 # Macrobase pesada como artefacto derivado de datos
 4. RESULTADOS/macro_base_eam.rds
 
+# Base reducida pesada del script archivado de 2012 (regenerable corriendo
+# descartado/2012_reforma_tributaria/descriptivo_exposicion_2012_eam.R),
+# misma convencion que la base reducida equivalente de 1. DATOS/ (no se
+# versiona la tabla firma-anio completa, solo resumenes y graficos).
+descartado/2012_reforma_tributaria/base_reducida_exposicion_2012_eam.rds
+descartado/2012_reforma_tributaria/base_reducida_exposicion_2012_eam.csv
+
 # Archivos locales de R/RStudio
 .Rhistory
 .RData

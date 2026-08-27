@@ -1,0 +1,3 @@
+version,n,pearson,spearman
+"Bite2022_obreros (original, sin winsorizar salario)",5099,0.124,0.159
+Bite2022_obreros_winsorizado (salario winsorizado 1%-99%),5103,0.149,0.159

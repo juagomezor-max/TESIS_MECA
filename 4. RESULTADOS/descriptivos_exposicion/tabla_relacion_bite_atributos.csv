@@ -1,0 +1,4 @@
+atributo,tipo_medida,r2,spearman
+Sector (CIIU4),"R2 (ANOVA, % varianza explicada)",0.0921,NA
+DPTO (region),"R2 (ANOVA, % varianza explicada)",0.0261,NA
+Tamano de empresa,R2 (ANOVA) y Spearman (ordinal),0.1162,-0.399

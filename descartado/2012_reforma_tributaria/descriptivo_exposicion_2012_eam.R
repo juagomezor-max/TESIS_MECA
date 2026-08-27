@@ -1,3 +1,23 @@
+# ARCHIVADO el 2026-08-10: logica de exposicion al choque de la reforma
+# tributaria de 2012 (Ley 1607), extraida de
+# 3. SCRIPTS/descriptivo_exposicion_eam.R para que ese script quede
+# exclusivamente con la logica del choque de salario minimo 2023.
+# Ver README.md en esta misma carpeta para el motivo del archivado.
+#
+# Este script es AUTOCONTENIDO (no depende de 3. SCRIPTS/descriptivo_exposicion_eam.R):
+# duplica la carga de datos y las utilidades que necesita, para poder
+# correr de forma independiente si esta linea se retoma en el futuro.
+# Se ejecuta desde la raiz del repositorio, igual que el resto de scripts
+# del proyecto:
+#
+#   Rscript "descartado/2012_reforma_tributaria/descriptivo_exposicion_2012_eam.R"
+#
+# Nota metodologica (igual que en el script original):
+# - Exposure2012 se define como intensidad laboral en 2011 (linea base
+#   pre-choque de la reforma tributaria de 2012).
+# - Si algunas variables no existen, el script usa candidatos alternativos
+#   o deja el resultado en NA con un mensaje informativo.
+
 suppressPackageStartupMessages({
   library(tidyverse)
   library(ggplot2)
@@ -7,35 +27,16 @@ suppressPackageStartupMessages({
 
 source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
 
-# ============================================================
-# Analisis descriptivo preliminar de exposicion a choques laborales
-# Macrobase EAM
-# ============================================================
-# Este script:
-# 1. Carga la macrobase EAM desde here::here().
-# 2. Agrega la base a nivel NORDEMP-ANIO.
-# 3. Construye variables laborales y de desempeno.
-# 4. Define exposicion al choque de salario minimo 2023 (baseline 2022).
-# 5. Genera series, histogramas, boxplots y tablas resumen.
-# 6. Exporta una base reducida con las variables construidas.
-#
-# Nota metodologica:
-# - Exposure2022 se define como una proxy de cercania al salario minimo
-#   usando el inverso del salario promedio en 2022.
-# - Si algunas variables no existen, el script usa candidatos alternativos
-#   o deja el resultado en NA con un mensaje informativo.
-#
-# La exposicion al choque de la reforma tributaria de 2012 (Exposure2012)
-# se archivo el 2026-08-10 y ya NO se calcula en este script. Ver
-# descartado/2012_reforma_tributaria/README.md.
-
 # -----------------------------
-# 1) Rutas
+# 1) Rutas (las salidas de esta linea archivada quedan en esta misma
+#    carpeta, no en 4. RESULTADOS/ ni en 1. DATOS/, para no mezclarse con
+#    las salidas activas del choque de 2023).
 # -----------------------------
 
 paths <- ensure_project_structure()
-plot_dir <- paths$resultados_exposicion
-data_output_dir <- paths$bases_derivadas_exposicion
+archivo_dir <- here::here("descartado", "2012_reforma_tributaria")
+plot_dir <- archivo_dir
+data_output_dir <- archivo_dir
 
 macro_candidates <- c(
   paths$macro_base_eam,
@@ -47,7 +48,7 @@ macro_path <- find_existing_path(macro_candidates, "macro_base_eam.rds")
 message("Leyendo macrobase desde: ", macro_path)
 
 # -----------------------------
-# 2) Utilidades
+# 2) Utilidades (duplicadas de descriptivo_exposicion_eam.R)
 # -----------------------------
 
 first_existing_var <- function(data, candidates, label = NULL) {
@@ -67,13 +68,10 @@ safe_numeric <- function(x) {
   suppressWarnings(as.numeric(x))
 }
 
-# Evita divisiones por cero y deja NA cuando el denominador no es usable.
 safe_divide <- function(num, den) {
   ifelse(is.na(num) | is.na(den) | den == 0, NA_real_, num / den)
 }
 
-# Suma un conjunto de variables si existen en la base. Cuando todas faltan
-# en una fila, conserva NA en lugar de devolver cero artificial.
 sum_if_exists <- function(data, vars) {
   present <- vars[vars %in% names(data)]
   if (length(present) == 0) {
@@ -169,7 +167,6 @@ build_series_plot <- function(data, value_var, title, subtitle, shock_year, y_la
 }
 
 build_histogram <- function(data, exposure_var, title, subtitle, x_label) {
-  # Se filtran valores no finitos para evitar advertencias en el histograma.
   plot_data <- data %>%
     filter(is.finite(.data[[exposure_var]]))
 
@@ -186,7 +183,6 @@ build_histogram <- function(data, exposure_var, title, subtitle, x_label) {
 }
 
 build_boxplot <- function(data, title, subtitle) {
-  # Lo mismo para boxplots: se descartan infinitos/NA generados por ratios.
   plot_data <- data %>%
     filter(is.finite(valor))
 
@@ -233,8 +229,6 @@ panel_raw <- macro_base %>%
   mutate(across(-c(NORDEMP, ANIO), safe_numeric))
 
 panel <- panel_raw %>%
-  # Si una empresa-anio aparece duplicada, se consolida sumando componentes
-  # numericos para trabajar con un unico registro por NORDEMP-ANIO.
   group_by(NORDEMP, ANIO) %>%
   summarise(
     across(
@@ -255,8 +249,6 @@ temporales_directos_var <- first_existing_var(panel, c("PERTEM3"), "temporales d
 
 panel_built <- panel %>%
   mutate(
-    # Las definiciones priorizan variables resumen ya construidas en EAM
-    # y usan alternativas cuando la variable preferida no esta disponible.
     empleo_total = if (!is.na(empleo_var)) safe_numeric(.data[[empleo_var]]) else NA_real_,
     trabajadores_permanentes = if (!is.na(permanentes_var)) safe_numeric(.data[[permanentes_var]]) else NA_real_,
     trabajadores_temporales = if (!is.na(perm_mas_prop_var)) {
@@ -273,8 +265,6 @@ panel_built <- panel %>%
     } else {
       sum_if_exists(., c("SALARPER", "PRESSPER", "REMUTEMP"))
     },
-    # Se usa una jerarquia de variables de resultado para productividad e
-    # intensidad laboral, priorizando valor agregado y luego produccion/ventas.
     base_resultado = coalesce_positive(., c("VALAGRI", "PRODBIND", "VALORVEN", "VALVFAB")),
     salario_promedio = safe_divide(costo_laboral_total, empleo_total),
     productividad = safe_divide(base_resultado, empleo_total),
@@ -298,45 +288,42 @@ core_vars <- c(
 )
 
 # -----------------------------
-# 5) Exposicion al shock 2023
+# 5) Exposicion al shock 2012
 # -----------------------------
 
-baseline_2022 <- panel_built %>%
-  filter(ANIO == 2022) %>%
-  # Menor salario promedio implica mayor exposicion potencial a un alza fuerte
-  # del salario minimo; por eso se usa su inverso.
-  mutate(exposure_low_wage = if_else(salario_promedio > 0, 1 / salario_promedio, NA_real_)) %>%
+baseline_2011 <- panel_built %>%
+  filter(ANIO == 2011) %>%
   transmute(
     NORDEMP,
-    Exposure2022 = winsorize(exposure_low_wage),
-    quintil_exposure2022 = make_quintiles(Exposure2022)
+    Exposure2012 = winsorize(intensidad_laboral),
+    quintil_exposure2012 = make_quintiles(Exposure2012)
   )
 
-panel_2022 <- panel_built %>%
-  left_join(baseline_2022, by = "NORDEMP") %>%
+panel_2012 <- panel_built %>%
+  left_join(baseline_2011, by = "NORDEMP") %>%
   mutate(
-    periodo_2023 = case_when(
-      ANIO %in% 2020:2022 ~ "Pre (2020-2022)",
-      ANIO %in% 2023:2024 ~ "Post (2023-2024)",
+    periodo_2012 = case_when(
+      ANIO <= 2012 ~ "Pre (<=2012)",
+      ANIO >= 2013 ~ "Post (>=2013)",
       TRUE ~ NA_character_
     )
   )
 
 # -----------------------------
-# 6) Base reducida y chequeos
+# 6) Base reducida (solo 2012)
 # -----------------------------
 
-base_reducida <- panel_2022 %>%
+base_reducida_2012 <- panel_2012 %>%
   select(
     all_of(core_vars),
-    Exposure2022, quintil_exposure2022, periodo_2023
+    Exposure2012, quintil_exposure2012, periodo_2012
   )
 
-readr::write_rds(base_reducida, file.path(data_output_dir, "base_reducida_exposicion_eam.rds"))
-readr::write_csv(base_reducida, file.path(data_output_dir, "base_reducida_exposicion_eam.csv"))
+readr::write_rds(base_reducida_2012, file.path(data_output_dir, "base_reducida_exposicion_2012_eam.rds"))
+readr::write_csv(base_reducida_2012, file.path(data_output_dir, "base_reducida_exposicion_2012_eam.csv"))
 
 # -----------------------------
-# 7) Graficos de series 2023
+# 7) Graficos de series 2012
 # -----------------------------
 
 metrics_info <- tribble(
@@ -348,9 +335,9 @@ metrics_info <- tribble(
   "intensidad_laboral", "Intensidad laboral promedio", "intensidad_laboral"
 )
 
-series_2023 <- panel_2022 %>%
-  filter(ANIO %in% 2020:2024, !is.na(quintil_exposure2022)) %>%
-  group_by(ANIO, quintil = quintil_exposure2022) %>%
+series_2012 <- panel_2012 %>%
+  filter(!is.na(quintil_exposure2012)) %>%
+  group_by(ANIO, quintil = quintil_exposure2012) %>%
   summarise(
     across(
       all_of(metrics_info$var),
@@ -362,33 +349,33 @@ series_2023 <- panel_2022 %>%
 for (i in seq_len(nrow(metrics_info))) {
   metric <- metrics_info[i, ]
   plot_i <- build_series_plot(
-    data = series_2023,
+    data = series_2012,
     value_var = metric$var,
     title = paste0(metric$label, " por quintil de exposicion"),
-    subtitle = "Shock: salario minimo 2023 | Exposicion medida en 2022 | Ventana 2020-2024",
-    shock_year = 2023,
+    subtitle = "Shock: reforma tributaria 2012 | Exposicion medida en 2011 | Linea vertical en 2013",
+    shock_year = 2013,
     y_label = metric$label
   )
 
-  save_plot(plot_i, paste0("serie_2023_", metric$filename_stub, ".png"))
+  save_plot(plot_i, paste0("serie_2012_", metric$filename_stub, ".png"))
 }
 
 # -----------------------------
-# 8) Histograma de exposicion
+# 8) Histograma de exposicion 2012
 # -----------------------------
 
-hist_2022 <- build_histogram(
-  data = baseline_2022,
-  exposure_var = "Exposure2022",
-  title = "Distribucion de Exposure2022",
-  subtitle = "Proxy de cercania al salario minimo medida en 2022",
-  x_label = "Exposure2022"
+hist_2012 <- build_histogram(
+  data = baseline_2011,
+  exposure_var = "Exposure2012",
+  title = "Distribucion de Exposure2012",
+  subtitle = "Proxy de intensidad laboral medida en 2011",
+  x_label = "Exposure2012"
 )
 
-save_plot(hist_2022, "histograma_exposure2022.png", width = 9, height = 6)
+save_plot(hist_2012, "histograma_exposure2012.png", width = 9, height = 6)
 
 # -----------------------------
-# 9) Boxplot alta vs baja exposicion
+# 9) Boxplot alta vs baja exposicion 2012
 # -----------------------------
 
 boxplot_vars <- c(
@@ -407,29 +394,29 @@ boxplot_labels <- c(
   intensidad_laboral = "Intensidad laboral"
 )
 
-box_2023 <- panel_2022 %>%
-  filter(ANIO %in% 2020:2024, quintil_exposure2022 %in% c("Q1 - Muy baja", "Q5 - Muy alta")) %>%
-  mutate(grupo_exposicion = if_else(quintil_exposure2022 == "Q5 - Muy alta", "Alta exposicion", "Baja exposicion")) %>%
-  select(NORDEMP, ANIO, periodo = periodo_2023, grupo_exposicion, all_of(boxplot_vars)) %>%
+box_2012 <- panel_2012 %>%
+  filter(quintil_exposure2012 %in% c("Q1 - Muy baja", "Q5 - Muy alta")) %>%
+  mutate(grupo_exposicion = if_else(quintil_exposure2012 == "Q5 - Muy alta", "Alta exposicion", "Baja exposicion")) %>%
+  select(NORDEMP, ANIO, periodo = periodo_2012, grupo_exposicion, all_of(boxplot_vars)) %>%
   filter(!is.na(periodo)) %>%
   pivot_longer(cols = all_of(boxplot_vars), names_to = "indicador", values_to = "valor") %>%
   mutate(indicador = recode(indicador, !!!boxplot_labels))
 
-plot_box_2023 <- build_boxplot(
-  box_2023,
-  title = "Empresas de alta y baja exposicion antes y despues del shock de salario minimo 2023",
-  subtitle = "Comparacion entre Q1 y Q5 de Exposure2022"
+plot_box_2012 <- build_boxplot(
+  box_2012,
+  title = "Empresas de alta y baja exposicion antes y despues de la reforma de 2012",
+  subtitle = "Comparacion entre Q1 y Q5 de Exposure2012"
 )
 
-save_plot(plot_box_2023, "boxplots_alta_baja_exposicion_2023.png", width = 13, height = 8)
+save_plot(plot_box_2012, "boxplots_alta_baja_exposicion_2012.png", width = 13, height = 8)
 
 # -----------------------------
-# 10) Tabla resumen por quintil y periodo
+# 10) Tabla resumen por quintil y periodo (2012)
 # -----------------------------
 
-summary_2023 <- panel_2022 %>%
-  filter(ANIO %in% 2020:2024, !is.na(quintil_exposure2022), !is.na(periodo_2023)) %>%
-  group_by(quintil_exposure2022, periodo_2023) %>%
+summary_2012 <- panel_2012 %>%
+  filter(!is.na(quintil_exposure2012), !is.na(periodo_2012)) %>%
+  group_by(quintil_exposure2012, periodo_2012) %>%
   summarise(
     n_empresas = n_distinct(NORDEMP),
     n_obs = n(),
@@ -443,13 +430,13 @@ summary_2023 <- panel_2022 %>%
     .groups = "drop"
   )
 
-readr::write_csv(summary_2023, file.path(data_output_dir, "tabla_resumen_quintiles_2023.csv"))
+readr::write_csv(summary_2012, file.path(data_output_dir, "tabla_resumen_quintiles_2012.csv"))
 
 # -----------------------------
 # 11) Mensajes finales
 # -----------------------------
 
-message("Script completado.")
-message("Base reducida exportada en: ", file.path(data_output_dir, "base_reducida_exposicion_eam.rds"))
-message("Tablas resumen exportadas en: ", data_output_dir)
+message("Script completado (linea archivada: reforma tributaria 2012).")
+message("Base reducida exportada en: ", file.path(data_output_dir, "base_reducida_exposicion_2012_eam.rds"))
+message("Tabla resumen exportada en: ", file.path(data_output_dir, "tabla_resumen_quintiles_2012.csv"))
 message("Graficos exportados en: ", plot_dir)
