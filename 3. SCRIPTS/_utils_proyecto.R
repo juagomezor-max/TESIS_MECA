@@ -38,6 +38,7 @@ get_project_paths <- function(root_dir = normalizePath(".", winslash = "/", must
     resultados = file.path(root_dir, "4. RESULTADOS"),
     resultados_panel = file.path(root_dir, "4. RESULTADOS", "panel_diagnostico"),
     resultados_exposicion = file.path(root_dir, "4. RESULTADOS", "descriptivos_exposicion"),
+    resultados_validaciones = file.path(root_dir, "4. RESULTADOS", "Validaciones"),
     diccionario_docx = file.path(root_dir, "1. DATOS", "Diccionarios_EAM_EAC.docx"),
     diccionario_maestro = file.path(root_dir, "1. DATOS", "3. DICCIONARIOS", "diccionario_maestro_variables.csv"),
     macro_base_eam = file.path(root_dir, "1. DATOS", "5. MACROBASE", "macro_base_eam.rds")
@@ -68,7 +69,8 @@ ensure_project_structure <- function(paths = get_project_paths()) {
     paths$scripts,
     paths$resultados,
     paths$resultados_panel,
-    paths$resultados_exposicion
+    paths$resultados_exposicion,
+    paths$resultados_validaciones
   )
 
   invisible(lapply(dirs, ensure_dir))
