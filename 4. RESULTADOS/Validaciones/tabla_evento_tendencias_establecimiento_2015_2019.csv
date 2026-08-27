@@ -1,0 +1,5 @@
+variable,n_obs,n_establecimientos,n_firmas,f_stat,df1,df2,p_value
+empleo_total,32475,6670,6137,0.392,4,6117,0.8148
+empleo_permanente,32475,6670,6137,0.672,4,6117,0.6111
+empleo_temporal,32475,6670,6137,0.582,4,6117,0.6757
+participacion_permanente,32461,6670,6137,0.269,4,6117,0.898
