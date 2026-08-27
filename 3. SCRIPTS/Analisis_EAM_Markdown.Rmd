@@ -491,6 +491,27 @@ base_analisis <- map_dfr(
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#######Hasta aca
+
 ```{r}
 dim(base_analisis)
 ```
