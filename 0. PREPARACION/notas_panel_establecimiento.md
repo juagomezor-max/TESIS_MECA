@@ -107,3 +107,387 @@ multiplanta (0.03% de establecimientos). El unico punto que requiere una
 decision explicita es el tratamiento de los 169 establecimientos (1.34%)
 que cambian de empresa duena -- ver propuesta en el punto 4, pendiente
 de aprobacion.
+
+## Paso 2.1 — Variable de ubicacion (departamento)
+
+**Confirmado: `DPTO`.**
+
+Evidencia:
+- Diccionario maestro EAM: `DPTO` = "Departamento", presente en los 17 de
+  17 anios (2008-2024). Es la UNICA variable de ubicacion en la
+  macrobase -- no hay columna de municipio, ciudad ni codigo DIVIPOLA
+  completo por separado (busqueda de `DPTO|DEPARTA|DIVIPOLA|COD_DPT|MUNI|REGION`
+  en las 398 columnas, sin otros resultados).
+- Formato: numerico, 23 valores unicos, 0 NA/vacios en las 140,835
+  filas. Valores (5, 8, 11, 13, 15, 17, 19, 20, 23, 25, 41, 47, 50, 52,
+  54, 63, 66, 68, 70, 73, 76, 85, 99) consistentes con codigos DIVIPOLA
+  de departamento (ej. 5=Antioquia, 11=Bogota D.C., 76=Valle del Cauca).
+  Granularidad de DEPARTAMENTO, no de municipio.
+
+## Paso 2.2 — Cobertura y consistencia de DPTO por anio
+
+Script: `3. SCRIPTS/auditar_cobertura_dpto_establecimiento.R`.
+
+**Cobertura: 100% en los 17 anios (2008-2024), sin excepcion.** Ningun
+anio tiene cobertura por debajo del 99% -- de hecho ningun anio tiene
+cobertura por debajo del 100%. No hay evidencia de un anio con captura
+notablemente peor que el resto.
+
+**Chequeo adicional (mismo espiritu que el Paso 1.5):** ademas del % de
+cobertura, se comparo el CONJUNTO EXACTO de codigos DPTO presentes cada
+anio (un cambio de metodologia podria mantener 100% de cobertura pero
+alterar que codigos se usan, ej. reagrupar departamentos o introducir un
+codigo de "no clasificado"). Resultado: **el conjunto de 23 codigos DPTO
+es IDENTICO en los 17 anios**, sin una sola variacion. Sin evidencia de
+cambio de formulario o metodologia de captura que afecte esta variable
+en ningun punto del periodo.
+
+### Conclusion del Paso 2.2
+
+DPTO tiene cobertura y consistencia perfectas en todo el panel
+2008-2024. Se puede usar sin reservas para construir
+`departamento*anio` como efecto fijo en la especificacion a nivel
+establecimiento.
+
+## Paso 2.3 — Estabilidad de DPTO DENTRO de un mismo NORDEST
+
+Script: `3. SCRIPTS/auditar_estabilidad_dpto_nordest.R`. Un
+establecimiento es una ubicacion fisica: el departamento no deberia
+cambiar de un anio a otro para el mismo NORDEST, salvo relocalizacion
+real (rara) o error/recodificacion.
+
+### Cuantificacion
+
+**465 de 12,621 establecimientos (3.68%) tienen mas de un DPTO distinto
+en su panel.** Clasificacion del patron (run-length encoding de la
+secuencia DPTO ordenada por anio):
+
+| Patron | N | % de inestables |
+|---|---|---|
+| `cambio_sostenido` (cambio permanente, sin reversion -- 2 valores, 2 corridas) | 415 | 89.2% |
+| `patron_irregular` (alternancia repetida o >2 valores -- revision manual) | 37 | 7.96% |
+| `salto_aislado` (un anio se desvia y vuelve al valor original -- probable error puntual) | 13 | 2.8% |
+
+### Hallazgo principal: concentracion en el par Bogota D.C. (11) / Cundinamarca (25)
+
+**334 de los 465 establecimientos inestables (71.8%) alternan
+EXCLUSIVAMENTE entre DPTO 11 (Bogota D.C.) y DPTO 25 (Cundinamarca)**;
+409 de 465 (88%) involucran a 11 o 25 en algun momento de su secuencia.
+Dentro de los 415 `cambio_sostenido`, 291 son especificamente el par
+11->25 (permanente, sin reversion), concentrados en **2010-2013** (234
+de esos 291), con un goteo menor y sostenido 2016-2024. Los casos
+`salto_aislado` y `patron_irregular` muestran el mismo patron
+dominante (alternancia entre 11 y 25), solo que con timing menos limpio.
+
+### Verificacion externa: ¿cambio de codificacion DIVIPOLA?
+
+Se busco explicitamente (WebSearch, no memoria) si DANE tuvo algun
+cambio de codigos DIVIPOLA de DEPARTAMENTO (no municipio) en Colombia
+durante 2008-2024, especificamente para Bogota D.C. (11) o Cundinamarca
+(25). No se encontro evidencia de tal cambio -- el unico cambio DIVIPOLA
+identificado en el periodo es la creacion de un MUNICIPIO nuevo en 2023
+(Nuevo Belen de Bajira, segregado de Riosucio), no relacionado con
+codigos de departamento. Fuentes: DANE (codificacion DIVIPOLA),
+datos.gov.co (codigos de departamentos).
+
+Esto, combinado con el hallazgo del Paso 2.2 (el conjunto de 23 codigos
+de departamento es IDENTICO en los 17 anios, sin altas ni bajas de
+codigos), **descarta la hipotesis de un cambio de codificacion DIVIPOLA
+nacional** como explicacion del patron 11<->25.
+
+### Interpretacion
+
+El patron es casi con certeza una **correccion/ambiguedad de
+clasificacion geografica especifica de la EAM**, no relocalizaciones
+fisicas reales ni un cambio de codigo DIVIPOLA: establecimientos
+fisicamente ubicados en municipios industriales de Cundinamarca vecinos
+a Bogota (cinturon industrial de la sabana: Soacha, Mosquera, Funza,
+Cota, Chia, Zipaquira, Tocancipa) son un caso de ambiguedad conocida en
+Colombia entre la direccion fiscal/administrativa de la firma (a
+menudo en Bogota) y la ubicacion fisica de la planta (a menudo en
+Cundinamarca) -- consistente con que DANE haya ido corrigiendo esta
+clasificacion de forma gradual a lo largo del panel, mas intensamente
+en 2010-2013.
+
+### Implicacion practica para el panel del DiD
+
+La mayoria de las transiciones 11->25 ocurrieron en 2010-2013, ANTES de
+la ventana de pre-choque 2015-2019 que se usara en el diseño DiD -- el
+impacto practico en la ventana de estimacion es limitado (para
+2015-2019+2023, la mayoria de estos establecimientos ya habian
+"asentado" su DPTO). Aun asi, queda un goteo de cambios en 2016-2024 que
+si cae dentro de la ventana de estimacion.
+
+**Tratamiento APROBADO (regla diferenciada por patron):** fijar DPTO a
+un UNICO valor por establecimiento (invariante en el tiempo), en vez de
+dejarlo variar anio a anio, con el criterio dependiendo del patron de
+inestabilidad:
+
+- **`cambio_sostenido` (415 casos, 89.2% de los inestables):** usar el
+  DPTO vigente en el anio base de exposicion (**2022**), por
+  coherencia metodologica con el resto del diseño (Exposure2022_obreros
+  y Bite2022_obreros tambien se miden en 2022). Tiene sentido especifico
+  para este patron porque el cambio es permanente -- el valor de 2022
+  ya refleja la ubicacion "asentada" post-cambio en la gran mayoria de
+  los casos (la mayoria de las transiciones ocurrieron en 2010-2013,
+  antes de 2022).
+- **`salto_aislado` (13 casos, 2.8%) y `patron_irregular` (37 casos,
+  8.0%):** usar el DPTO **modal** (mas frecuente en todo el panel del
+  establecimiento). Tiene sentido para estos patrones porque no hay un
+  "antes/despues" limpio que el anio 2022 pueda representar de forma
+  confiable -- el modal es mas robusto a un dato puntual erroneo (salto
+  aislado) o a alternancia sin patron claro (irregular).
+
+Los 37 casos `patron_irregular` (0.29% del total de establecimientos)
+se marcan para revision manual si se requiere mayor precision, aunque
+dada su magnitud marginal no se considera bloqueante.
+
+### Conclusion del Paso 2.3
+
+DPTO es estable dentro del 96.32% de los establecimientos. La
+inestabilidad restante (3.68%) esta concentrada de forma casi exclusiva
+(71.8%) en un patron identificable y explicable (ambiguedad
+Bogota/Cundinamarca en la EAM, no relocalizacion real ni cambio
+DIVIPOLA), y tiene un tratamiento aprobado (regla diferenciada por
+patron: 2022 para `cambio_sostenido`, modal para `salto_aislado` y
+`patron_irregular`).
+
+## Paso 2.4 — Distribucion de establecimientos por departamento
+
+Script: `3. SCRIPTS/auditar_distribucion_dpto_establecimiento.R`. Objetivo:
+dimensionar el riesgo de celdas `departamento*anio` pequeñas/sin
+variacion para la especificacion a nivel establecimiento. DPTO
+representativo usado para la distribucion cross-seccional: el MODAL de
+cada NORDEST (robusto a la inestabilidad del Paso 2.3, no depende de la
+decision de tratamiento).
+
+### Distribucion cross-seccional (23 departamentos)
+
+Concentrada pero no degenerada: top 3 (Bogota D.C. 35.4%, Antioquia
+21.0%, Valle del Cauca 12.8%) = 69.3% del total; cola larga hasta
+Vichada (99), con 26 establecimientos (0.21%). Solo **1 departamento
+(Vichada) tiene menos de 30 establecimientos** en todo el panel
+2008-2024.
+
+| Rango | Departamentos (codigo DIVIPOLA) | Establecimientos |
+|---|---|---|
+| Top 3 | Bogota (11), Antioquia (5), Valle del Cauca (76) | 8,750 (69.3%) |
+| Top 5 | + Cundinamarca (25), Santander (68) | 10,160 (80.5%) |
+| Mas pequeño | Vichada (99) | 26 (0.21%) |
+
+### Celdas departamento-anio en la ventana relevante del DiD (2015-2019 + 2023)
+
+Esto es lo que realmente importa para identificar `departamento*anio`
+como efecto fijo (no la distribucion cross-seccional total). Se revisaron
+las 23 x 6 = 138 celdas departamento-anio de la ventana pre/post del
+diseño:
+
+- **Ninguna celda tiene menos de 10 establecimientos** (el minimo
+  observado es 14, en Casanare (85) y Vichada (99), los departamentos
+  mas pequeños).
+- **Cero celdas completamente vacias.**
+- El departamento mas grande (Bogota, 11) va de 2,100 a 3,214
+  establecimientos por anio en esa ventana.
+
+### Conclusion del Paso 2.4
+
+Pese a la concentracion geografica fuerte (69.3% en solo 3
+departamentos), NO hay riesgo de celdas `departamento*anio` sin
+variacion en la ventana de estimacion relevante -- incluso los
+departamentos mas pequeños mantienen al menos 14 establecimientos por
+anio. `departamento*anio` esta bien identificado para la especificacion
+a nivel establecimiento.
+
+## Paso 2.5 — Cruce departamento x sector (CIIU4): riesgo de colinealidad
+
+Script: `3. SCRIPTS/auditar_cruce_dpto_ciiu4.R`. Objetivo: verificar si
+hay departamentos donde la actividad manufacturera esta muy concentrada
+en uno o dos sectores -- riesgo de colinealidad entre `sector*anio` y
+`departamento*anio` si un departamento es casi monosectorial (ambos
+efectos fijos absorberian esencialmente la misma variacion para ese
+departamento). NO se construyo el panel de establecimiento-anio ni se
+corrio ninguna regresion -- exclusivamente validacion de la variable de
+ubicacion. Ventana: establecimiento-anio 2015-2019+2023 (misma que
+Paso 2.4), 47,951 observaciones con DPTO y CIIU4 validos.
+
+### Concentracion sectorial por departamento
+
+Metrica principal: HHI (Herfindahl-Hirschman, participaciones de cada
+CIIU4 dentro del DPTO, escala 0-1; mas alto = mas concentrado).
+
+**Solo 1 de 23 departamentos supera el 50% de sus establecimiento-anio
+en UN SOLO sector CIIU4: Casanare (85), con 50.5% en el sector 1051
+(elaboracion de productos lacteos)**, coherente con su economia
+ganadera. Le sigue Vichada (99) con 44.8% en el sector 3290.
+
+| Departamento (DIVIPOLA) | Estab.-anio (ventana) | Sectores CIIU4 distintos | % top1 sector | HHI |
+|---|---|---|---|---|
+| Casanare (85) | 107 | 4 | 50.5% | 0.354 |
+| Vichada (99) | 105 | 4 | 44.8% | 0.306 |
+| Nariño (52) | 277 | 9 | 35.0% | 0.210 |
+| Sucre (70) | 117 | 5 | 34.2% | 0.263 |
+| ... (19 departamentos intermedios, HHI 0.03-0.19) | | | | |
+| Cundinamarca (25) | 3,894 | 79 | 6.4% | 0.026 |
+| Santander (68) | 2,119 | 58 | 8.3% | 0.039 |
+| Atlantico (8) | 1,979 | 66 | 9.2% | 0.033 |
+| Bogota D.C. (11) | 16,195 | 116 | 9.2% | 0.033 |
+| Valle del Cauca (76) | 6,175 | 91 | 9.9% | 0.031 |
+
+### Patron detectado: los departamentos pequeños son tambien los mas concentrados
+
+Los 2 departamentos con MENOS establecimientos (Paso 2.4: Casanare y
+Vichada, ambos con minimo anual de 14 establecimientos) son tambien los
+2 con MAYOR concentracion sectorial (HHI 0.354 y 0.306). Los
+departamentos grandes (Bogota, Valle, Santander, Cundinamarca, todos con
+>2,000 establecimiento-anio) son los mas diversificados (HHI entre
+0.026 y 0.039). Este patron **compone** (no crea de la nada, pero
+agrava) el riesgo de celdas pequeñas ya identificado en el Paso 2.4:
+ademas de tener pocos establecimientos, esos pocos estan concentrados en
+1-2 sectores, dejando menos variacion independiente para separar
+`sector*anio` de `departamento*anio` especificamente en esos casos
+puntuales (Casanare y, en menor medida, Vichada).
+
+### Nota metodologica: el sector CIIU 3290 no es señal de especializacion real
+
+El sector CIIU4 3290 ("Otras industrias manufactureras n.c.p.") aparece
+como el sector TOP1 en 14 de los 23 departamentos. Esto NO indica
+especializacion real: es un codigo generico/heterogeneo que agrupa
+actividades misceláneas de manufactura y es grande en casi todo el pais
+por construccion de la clasificacion, no por una concentracion
+economica genuina en un departamento especifico.
+
+### Conclusion del Paso 2.5
+
+El riesgo de colinealidad `sector*anio` / `departamento*anio` es
+marginal y esta acotado a 1-2 departamentos pequeños (Casanare y,
+en menor medida, Vichada), que ya estaban señalados como los de menor
+tamaño en el Paso 2.4. El resto de los 23 departamentos tiene HHI bajo
+(<0.22) y suficiente diversidad sectorial. No es un problema
+generalizado que comprometa la especificacion completa, pero se
+documenta como punto de atencion especifico para esos 1-2
+departamentos si se usan controles `sector*anio` y `departamento*anio`
+simultaneamente.
+
+## Paso 2.6 — Celdas departamento-anio en la ventana REAL del panel final
+
+Script: `3. SCRIPTS/auditar_celdas_departamento_anio_ventana_final.R`. El
+Paso 2.4 solo verifico celdas en 2015-2019+2023 (ventana del diagnostico
+preliminar de pre-tendencias). Falta confirmar la ventana real del panel
+formal del DiD y repetir el chequeo ahi.
+
+### Ventana del panel final (confirmada, no una decision nueva)
+
+Se consolido a partir de decisiones YA explicitas en otros archivos del
+repo:
+
+- **Pre-periodo: 2015-2019 + 2021-2022** -- pendiente explicito en
+  `0. PREPARACION/notas_exposicion_obreros_eam.md`, seccion "Pendientes
+  abiertos para la siguiente sesion": *"Construir el panel formal
+  2015-2019 + 2021-2022 para el event study"*.
+- **2020 EXCLUIDO** del pre-periodo -- mismo criterio ya usado en
+  `3. SCRIPTS/diagnostico_preliminar_tendencias_2015_2019.R`: *"EXCLUYE
+  2020 explicitamente porque ese anio arranca el choque de la pandemia
+  (COVID-19), que introduciria una discontinuidad ajena al diseño de
+  pre-tendencias"*.
+- **Post-periodo: 2023-2024** -- siguiendo la convencion `periodo_2023`
+  ya usada en todo el proyecto (`construir_exposicion_obreros_eam.R`,
+  `descriptivo_exposicion_eam.R`): `ANIO %in% 2023:2024 ~ "Post (2023-2024)"`.
+
+**PANEL_ANIOS_FINAL = 2015, 2016, 2017, 2018, 2019, 2021, 2022, 2023,
+2024 (9 anios).**
+
+### Celdas departamento-anio en la ventana final (23 x 9 = 207 celdas)
+
+- **Ninguna celda tiene menos de 10 establecimientos.** Minimo
+  observado: **13** (Vichada, 2024). Segundo minimo: 14 (Casanare, 2015).
+- **Cero celdas completamente vacias.**
+- El departamento mas grande (Bogota, 11) va de 1,998 a 3,214
+  establecimientos por anio en esta ventana.
+
+### ¿2020 o 2021 cambian el panorama en Casanare/Vichada?
+
+Se reviso la serie ANUAL COMPLETA 2008-2024 de ambos departamentos
+(`auditoria_celdas_casanare_vichada_todos_anios.csv`):
+
+- **Casanare (85):** crecimiento suave y sostenido en establecimientos
+  reportantes durante todo el periodo (14 en 2015 -> 26 en 2024). El
+  valor de 2020 (21) esta perfectamente en linea con la tendencia
+  (2019=20, 2020=21, 2021=22) -- **sin quiebre visible por la pandemia**.
+- **Vichada (99):** conteo estable/plano (16 establecimientos en 2019,
+  2020 Y 2021, identico) -- **tampoco hay disrupcion visible**.
+
+**Conclusion: 2020 y 2021 NO cambian el panorama de riesgo en estos
+departamentos.** El numero de establecimientos reportantes no muestra
+ninguna caida ni salto atribuible a la pandemia en ninguno de los dos
+casos; la exclusion de 2020 del panel se sostiene por el criterio ya
+documentado (discontinuidad de TENDENCIAS, no de cobertura/conteo), no
+porque el conteo de establecimientos se vea afectado.
+
+### Conclusion del Paso 2.6
+
+Con la ventana real del panel final (9 anios, 2020 excluido), el
+resultado es igual de solido que con la ventana preliminar del Paso 2.4:
+ninguna celda departamento-anio queda vacia o por debajo del umbral de
+10 establecimientos. `departamento*anio` sigue bien identificado.
+
+## Paso 2.7 — Robustez Casanare/Vichada: limitacion conocida y criterio preparado
+
+### Limitacion conocida (documentada explicitamente)
+
+Casanare (85) y Vichada (99) combinan, de forma simultanea:
+
+1. **Baja N**: los 2 departamentos con menos establecimientos del panel
+   (minimo anual 13-14 en la ventana final, ver Paso 2.6; total 26-31 en
+   todo el panel 2008-2024, ver Paso 2.4).
+2. **Alta concentracion sectorial**: los 2 departamentos con mayor HHI
+   (Casanare 0.354, Vichada 0.306 -- ver Paso 2.5), muy por encima del
+   resto (siguiente mas alto: Nariño con 0.210).
+
+Esta combinacion -- pocas observaciones Y poca variacion sectorial
+dentro de esas pocas observaciones -- es una **limitacion conocida del
+control `departamento*anio`** para estos 2 departamentos especificamente:
+la potencia estadistica para identificar efectos especificos de
+Casanare/Vichada, separados de sus sectores dominantes, es baja. No es
+un problema que invalide la especificacion completa (ningun otro
+departamento combina ambos riesgos, y ninguna celda esta vacia -- Paso
+2.6), pero se documenta explicitamente para no ignorarlo al interpretar
+resultados de esos 2 departamentos en particular.
+
+### Criterio de robustez preparado (NO ejecutado todavia)
+
+Cuando se corra la especificacion formal del DiD a nivel establecimiento
+(pendiente, fuera del alcance de este paso de validacion), se preparara
+la siguiente comparacion de robustez:
+
+1. **Especificacion principal**: los 23 departamentos completos, cada
+   uno como categoria propia de `departamento*anio`.
+2. **Robustez A -- exclusion**: repetir la especificacion principal
+   EXCLUYENDO Casanare y Vichada del panel, para verificar que el
+   resultado no depende de esos 2 casos de baja potencia.
+3. **Robustez B -- agrupacion**: repetir la especificacion principal
+   agrupando Casanare, Vichada, y otros departamentos de baja N (usar el
+   mismo umbral de <30 establecimientos totales del Paso 2.4, si aplica
+   a mas casos en el panel final) en una categoria unica "Otros" dentro
+   de `departamento*anio`, en vez de excluirlos.
+4. Comparar los 3 resultados (principal, robustez A, robustez B): si los
+   coeficientes de interes son estables entre las 3 especificaciones,
+   confirma que Casanare/Vichada no estan distorsionando el resultado
+   general. Si divergen, hay que investigar mas antes de reportar.
+
+Este criterio queda preparado y documentado; su ejecucion queda
+pendiente para cuando se corra la regresion formal del panel de
+establecimiento-anio (no forma parte de este paso de validacion de la
+variable de ubicacion).
+
+## Conclusion general del Paso 2
+
+`DPTO` tiene cobertura perfecta (100%, 17/17 anios) y es estable en el
+96.32% de los establecimientos. La inestabilidad restante (3.68%) tiene
+un tratamiento aprobado (regla diferenciada 2022/modal). La distribucion
+geografica esta concentrada pero no genera celdas `departamento*anio`
+vacias o muy pequeñas en la ventana real del panel final (207 celdas,
+minimo 13 establecimientos, cero vacias). El unico riesgo de
+colinealidad `sector*anio`/`departamento*anio` detectado se limita a
+Casanare y Vichada, documentado como limitacion conocida con un
+criterio de robustez preparado para cuando se corra la regresion
+formal. Paso 2 completo.
