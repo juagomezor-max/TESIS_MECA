@@ -479,6 +479,132 @@ pendiente para cuando se corra la regresion formal del panel de
 establecimiento-anio (no forma parte de este paso de validacion de la
 variable de ubicacion).
 
+## Paso 3.1 — Exposure2022_obreros_est (nivel establecimiento)
+
+Scripts: `3. SCRIPTS/construir_conteo_personal_categoria_establecimiento_eam.R`,
+`3. SCRIPTS/construir_exposicion_obreros_establecimiento_eam.R`. Version
+a nivel establecimiento de `Exposure2022_obreros`, usando la composicion
+ocupacional PROPIA de cada NORDEST en 2022 (no heredada de NORDEMP).
+Misma formula, winsorizacion y quintiles que la version a nivel empresa.
+
+- No requiere `group_by`/sumar para deduplicar: NORDEST-ANIO ya es unico
+  (Paso 1). El script valida esto explicitamente y aborta si deja de
+  cumplirse.
+- **6,761 establecimientos con Exposure2022_obreros_est valida en 2022.**
+- Chequeo de sanidad: correlacion con Exposure2022_obreros (empresa,
+  heredada) = **0.964** -- alta, como se esperaba (la mayoria de las
+  firmas tiene un solo establecimiento, donde ambas medidas coinciden
+  casi exactamente; la diferencia proviene de las firmas multiplanta).
+- Salidas (no versionadas): `exposicion_obreros_establecimiento_eam.rds/.csv`.
+
+## Paso 3.2 — Descriptivos de estructura multiplanta EN 2022
+
+Script: `3. SCRIPTS/descriptivos_estructura_multiplanta_2022.R`. Objetivo:
+decidir si el diseño "dentro de firma" (delta_f(e),t, explotando
+variacion de exposicion ENTRE establecimientos de una misma empresa)
+tiene algo real que identificar.
+
+### Reconciliacion de los 3 numeros (447 / 262 / 260) y missingness
+
+**1) 447 vs 262 -- cortes temporales distintos, NO un error.** Las "447
+firmas multiplanta" del Paso 1.5 (`auditar_recodificacion_multiplanta_nordest.R`)
+son el universo medido sobre **todo el panel 2008-2024** (cualquier anio
+en que la firma tuviera >1 NORDEST). Como `Exposure2022_obreros_est` es
+un atributo medido especificamente en 2022, lo relevante para el diseño
+"dentro de firma" es el universo multiplanta EN 2022, que es un numero
+distinto por construccion (firmas que fueron multiplanta en otro anio
+del periodo pero no en 2022, o que no reportaron en 2022, o viceversa).
+**447 NO aplica a este analisis** -- es una estadistica de otro
+chequeo, con otro corte temporal.
+
+**`Multi_f` OFICIAL de este analisis (base 2022): 262 firmas.**
+
+**2) 262 vs 260 -- confirmado: 2 firmas excluidas por dato insuficiente,
+no un error.** De las 262 firmas multiplanta en 2022:
+
+| Establecimientos con exposicion valida | N firmas |
+|---|---|
+| 0 | 0 |
+| 1 (excluidas del calculo de rango) | 2 |
+| 2+ (base del calculo de variacion interna) | 260 |
+| **Total (verificacion)** | **262** |
+
+Las 2 firmas excluidas: NORDEMP 141327 (6 establecimientos totales, 1
+valido, 5 con `Exposure2022_obreros_est` faltante) y NORDEMP 977239 (2
+establecimientos totales, 1 valido, 1 faltante). Con un solo valor
+valido no se puede calcular un rango (max-min) -- de ahi que el
+denominador del calculo de variacion interna sea **260, no 262**.
+
+**Missingness general de `Exposure2022_obreros_est` en 2022** (punto 2
+del Paso 3, reportado aqui): de **6,775 establecimientos totales** en
+2022 (macrobase), **6,761 tienen exposicion valida** y **14 (0.21%)
+faltan**. Dentro de las firmas multiplanta especificamente: 851
+establecimientos totales, 843 validos, **8 faltantes (0.94%)** -- tasa
+de missingness algo mayor que el promedio general, pero pequeña en
+terminos absolutos.
+
+Script: `3. SCRIPTS/descriptivos_estructura_multiplanta_2022.R`, salida
+`descriptivos_multiplanta_2022_reconciliacion.csv`.
+
+### 1) Distribucion de N establecimientos por firma (2022)
+
+| N establecimientos | Firmas | % |
+|---|---|---|
+| 2 | 155 | 59.2% |
+| 3 | 45 | 17.2% |
+| 4+ | 62 | 23.7% |
+
+### 2) Departamentos distintos por firma (2022)
+
+**181 de 262 (69.1%) tienen presencia en 2 o mas departamentos** -- la
+mayoria de las firmas multiplanta son geograficamente dispersas, no
+concentradas en un solo departamento. Solo 81 (30.9%) estan en un unico
+departamento (multiplanta pero concentrada geograficamente, sin el
+problema que motivo el cambio de diseño).
+
+### 3) Variacion interna de Exposure2022_obreros_est dentro de cada firma
+
+260 de las 262 firmas tienen exposicion valida en 2+ de sus
+establecimientos (2 firmas quedan fuera por datos faltantes). Rango
+(max-min) entre establecimientos de la misma firma:
+
+| Estadistico | Valor (pp) |
+|---|---|
+| Promedio | 25.7 |
+| Mediana | 21.4 |
+| p75 | 37.0 |
+| p90 | 55.2 |
+| Maximo | 94.1 |
+
+### 4) Umbral de "variacion sustancial" y conteo de firmas que lo superan
+
+**Umbral propuesto: 15 puntos porcentuales** (0.15 en la escala 0-1 de
+Exposure2022_obreros_est). Justificacion: la medida es una proporcion
+(participacion de obreros en el empleo); 15pp representa una diferencia
+economicamente no trivial entre dos establecimientos de la misma firma,
+no ruido de redondeo o winsorizacion, dado que la dispersion tipica de
+Exposure2022_obreros cubre buena parte de la escala 0-1 (ver
+diagnosticos de la rama feature/exposicion-obreros-operarios). Se
+reporta tambien 20pp (limite superior del rango sugerido) como chequeo
+de sensibilidad.
+
+| Umbral | Firmas que lo superan | % |
+|---|---|---|
+| >= 15pp | 168 de 260 | **64.6%** |
+| >= 20pp | 137 de 260 | **52.7%** |
+
+### Conclusion del Paso 3.2
+
+**No es un puñado de casos.** Bajo cualquiera de los dos umbrales
+considerados, mas de la mitad de las 262 firmas multiplanta de 2022
+tienen variacion interna sustancial de exposicion entre sus
+establecimientos -- incluso con el umbral mas conservador (20pp), 137
+firmas la superan. Ademas, 69.1% de las firmas multiplanta tienen sedes
+en departamentos distintos (no es solo variacion dentro del mismo
+departamento). El diseño "dentro de firma" (delta_f(e),t) tiene una
+base empirica solida para identificar, no solo una justificacion
+teorica.
+
 ## Conclusion general del Paso 2
 
 `DPTO` tiene cobertura perfecta (100%, 17/17 anios) y es estable en el

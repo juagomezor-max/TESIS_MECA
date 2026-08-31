@@ -1,0 +1,12 @@
+metrica,valor
+Establecimientos totales en 2022 (macrobase),6775
+Establecimientos con Exposure2022_obreros_est valida en 2022,6761
+Establecimientos con Exposure2022_obreros_est FALTANTE en 2022,14
+"Firmas multiplanta 2008-2024 (Paso 1.5, NO aplica -- corte temporal distinto)",447
+Firmas multiplanta EN 2022 (Multi_f oficial de este analisis),262
+"  ... de esas, con 0 establecimientos con exposicion valida",0
+"  ... de esas, con exactamente 1 establecimiento con exposicion valida (excluidas del calculo de rango)",2
+"  ... de esas, con 2+ establecimientos con exposicion valida (base oficial del calculo de variacion interna)",260
+Establecimientos totales dentro de firmas multiplanta 2022,851
+  ... con exposicion valida,843
+  ... FALTANTES (missingness dentro de multiplanta),8
