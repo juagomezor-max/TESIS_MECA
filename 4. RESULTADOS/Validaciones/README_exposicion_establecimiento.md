@@ -108,6 +108,92 @@ Diferencia de medias: **-0.0202** (multiplanta ligeramente MENOS expuesta en pro
 
 **El 87.4% de los establecimientos (5,924 de 6,775 en 2022) pertenecen a firmas monoplanta**, donde `Exposure2022_obreros_est` (planta) y `Exposure2022_obreros` (firma) **coinciden por construccion** -- son literalmente el mismo calculo, porque la planta ES la firma. La diferencia entre las dos medidas de exposicion, y por tanto el valor añadido del diseño "dentro de firma", se concentra integramente en el 12.6% restante de establecimientos (843 de 6,775) que pertenecen a las 262 firmas multiplanta.
 
+## 5. Peso en empleo de firmas con variacion interna sustancial
+Script: `calcular_peso_empleo_variacion_interna_2022.R`. Salida: `descriptivos_peso_empleo_variacion_interna_2022.csv`.
+
+El 21.44% de la Seccion 2 cubre las 262 firmas multiplanta COMPLETAS, incluyendo algunas cuyas plantas tienen exposicion casi identica (no aportan variacion a `delta_f,t`). Esta seccion aisla el peso de solo las firmas con variacion SUSTANCIAL.
+
+| Grupo | N firmas (% de 262) | Empleo | % del empleo de las 262 | % del empleo total (710,060) | Empleo promedio/firma | Razon vs. promedio muestra (115) |
+|---|---|---|---|---|---|---|
+| Las 262 completas (referencia) | 262 (100%) | 152,227 | 100% | 21.4% | 581 | 5.06x |
+| Brecha >=15pp | 168 (64.1%) | 115,594 | **75.9%** | 16.3% | **688** | **5.99x** |
+| Brecha >=20pp | 137 (52.3%) | 98,231 | **64.5%** | 13.8% | **717** | **6.25x** |
+
+**La caida NO es proporcional al numero de firmas: las firmas con variacion interna sustancial son sistematicamente MAS GRANDES, no equivalentes al resto.** Las 168 firmas (>=15pp) son 64.1% de las 262 en numero pero concentran 75.9% de su empleo; las 137 (>=20pp) son 52.3% en numero pero 64.5% en empleo. El empleo promedio confirma el patron: 581 (todas las multiplanta) -> 688 (>=15pp) -> 717 (>=20pp), todas muy por encima del promedio de TODA la muestra 2022 (114.8, ~115 personas/firma).
+
+**Implicacion de generalizacion:** la especificacion "dentro de firma" (`delta_f(e),t`) se identifica sobre un subconjunto de firmas **~6 veces mas grandes** que la firma promedio del panel (razon 5.99x-6.25x). Los efectos estimados con este diseño describen el comportamiento de firmas manufactureras grandes con presencia multiplanta, no necesariamente el de la firma promedio de la EAM -- una limitacion de validez externa que debe declararse explicitamente al reportar resultados de la especificacion B.
+
+## 6. Panel efectivo de la especificacion B por anio
+Script: `construir_panel_efectivo_especificacion_b_por_anio.R`. Ventana confirmada en el Paso 2.6: 2015-2019 + 2021-2022 (pre) + 2023-2024 (post), 2020 excluido (9 anios).
+
+**Cuidado: dos poblaciones distintas.** "Cualquier firma multiplanta ese año" (referencia amplia, salida `descriptivos_panel_efectivo_especificacion_b_por_anio.csv`) NO es lo mismo que "las mismas 262 firmas de la cohorte 2022" (poblacion correcta para medir el panel efectivo de `delta_f(e),t`, salida `descriptivos_panel_efectivo_especificacion_b_cohorte_2022_por_anio.csv`). La primera mezcla entradas/salidas de firmas distintas cada año y OCULTA la tendencia real de la cohorte fija.
+
+### Referencia amplia (cualquier firma, NO es la poblacion relevante)
+
+| Año | Firmas multiplanta ese año | Establecimientos |
+|---|---|---|
+| 2015 | 268 | 894 |
+| 2016 | 279 | 925 |
+| 2017 | 287 | 959 |
+| 2018 | 278 | 933 |
+| 2019 | 282 | 929 |
+| 2021 | 266 | 857 |
+| 2022 | 262 | 851 |
+| 2023 | 263 | 858 |
+| 2024 | 270 | 880 |
+
+Muestra una falsa estabilidad (rango 262-287) que no refleja lo que le pasa a las 262 firmas especificas de la cohorte.
+
+### Cohorte 2022 (poblacion CORRECTA: las MISMAS 262 firmas, por año)
+
+| Año | Firmas de las 262 con >=2 plantas | Establecimientos aportados | % de las 262 |
+|---|---|---|---|
+| 2015 | 197 | 739 | 75.2% |
+| 2016 | 207 | 771 | 79.0% |
+| 2017 | 219 | 812 | 83.6% |
+| 2018 | 229 | 828 | 87.4% |
+| 2019 | 242 | 843 | 92.4% |
+| 2021 | 255 | 835 | 97.3% |
+| 2022 | 262 | 851 | 100% (año base, por construccion) |
+| 2023 | 251 | 833 | 95.8% |
+| 2024 | 243 | 813 | 92.8% |
+
+**Patron real: crecimiento SOSTENIDO de 75.2% (2015) a 100% (2022), luego leve declive a 92.8% (2024).** Sustancialmente distinto de la falsa estabilidad de la tabla de referencia amplia -- la cohorte de firmas multiplanta creció progresivamente hacia el año base y se mantuvo mayormente estable despues del choque.
+
+**De las 262 firmas de la cohorte 2022, 181 (69.1%) mantienen >=2 plantas en LOS 9 AÑOS completos de la ventana** (salida `descriptivos_panel_efectivo_especificacion_b_persistencia_262.csv`). El resto se distribuye en 3 a 8 años (nunca menos de 3).
+
+**Nota metodologica importante: la rampa 2015->2022 (75.2% -> 100%) es MECANICA, no consolidacion empresarial.** La cohorte de 262 firmas se DEFINE por tener >=2 plantas especificamente en 2022 (el año base). Hacia atras en el tiempo, solo las firmas que YA eran multiplanta en cada año anterior pueden cumplir esa condicion dentro de este conjunto fijo -- es una consecuencia aritmetica de la seleccion de la cohorte (survivorship hacia atras), no evidencia de que las firmas se hayan ido expandiendo a multiples plantas progresivamente. La unica parte de la serie con contenido informativo real sobre dinamica de plantas es el tramo POST-2022 (Seccion 7).
+
+## 7. Descomposicion de las salidas de la cohorte 2022 (2023 y 2024)
+Script: `descomponer_salidas_cohorte_2022.R`. Salidas: `descriptivos_descomposicion_salidas_cohorte_2023.csv`, `descriptivos_descomposicion_salidas_cohorte_2024.csv`, `descriptivos_comparacion_exposure_salen_vs_mantienen_2023_2024.csv`.
+
+Objetivo: determinar si la caida post-2022 en la cohorte balanceada (100% en 2022 -> 95.8% en 2023 -> 92.8% en 2024) es churn ordinario o seleccion inducida por el choque de salario minimo 2023.
+
+### Descomposicion por año (atricion y perdida de planta son fenomenos DISTINTOS)
+
+| Año | Caen bajo 2 plantas | Atricion (desaparece del panel) | Perdida de planta (sigue en EAM, 1 planta) | Se mantiene (>=2) |
+|---|---|---|---|---|
+| 2023 | 11 (4.2%) | 7 (2.67%) | 4 (1.53%) | 251 (95.8%) |
+| 2024 | 19 (7.3%) | 9 (3.44%) | 10 (3.82%) | 243 (92.8%) |
+
+### Exposicion 2022 (firma): salen vs. se mantienen
+
+| Año | Grupo | N | Media | DE | Diferencia | Error estandar | t | p-valor |
+|---|---|---|---|---|---|---|---|---|
+| 2023 | Salen | 11 | 0.500 | 0.231 | -0.0651 | 0.0708 | -0.92 | 0.378 |
+| 2023 | Se mantienen | 251 | 0.565 | 0.189 | | | | |
+| 2024 | Salen | 19 | 0.488 | 0.211 | -0.0804 | 0.0499 | -1.61 | 0.123 |
+| 2024 | Se mantienen | 243 | 0.568 | 0.189 | | | | |
+
+**Las firmas que salen tienen exposicion 2022 MAS BAJA en promedio (no mas alta), pero la diferencia NO es estadisticamente significativa en ningun año** (p=0.378 en 2023, p=0.123 en 2024; muestras pequeñas, n=11 y n=19, limitan la potencia). No hay evidencia de que el choque de 2023 este expulsando selectivamente a las firmas mas expuestas -- la caida post-2022 es mas consistente con churn ordinario que con seleccion inducida por el tratamiento, aunque con esta N no se puede descartar con confianza un efecto moderado.
+
+## Implicacion para el event study de la especificacion B
+
+- **Muestra PRINCIPAL: la cohorte BALANCEADA** -- las 181 firmas que mantienen >=2 plantas en los 9 años de la ventana. En un panel no balanceado la composicion de firmas cambia año a año, lo que confundiria composicion con tendencia (una aparente tendencia en el event study podria reflejar cambios en QUIENES estan en la muestra, no un efecto real dentro de firma).
+- **Muestra de ROBUSTEZ: la cohorte NO balanceada** (las 262 completas) -- util para verificar que los resultados no dependen de excluir a las 81 firmas que entran/salen, pero no debe ser la especificacion principal por el problema de composicion.
+
 ## Conclusion del Paso 3
 
-`Exposure2022_obreros_est` esta construida y validada. El diseño "dentro de firma" tiene una base empirica solida: aunque las firmas multiplanta son pocas (4.24%), concentran una porcion desproporcionada del empleo (21.44%), tienen variacion interna sustancial de exposicion (mediana 21.4pp, 64.6% supera 15pp), y sus plantas no son solo heterogeneas entre si sino tambien, en promedio, levemente distintas en nivel de exposicion frente a las plantas monoplanta.
+`Exposure2022_obreros_est` esta construida y validada. El diseño "dentro de firma" tiene una base empirica solida: aunque las firmas multiplanta son pocas (4.24%), concentran una porcion desproporcionada del empleo (21.44%), tienen variacion interna sustancial de exposicion (mediana 21.4pp, 64.6% supera 15pp), y sus plantas no son solo heterogeneas entre si sino tambien, en promedio, levemente distintas en nivel de exposicion frente a las plantas monoplanta. El panel de estas firmas es razonablemente balanceado en el tiempo (69.1% mantiene >=2 plantas en los 9 años de la ventana de estimacion).
+
+**Pero la identificacion no es gratuita**: las firmas que aportan variacion sustancial son sistematicamente ~6 veces mas grandes que la firma promedio de la muestra (Seccion 5). La especificacion "dentro de firma" describe el comportamiento de firmas manufactureras grandes con presencia multiplanta, no el de la firma tipica de la EAM -- esta limitacion de validez externa debe declararse explicitamente al reportar resultados de la especificacion B, y contrasta con la especificacion "entre firmas" (nivel establecimiento con Exposure2022_obreros_est completo), que si cubre a la firma promedio via el 87.4% de establecimientos monoplanta.
