@@ -1,0 +1,37 @@
+variable,term,estimate,std.error,statistic,p.value,conf.low,conf.high,grupo_base_omitido
+empleo_total,anio_lineal,4.136427,1.333157,3.1027,0.001928,1.522857,6.749997,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_total,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-2.758333,1.651638,-1.6701,0.09497,-5.996266,0.479599,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_total,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-2.718837,1.475349,-1.8428,0.06541,-5.611165,0.173491,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_total,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-3.997526,1.498511,-2.6677,0.007663,-6.935263,-1.059789,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_total,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-3.843735,1.413115,-2.72,0.00655,-6.614059,-1.073412,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_total,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-2.903867,1.660125,-1.7492,0.08032,-6.158438,0.350703,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_total,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-2.386812,1.465362,-1.6288,0.1034,-5.259563,0.485938,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_total,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-3.985891,1.509079,-2.6413,0.008285,-6.944346,-1.027436,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_total,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-3.805491,1.462954,-2.6012,0.009316,-6.673519,-0.937462,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_permanente,anio_lineal,2.429349,0.963252,2.522,0.0117,0.540953,4.317744,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_permanente,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-1.808831,1.170396,-1.5455,0.1223,-4.103318,0.485656,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_permanente,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-0.772608,1.073128,-0.72,0.4716,-2.876407,1.331191,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_permanente,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-1.344366,1.029405,-1.306,0.1916,-3.362449,0.673716,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_permanente,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-1.658338,1.087302,-1.5252,0.1273,-3.789925,0.473248,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_permanente,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-1.66037,1.218048,-1.3631,0.1729,-4.048276,0.727536,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_permanente,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-0.304771,1.113048,-0.2738,0.7842,-2.486831,1.87729,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_permanente,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-1.079969,1.078607,-1.0013,0.3167,-3.194511,1.034572,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_permanente,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-1.428436,1.131577,-1.2623,0.2069,-3.64682,0.789949,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_temporal,anio_lineal,1.392188,0.884077,1.5747,0.1154,-0.34099,3.125366,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_temporal,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-0.750988,1.140851,-0.6583,0.5104,-2.987556,1.485579,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_temporal,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-1.718073,0.954257,-1.8004,0.07185,-3.588834,0.152688,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_temporal,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-2.402137,1.04973,-2.2883,0.02216,-4.460066,-0.344209,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_temporal,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-1.878995,0.960068,-1.9571,0.05039,-3.761149,0.003159,Q1 - Muy baja (ref.); especificacion: Sin controles
+empleo_temporal,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-1.072241,1.15375,-0.9294,0.3528,-3.334095,1.189613,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_temporal,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-1.851035,0.979568,-1.8896,0.05886,-3.771416,0.069346,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_temporal,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-2.627659,1.090156,-2.4104,0.01597,-4.764842,-0.490476,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+empleo_temporal,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-2.040664,1.021784,-1.9972,0.04586,-4.043806,-0.037521,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+participacion_permanente,anio_lineal,-0.410927,0.198011,-2.0753,0.03801,-0.799115,-0.022738,Q1 - Muy baja (ref.); especificacion: Sin controles
+participacion_permanente,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,0.617435,0.28984,2.1303,0.0332,0.049221,1.185649,Q1 - Muy baja (ref.); especificacion: Sin controles
+participacion_permanente,quintil_bite2022_obreros::Q3 - Media:anio_lineal,0.900459,0.29333,3.0698,0.002154,0.325404,1.475514,Q1 - Muy baja (ref.); especificacion: Sin controles
+participacion_permanente,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,1.581633,0.314593,5.0276,5.141e-7,0.964894,2.198372,Q1 - Muy baja (ref.); especificacion: Sin controles
+participacion_permanente,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,1.315992,0.310676,4.2359,2.317e-5,0.706931,1.925053,Q1 - Muy baja (ref.); especificacion: Sin controles
+participacion_permanente,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,0.724466,0.30239,2.3958,0.01662,0.13165,1.317282,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+participacion_permanente,quintil_bite2022_obreros::Q3 - Media:anio_lineal,0.835695,0.306567,2.726,0.006433,0.23469,1.436701,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+participacion_permanente,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,1.650492,0.332682,4.9612,7.238e-7,0.99829,2.302694,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio
+participacion_permanente,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,1.457969,0.330283,4.4143,1.035e-5,0.810471,2.105467,Q1 - Muy baja (ref.); especificacion: Con sector*anio + departamento*anio

@@ -1,9 +1,9 @@
-variable,especificacion,n_obs,n_firmas,f_stat,df1,df2,p_value
-empleo_total,Sin controles,24696,5033,5.812,4,19673,1.137e-4
-empleo_total,Con sector*anio + departamento*anio,24693,5033,5.07,4,18996,4.412e-4
-empleo_permanente,Sin controles,24696,5033,2.5,4,19673,0.04048
-empleo_permanente,Con sector*anio + departamento*anio,24693,5033,2.145,4,18996,0.07249
-empleo_temporal,Sin controles,24696,5033,4.617,4,19673,0.001003
-empleo_temporal,Con sector*anio + departamento*anio,24693,5033,4.446,4,18996,0.001364
-participacion_permanente,Sin controles,24689,5033,15.025,4,19666,2.886e-12
-participacion_permanente,Con sector*anio + departamento*anio,24686,5033,14.593,4,18989,6.653e-12
+variable,especificacion,n_obs,n_firmas,f_stat,df1,df2,p_value,coeficientes_en_test
+empleo_total,Sin controles,24696,5033,2.417,4,5017,0.04658,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
+empleo_total,Con sector*anio + departamento*anio,24693,5033,2.308,4,5017,0.05573,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
+empleo_permanente,Sin controles,24696,5033,1.033,4,5017,0.3886,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
+empleo_permanente,Con sector*anio + departamento*anio,24693,5033,1.151,4,5017,0.3305,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
+empleo_temporal,Sin controles,24696,5033,1.798,4,5017,0.1262,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
+empleo_temporal,Con sector*anio + departamento*anio,24693,5033,1.749,4,5017,0.1363,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
+participacion_permanente,Sin controles,24689,5033,8.038,4,5017,1.864e-6,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
+participacion_permanente,Con sector*anio + departamento*anio,24686,5033,7.709,4,5017,3.446e-6,quintil_bite2022_obreros::Q2 - Baja:anio_lineal; quintil_bite2022_obreros::Q3 - Media:anio_lineal; quintil_bite2022_obreros::Q4 - Alta:anio_lineal; quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal
