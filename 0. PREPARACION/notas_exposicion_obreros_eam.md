@@ -56,20 +56,20 @@ inventario del repositorio en la rama `feature/panel-establecimiento`
 - Mide: de las 6,186 firmas presentes en 2022, cuantas siguen
   apareciendo en el panel deduplicado en 2023 y en 2024, por separado,
   desagregado por quintil de `Exposure2022_obreros` (nivel FIRMA).
-- **Resultado (del mensaje del commit -- el CSV de salida NO esta
-  versionado, ver advertencia):** diferencia Q5-Q1 = 0.57pp en 2023 y
-  1.7pp en 2024; tasas de salida similares entre quintiles (2-3% en
-  2023, 5-9% en 2024), sin patron monotonico por exposicion. **No hay
-  señal de atricion diferencial que amenace la comparacion pre/post
-  2023, a nivel firma.**
-- **ADVERTENCIA:** la salida (`atricion_por_quintil_exposicion_eam.csv`)
-  se escribe a `1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/`
-  (gitignored) y nunca se comiteo. Los numeros de arriba viven
-  UNICAMENTE en el mensaje del commit `15105d6` -- si se necesita el
-  archivo en si, hay que re-correr el script (sus insumos,
-  `conteo_personal_categoria_eam.rds` y `exposicion_obreros_eam.rds`,
-  no han cambiado de definicion desde agosto: ambos scripts que los
-  generan tienen un unico commit en toda su historia).
+- **Resultado:** diferencia Q5-Q1 = 0.57pp en 2023 y 1.7pp en 2024;
+  tasas de salida por quintil: 2.75%/2.43%/2.35%/1.94%/3.32% en 2023 y
+  7.28%/7.52%/5.91%/4.94%/8.98% en 2024 (Q1 a Q5), sin patron
+  monotonico por exposicion. **No hay señal de atricion diferencial que
+  amenace la comparacion pre/post 2023, a nivel firma.**
+- **Re-corrido el 2026-08-31** (script sin modificar, mismos insumos de
+  agosto -- `conteo_personal_categoria_eam.rds` y
+  `exposicion_obreros_eam.rds` no han cambiado de definicion, ambos
+  scripts que los generan tienen un unico commit en toda su historia):
+  **reproduce exactamente los valores del commit `15105d6` (0.57pp y
+  1.7pp), sin discrepancia.** Salida ahora **versionada** en
+  `4. RESULTADOS/Validaciones/atricion_por_quintil_exposicion_eam.csv`
+  (copiada del path no versionado donde el script la escribe por
+  diseño). Ya no depende solo del mensaje del commit.
 - **No cubre** (limitaciones frente al trabajo pendiente de
   `feature/panel-establecimiento`/`feature/atricion-tendencias-paralelas`):
   nivel establecimiento (`Exposure2022_obreros_est`), separacion entre
