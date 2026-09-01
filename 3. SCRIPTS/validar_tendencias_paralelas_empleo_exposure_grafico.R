@@ -31,6 +31,8 @@
 # - evento_tendencias_2015_2019_empleo_temporal.png
 # - evento_tendencias_2015_2019_participacion_permanente.png
 # - tabla_evento_tendencias_2015_2019_exposure.csv (prueba F conjunta 2016-2019 por dimension)
+# - tabla_evento_tendencias_2015_2019_exposure_coeficientes.csv (2026-09-01: coeficientes tidy con SE e IC 95%)
+# - tabla_evento_tendencias_2015_2019_exposure_metadatos.csv (2026-09-01: FE/controles/cluster explicitos)
 
 source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
 
@@ -162,6 +164,9 @@ correr_evento <- function(data, var_y) {
   fixest::feols(formula_modelo, data = data, cluster = ~NORDEMP, warn = FALSE, notes = FALSE)
 }
 
+coeficientes_list <- list()
+metadatos_list <- list()
+
 resultados_f <- purrr::map_dfr(seq_len(nrow(metrics_info)), function(i) {
   metric <- metrics_info[i, ]
   modelo <- correr_evento(panel_built, metric$var)
@@ -181,6 +186,27 @@ resultados_f <- purrr::map_dfr(seq_len(nrow(metrics_info)), function(i) {
   dev.off()
 
   prueba_f <- fixest::wald(modelo, keep = "ANIO_F::(2016|2017|2018|2019)", print = FALSE)
+
+  # --- Exportacion adicional (NO cambia la especificacion): tabla tidy
+  # de coeficientes con SE e IC 95%, y conteo explicito de clusters. ---
+  coeficientes_list[[metric$var]] <<- extraer_coeficientes_tidy_fixest(modelo, metric$var, "2015 (ref.)")
+  clusters_info <- contar_clusters_fixest(
+    modelo, panel_built, "NORDEMP",
+    c(metric$var, "ANIO_F", "exposicion_10pp", "CIIU4", "DPTO")
+  )
+  metadatos_list[[metric$var]] <<- tibble::tibble(
+    variable = metric$var,
+    efectos_fijos = "NORDEMP + CIIU4^ANIO_F + DPTO^ANIO_F",
+    controles = "sector (CIIU4) x anio, departamento (DPTO) x anio",
+    variable_cluster = "NORDEMP",
+    n_clusters = clusters_info$n_clusters,
+    n_obs = stats::nobs(modelo),
+    n_obs_reconstruido_coincide = clusters_info$coincide_con_modelo,
+    ventana = "2015-2019 (pre-choque, NO ampliada)",
+    filtro_muestra = "CIIU4 no NA, DPTO no NA; sin exclusion de firmas atipicas",
+    variable_exposicion = "Exposure2022_obreros (firma), continua, escalada a 10pp"
+  )
+
   tibble::tibble(
     variable = metric$var,
     n_obs = stats::nobs(modelo),
@@ -188,11 +214,17 @@ resultados_f <- purrr::map_dfr(seq_len(nrow(metrics_info)), function(i) {
     f_stat = round(prueba_f$stat, 3),
     df1 = prueba_f$df1,
     df2 = round(prueba_f$df2, 1),
-    p_value = signif(prueba_f$p, 4)
+    p_value = signif(prueba_f$p, 4),
+    coeficientes_en_test = paste(grep("ANIO_F::(2016|2017|2018|2019)", names(stats::coef(modelo)), value = TRUE), collapse = "; ")
   )
 })
 
 readr::write_csv(resultados_f, file.path(out_dir, "tabla_evento_tendencias_2015_2019_exposure.csv"))
+
+coeficientes_tabla <- dplyr::bind_rows(coeficientes_list)
+metadatos_tabla <- dplyr::bind_rows(metadatos_list)
+readr::write_csv(coeficientes_tabla, file.path(out_dir, "tabla_evento_tendencias_2015_2019_exposure_coeficientes.csv"))
+readr::write_csv(metadatos_tabla, file.path(out_dir, "tabla_evento_tendencias_2015_2019_exposure_metadatos.csv"))
 
 # ------------------------------------------------------------------
 # Reporte en consola

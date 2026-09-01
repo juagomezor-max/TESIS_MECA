@@ -42,6 +42,9 @@
 #
 # Salidas (versionadas, en 4. RESULTADOS/Validaciones/):
 # - validacion_tendencias_paralelas_empleo_bite.csv
+# - validacion_tendencias_paralelas_empleo_bite_coeficientes.csv (2026-09-01: coeficientes tidy con SE e IC 95%)
+# - validacion_tendencias_paralelas_empleo_bite_metadatos.csv (2026-09-01: FE/controles/cluster explicitos;
+#   HALLAZGO: este script usa errores estandar IID, no clusterizados -- ver metadatos)
 
 source(file.path("3. SCRIPTS", "_utils_proyecto.R"))
 
@@ -173,6 +176,9 @@ panel_built <- panel_vinculacion %>%
 
 QUINTIL_REFERENCIA <- "Q1 - Muy baja"
 
+coeficientes_list <- list()
+metadatos_list <- list()
+
 correr_test_f <- function(data, var_y, etiqueta, fe_adicionales = NULL) {
   fe <- if (is.null(fe_adicionales)) "NORDEMP" else paste("NORDEMP", fe_adicionales, sep = " + ")
   formula_modelo <- stats::as.formula(paste0(
@@ -180,6 +186,34 @@ correr_test_f <- function(data, var_y, etiqueta, fe_adicionales = NULL) {
   ))
   modelo <- fixest::feols(formula_modelo, data = data, warn = FALSE, notes = FALSE)
   comparacion <- fixest::wald(modelo, keep = "quintil_bite2022_obreros", print = FALSE)
+
+  # --- Exportacion adicional (NO cambia la especificacion): tabla tidy
+  # de coeficientes con SE e IC 95%, y metadatos exactos del modelo.
+  # HALLAZGO (no corregido aqui, solo reportado): este script NO
+  # especifica cluster= ni vcov= en feols(), asi que fixest usa su
+  # default de errores estandar IID -- verificado empiricamente, no
+  # asumido -- a diferencia de validar_tendencias_paralelas_establecimiento.R
+  # y validar_tendencias_paralelas_empleo_exposure_grafico.R, que si
+  # clusterizan explicitamente por NORDEMP. ---
+  clave <- paste(var_y, etiqueta)
+  coeficientes_list[[clave]] <<- extraer_coeficientes_tidy_fixest(modelo, var_y, paste0("Q1 - Muy baja (ref.); especificacion: ", etiqueta))
+  vars_regresion <- c(var_y, "anio_lineal", "quintil_bite2022_obreros", "NORDEMP")
+  if (!is.null(fe_adicionales)) vars_regresion <- c(vars_regresion, "CIIU4", "ANIO_F", "DPTO")
+  filas_completas <- data[stats::complete.cases(data[, vars_regresion, drop = FALSE]), , drop = FALSE]
+  metadatos_list[[clave]] <<- tibble::tibble(
+    variable = var_y,
+    especificacion = etiqueta,
+    efectos_fijos = fe,
+    controles = if (is.null(fe_adicionales)) "Ninguno" else "sector (CIIU4) x anio, departamento (DPTO) x anio",
+    variable_cluster = "Ninguna -- errores estandar IID (default de fixest, verificado empiricamente; el script no especifica cluster= ni vcov=)",
+    n_clusters = NA_integer_,
+    n_obs = stats::nobs(modelo),
+    n_obs_reconstruido_coincide = nrow(filas_completas) == stats::nobs(modelo),
+    ventana = "2015-2019 (pre-choque, NO ampliada)",
+    filtro_muestra = "quintil_bite2022_obreros no NA, CIIU4 no NA, DPTO no NA; sin exclusion de firmas atipicas",
+    variable_exposicion = "Bite2022_obreros (firma), quintiles x anio_lineal (NO estudio de evento anio-a-anio)"
+  )
+
   tibble::tibble(
     variable = var_y,
     especificacion = etiqueta,
@@ -188,7 +222,8 @@ correr_test_f <- function(data, var_y, etiqueta, fe_adicionales = NULL) {
     f_stat = round(comparacion$stat, 3),
     df1 = comparacion$df1,
     df2 = round(comparacion$df2, 1),
-    p_value = signif(comparacion$p, 4)
+    p_value = signif(comparacion$p, 4),
+    coeficientes_en_test = paste(grep("quintil_bite2022_obreros", names(stats::coef(modelo)), value = TRUE), collapse = "; ")
   )
 }
 
@@ -202,6 +237,11 @@ resultado <- purrr::map_dfr(variables_y, function(var_y) {
 })
 
 readr::write_csv(resultado, file.path(out_dir, "validacion_tendencias_paralelas_empleo_bite.csv"))
+
+coeficientes_tabla <- dplyr::bind_rows(coeficientes_list)
+metadatos_tabla <- dplyr::bind_rows(metadatos_list)
+readr::write_csv(coeficientes_tabla, file.path(out_dir, "validacion_tendencias_paralelas_empleo_bite_coeficientes.csv"))
+readr::write_csv(metadatos_tabla, file.path(out_dir, "validacion_tendencias_paralelas_empleo_bite_metadatos.csv"))
 
 # ------------------------------------------------------------------
 # Reporte en consola

@@ -101,3 +101,52 @@ script_header <- function(title) {
   message(title)
   message(line)
 }
+
+# ------------------------------------------------------------------
+# Exportacion (NO estimacion) de resultados de modelos fixest::feols.
+# Agregadas 2026-09-01 para que los coeficientes ano-a-ano/quintil-a-
+# quintil, sus errores estandar e intervalos de confianza queden
+# guardados como tabla, no solo visualizados en el PNG de fixest::iplot.
+# No cambian ninguna especificacion, efecto fijo, control, muestra ni
+# ventana de los scripts que las usan -- solo extraen y formatean lo que
+# el modelo ya estimo.
+# ------------------------------------------------------------------
+
+extraer_coeficientes_tidy_fixest <- function(modelo, variable_y, anio_o_grupo_base) {
+  ct <- summary(modelo)$coeftable
+  ci <- stats::confint(modelo, level = 0.95)
+  term <- rownames(ct)
+  ci <- ci[term, , drop = FALSE]
+
+  tibble::tibble(
+    variable = variable_y,
+    term = term,
+    estimate = round(unname(ct[, 1]), 6),
+    std.error = round(unname(ct[, 2]), 6),
+    statistic = round(unname(ct[, 3]), 4),
+    p.value = signif(unname(ct[, 4]), 4),
+    conf.low = round(unname(ci[, 1]), 6),
+    conf.high = round(unname(ci[, 2]), 6),
+    grupo_base_omitido = anio_o_grupo_base
+  )
+}
+
+# Cuenta clusters de forma explicita (no inferida del ojo del lector),
+# reconstruyendo la muestra efectivamente usada por el modelo (todas las
+# variables de la formula no-NA) y comparando su tamano contra
+# stats::nobs(modelo) para detectar si fixest descarto observaciones
+# adicionales (ej. por FE singleton) que esta reconstruccion no capturaria --
+# si no coinciden, lo marca explicitamente en vez de reportar una cifra
+# falsamente precisa.
+contar_clusters_fixest <- function(modelo, data, cluster_var, vars_regresion) {
+  filas_completas <- data[stats::complete.cases(data[, vars_regresion, drop = FALSE]), , drop = FALSE]
+  n_obs_reconstruido <- nrow(filas_completas)
+  n_obs_modelo <- stats::nobs(modelo)
+  coincide <- n_obs_reconstruido == n_obs_modelo
+  list(
+    n_clusters = dplyr::n_distinct(filas_completas[[cluster_var]]),
+    n_obs_reconstruido = n_obs_reconstruido,
+    n_obs_modelo = n_obs_modelo,
+    coincide_con_modelo = coincide
+  )
+}
