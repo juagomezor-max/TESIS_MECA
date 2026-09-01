@@ -1,0 +1,11 @@
+quintil,n_firmas,n_sale,tasa_salida_pct,se_pct,anio_seguimiento,anio_base,brecha_q5_q1_pp,se_brecha_pp,z_stat_brecha,p_valor_brecha,brecha_relativa_pct_sobre_base_promedio
+Q1 - Muy baja,1506,78,5.179,0.571,2018,"2017 (placebo, pre-choque)",1.333,0.855,1.559,0.119,22.8
+Q2 - Baja,1505,63,4.186,0.516,2018,"2017 (placebo, pre-choque)",1.333,0.855,1.559,0.119,22.8
+Q3 - Media,1505,64,4.252,0.52,2018,"2017 (placebo, pre-choque)",1.333,0.855,1.559,0.119,22.8
+Q4 - Alta,1505,62,4.12,0.512,2018,"2017 (placebo, pre-choque)",1.333,0.855,1.559,0.119,22.8
+Q5 - Muy alta,1505,98,6.512,0.636,2018,"2017 (placebo, pre-choque)",1.333,0.855,1.559,0.119,22.8
+Q1 - Muy baja,1506,118,7.835,0.692,2019,"2017 (placebo, pre-choque)",3.926,1.081,3.632,2.812e-4,40.1
+Q2 - Baja,1505,116,7.708,0.688,2019,"2017 (placebo, pre-choque)",3.926,1.081,3.632,2.812e-4,40.1
+Q3 - Media,1505,118,7.841,0.693,2019,"2017 (placebo, pre-choque)",3.926,1.081,3.632,2.812e-4,40.1
+Q4 - Alta,1505,122,8.106,0.704,2019,"2017 (placebo, pre-choque)",3.926,1.081,3.632,2.812e-4,40.1
+Q5 - Muy alta,1505,177,11.761,0.83,2019,"2017 (placebo, pre-choque)",3.926,1.081,3.632,2.812e-4,40.1

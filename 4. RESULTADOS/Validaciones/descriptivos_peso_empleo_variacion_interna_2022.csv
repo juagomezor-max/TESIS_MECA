@@ -1,0 +1,4 @@
+grupo,n_firmas,pct_n_firmas_de_262,empleo_grupo,pct_empleo_de_262,pct_empleo_de_muestra_total,empleo_promedio_por_firma,razon_vs_empleo_promedio_muestra
+"Todas las firmas con exposicion valida en 2+ plantas (base variacion interna, referencia)",262,100,152227,100,21.439,581,5.06
+Firmas con brecha >=15pp (variacion sustancial),168,64.12,115594,75.94,16.279,688.1,5.99
+"Firmas con brecha >=20pp (variacion sustancial, umbral conservador)",137,52.29,98231,64.53,13.834,717,6.25

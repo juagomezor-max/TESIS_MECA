@@ -1,0 +1,5 @@
+anio,grupo,n,media,DE,diferencia_medias,error_estandar_diferencia,t_stat,p_valor
+2023,Sale (perdida de planta o atricion),11,0.5001,0.2314,-0.0651,0.0708,-0.92,0.3782
+2023,Se mantiene (>=2 plantas),251,0.5652,0.1893,-0.0651,0.0708,-0.92,0.3782
+2024,Sale (perdida de planta o atricion),19,0.4879,0.2109,-0.0804,0.0499,-1.611,0.1226
+2024,Se mantiene (>=2 plantas),243,0.5683,0.1888,-0.0804,0.0499,-1.611,0.1226

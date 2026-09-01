@@ -1,0 +1,13 @@
+chequeo,valor
+A: total establecimientos 2022 (filtro auditar_confiabilidad_nordest.R),6775
+B: total establecimientos 2022 (filtro descriptivos_estructura_multiplanta_2022.R),6775
+A == B,TRUE
+C: firmas monoplanta (n_establecimientos == 1),5924
+"D: establecimientos en firmas monoplanta (conteo directo, NO inferido de C)",5924
+C == D,TRUE
+E: % establecimientos monoplanta (D / B),87.4391
+F: total establecimientos 2022 en exposicion_obreros_establecimiento_eam.rds,6775
+F == B,TRUE
+G: establecimientos con Exposure2022_obreros_est valida,6761
+"H: cobertura Exposure2022_obreros_est en 2022 (G / F, %)",99.7934
+H: faltante Exposure2022_obreros_est en 2022 (%),0.2066

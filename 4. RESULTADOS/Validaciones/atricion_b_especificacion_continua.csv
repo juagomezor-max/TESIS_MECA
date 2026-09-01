@@ -1,0 +1,5 @@
+especificacion,spec,n_obs,coef_10pp,se,ic95_bajo,ic95_alto,p_valor
+P(salir en 2023) ~ Exposure2022_obreros continua,Sin controles,6180,-5e-5,0.00109,-0.00219,0.00208,0.9605
+P(salir en 2023) ~ Exposure2022_obreros continua,Con sector(CIIU4) + tamano,6180,-0.00148,0.00126,-0.00396,9.9e-4,0.2402
+P(salir en 2024) ~ Exposure2022_obreros continua,Sin controles,6180,-2.3e-4,0.00167,-0.00351,0.00305,0.8922
+P(salir en 2024) ~ Exposure2022_obreros continua,Con sector(CIIU4) + tamano,6180,-0.00304,0.00191,-0.00678,7e-4,0.1113

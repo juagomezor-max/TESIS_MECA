@@ -1,0 +1,11 @@
+quintil,n_firmas,n_sale,tasa_salida_pct,se_pct,anio_seguimiento,anio_base,brecha_q5_q1_pp,se_brecha_pp,z_stat_brecha,p_valor_brecha,brecha_relativa_pct_sobre_base_promedio
+Q1 - Muy baja,1236,34,2.751,0.465,2023,"2022 (real, post-choque)",0.566,0.689,0.821,0.4116,18.7
+Q2 - Baja,1236,30,2.427,0.438,2023,"2022 (real, post-choque)",0.566,0.689,0.821,0.4116,18.7
+Q3 - Media,1236,29,2.346,0.431,2023,"2022 (real, post-choque)",0.566,0.689,0.821,0.4116,18.7
+Q4 - Alta,1236,24,1.942,0.392,2023,"2022 (real, post-choque)",0.566,0.689,0.821,0.4116,18.7
+Q5 - Muy alta,1236,41,3.317,0.509,2023,"2022 (real, post-choque)",0.566,0.689,0.821,0.4116,18.7
+Q1 - Muy baja,1236,90,7.282,0.739,2024,"2022 (real, post-choque)",1.699,1.099,1.546,0.1221,20.9
+Q2 - Baja,1236,93,7.524,0.75,2024,"2022 (real, post-choque)",1.699,1.099,1.546,0.1221,20.9
+Q3 - Media,1236,73,5.906,0.671,2024,"2022 (real, post-choque)",1.699,1.099,1.546,0.1221,20.9
+Q4 - Alta,1236,61,4.935,0.616,2024,"2022 (real, post-choque)",1.699,1.099,1.546,0.1221,20.9
+Q5 - Muy alta,1236,111,8.981,0.813,2024,"2022 (real, post-choque)",1.699,1.099,1.546,0.1221,20.9

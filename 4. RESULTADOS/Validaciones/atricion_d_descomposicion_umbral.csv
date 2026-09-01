@@ -1,0 +1,9 @@
+categoria,n_firmas,pct,especificacion
+"PERTOTAL_base < 10 (candidato a umbral, NO confirmado)",56,35.22,Salen en 2023 (base 2022)
+PERTOTAL_base >= 10 (atricion NO explicada por pata de empleo del umbral),103,64.78,Salen en 2023 (base 2022)
+"PERTOTAL_base < 10 (candidato a umbral, NO confirmado)",195,45.24,Salen en 2024 (base 2022)
+PERTOTAL_base >= 10 (atricion NO explicada por pata de empleo del umbral),236,54.76,Salen en 2024 (base 2022)
+"PERTOTAL_base < 10 (candidato a umbral, NO confirmado)",173,46.63,PLACEBO: salen en 2018 (base 2017)
+PERTOTAL_base >= 10 (atricion NO explicada por pata de empleo del umbral),198,53.37,PLACEBO: salen en 2018 (base 2017)
+"PERTOTAL_base < 10 (candidato a umbral, NO confirmado)",238,36.23,PLACEBO: salen en 2019 (base 2017)
+PERTOTAL_base >= 10 (atricion NO explicada por pata de empleo del umbral),419,63.77,PLACEBO: salen en 2019 (base 2017)

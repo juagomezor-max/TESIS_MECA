@@ -1,0 +1,5 @@
+especificacion,spec,n_obs,coef_10pp,se,ic95_bajo,ic95_alto,p_valor
+PLACEBO: P(salir en 2018) ~ Exposure2017_obreros continua,Sin controles,7526,6.8e-4,0.00127,-0.0018,0.00317,0.5898
+PLACEBO: P(salir en 2018) ~ Exposure2017_obreros continua,Con sector(CIIU4) + tamano,7526,-0.00147,0.00146,-0.00432,0.00138,0.3124
+PLACEBO: P(salir en 2019) ~ Exposure2017_obreros continua,Sin controles,7526,0.00449,0.00156,0.00142,0.00755,0.004108
+PLACEBO: P(salir en 2019) ~ Exposure2017_obreros continua,Con sector(CIIU4) + tamano,7526,0.00113,0.00173,-0.00227,0.00453,0.513
