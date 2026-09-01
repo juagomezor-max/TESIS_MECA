@@ -1,0 +1,5 @@
+variable,medida,n_obs,n_firmas,f_stat,df1,df2,p_value
+empleo_total,Exposure2022_obreros,29908,6104,0.767,4,6084,0.5463
+empleo_permanente,Exposure2022_obreros,29908,6104,1.031,4,6084,0.3898
+empleo_temporal,Exposure2022_obreros,29908,6104,1.556,4,6084,0.1832
+participacion_permanente,Exposure2022_obreros,29899,6104,0.308,4,6084,0.8729

@@ -1,0 +1,5 @@
+variable,medida,n_obs,n_firmas,f_stat,df1,df2,p_value
+empleo_total,Bite2022_obreros,24693,5033,2.308,4,5017,0.05573
+empleo_permanente,Bite2022_obreros,24693,5033,1.151,4,5017,0.3305
+empleo_temporal,Bite2022_obreros,24693,5033,1.749,4,5017,0.1363
+participacion_permanente,Bite2022_obreros,24686,5033,7.709,4,5017,3.446e-6
