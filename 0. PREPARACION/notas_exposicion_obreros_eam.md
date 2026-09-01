@@ -78,6 +78,129 @@ inventario del repositorio en la rama `feature/panel-establecimiento`
   exposicion alternativa (no existia aun el 9 de agosto).
 - Documentado tambien en `4. RESULTADOS/Validaciones/README.md`.
 
+## Extension del diagnostico de atricion diferencial (4 piezas nuevas)
+
+Script: `3. SCRIPTS/extender_diagnostico_atricion_diferencial.R`. Cubre lo
+que le faltaba al antecedente de 2026-08-09 (arriba): error estandar e
+IC 95%, especificacion continua, PLACEBO pre-choque, y descomposicion
+por umbral de cobertura.
+
+### (a) Tasa de salida por quintil, con error estandar e IC 95%
+
+| Anio | Brecha Q5-Q1 (pp) | SE | IC 95% | p-valor | Relativa (% sobre base promedio) |
+|---|---|---|---|---|---|
+| 2023 | 0.57 | 0.69 | [-0.78, 1.92] | 0.412 | 18.7% |
+| 2024 | 1.70 | 1.10 | [-0.46, 3.85] | 0.122 | 20.9% |
+
+**No se detecta atricion diferencial por exposicion atribuible al
+choque de 2023** (ninguna brecha es significativa al 5%) -- pero el
+IC 95% de 2024 NO permite descartar una brecha real de hasta ~3.9pp.
+Ausencia de significancia no es evidencia de ausencia de efecto: la N
+es chica (1,236 firmas por quintil) y la potencia limitada. En terminos
+relativos, el punto estimado no es despreciable (~19-21% mas alta la
+tasa de salida en Q5 que en Q1).
+
+### (b) Especificacion continua (LPM, controles sector CIIU4 + tamaño, SE robustos)
+
+| Anio | Sin controles (coef/10pp, p) | Con controles (coef/10pp, p) |
+|---|---|---|
+| 2023 | -0.00005, p=0.960 | -0.00148, p=0.240 |
+| 2024 | -0.00023, p=0.892 | -0.00304, p=0.111 |
+
+### (d, no-monotonicidad -- ver tambien punto (b)): el signo cambia segun la forma funcional
+
+El gap Q5-Q1 es POSITIVO (mayor exposicion, mayor tasa de salida en el
+extremo) pero el coeficiente de la especificacion CONTINUA es
+NEGATIVO (mayor exposicion, menor probabilidad de salir) en ambos
+años. La relacion entre exposicion y salida NO es monotonica/lineal --
+el gap de quintiles extremos no resume bien la forma real de la
+relacion. **Implicacion para el modelo principal del DiD:** estimar
+tambien con bins/cuantiles de exposicion como especificacion
+alternativa, no solo con el tratamiento continuo lineal, porque una
+especificacion lineal podria estar promediando efectos de signo
+contrario a lo largo de la distribucion.
+
+### (c) PLACEBO pre-choque: anio base 2017, seguimiento 2018/2019
+
+| Anio | Brecha Q5-Q1 (pp) | IC 95% | p-valor | Relativa |
+|---|---|---|---|---|
+| 2018 | 1.33 | [-0.34, 3.01] | 0.119 | 22.8% |
+| 2019 | **3.93** | **[1.81, 6.05]** | **0.00028** | **40.1%** |
+
+**Doble lectura del hallazgo del placebo:**
+
+1. **Como amenaza de seleccion (para la validez del DiD): DESCARTADA.**
+   El patron pre-choque (2019: 3.93pp, p=0.0003) es igual o MAYOR que
+   el patron post-choque (2024: 1.70pp, p=0.122, IC hasta 3.85pp) -- la
+   salida diferencial por exposicion, en la magnitud que existe, ya
+   estaba ahi ANTES del choque de 2023. No es una respuesta al
+   tratamiento.
+2. **Como caracterizacion del tratamiento (para interpretar
+   `Exposure2022_obreros` cruda): la exposicion cruda SI esta
+   correlacionada con dinamicas de salida preexistentes**, y esa
+   correlacion se explica por composicion sectorial y de tamaño --
+   desaparece al controlar (especificacion continua placebo 2019: sin
+   controles coef=0.00449, p=0.00411; CON controles coef=0.00113,
+   p=0.513). **Esto es el mismo patron encontrado en las validaciones
+   de tendencias paralelas** (`4. RESULTADOS/Validaciones/README.md`):
+   la identificacion depende de incluir `sector(CIIU4)*anio` y
+   `tamano*anio` como controles, no de usar la exposicion cruda sola --
+   confirma, desde un angulo distinto (atricion en vez de niveles de
+   outcome), la misma conclusion metodologica.
+
+### (d) Descomposicion via proxy del umbral de cobertura EAM
+
+**Umbral verificado en la ficha metodologica oficial de DANE**
+("Metodologia General Encuesta Anual Manufacturera - EAM", codigo
+DSO-EAM-MET-001, version 11, agosto 2025,
+https://www.dane.gov.co/files/operaciones/EAM/met-EAM.pdf): *"La
+operacion estadistica se aplica a establecimientos industriales con
+diez o mas personal ocupado o con un valor de produccion establecido
+anualmente, el cual se incrementa con base en el Indice de Precios del
+Productor (IPP) seccion industria"* (pag. 8). El parametro de
+produccion se recalibro en 2016 a *"500 millones de pesos anuales en
+ingresos o 10 personas ocupadas"* (antes $65 millones desde 1992,
+indexado por IPP) (pag. 15). El cambio de base fue en 2016 -- fuera de
+la ventana de comparacion de este diagnostico (2017-2024), no la
+contamina.
+
+**LIMITACION EXPLICITA:** la macrobase EAM y el diccionario maestro NO
+tienen ninguna columna de "novedad"/"estado"/motivo de salida
+(verificado por busqueda de `NOVEDAD|ESTADO|LIQUID|INACTIV` en las 398
+columnas, sin resultados). No se puede usar la clasificacion real de
+DANE. El proxy usado aqui cubre **UNICAMENTE la pata de EMPLEO** del
+criterio (PERTOTAL < 10 en el ultimo año observado antes de salir) --
+**la pata de valor de produccion indexado por IPP NO se verifico**
+(requeriria construir un deflactor IPP industrial indexado desde 2016,
+fuera de alcance de este diagnostico). Una firma con PERTOTAL>=10 que
+sale del panel NO esta explicada por el umbral (pasa la pata de empleo
+sin importar su produccion); una firma con PERTOTAL<10 es solo
+CANDIDATA, no confirmada (podria seguir calificando via produccion).
+
+| | 2023 | 2024 | Placebo 2018 | Placebo 2019 |
+|---|---|---|---|---|
+| PERTOTAL_base < 10 (candidato a umbral, NO confirmado) | 35.2% | 45.2% | 46.6% | 36.2% |
+| PERTOTAL_base >= 10 (NO explicado por pata de empleo del umbral) | 64.8% | 54.8% | 53.4% | 63.8% |
+
+Entre 35-47% de las salidas son consistentes con caer por debajo de la
+pata de empleo del umbral -- proporcion similar en periodo real y
+placebo, tampoco distingue el choque de 2023.
+
+### Conclusion de la extension
+
+No se detecta atricion diferencial por exposicion atribuible al choque
+de 2023 (brechas de 0.57pp y 1.70pp, ninguna significativa, IC 95%
+compatible con una brecha real de hasta ~3.9pp). El patron placebo
+pre-choque es igual o mas fuerte (3.93pp, p=0.0003), lo que descarta la
+seleccion como amenaza para el DiD, pero confirma que la exposicion
+cruda esta correlacionada con dinamicas sectoriales/de tamaño
+preexistentes -- la identificacion sigue dependiendo de los controles
+`sector*anio` y `tamano*anio`, no de la exposicion sola. La relacion
+exposicion-salida no es monotonica (gap de quintiles positivo, pero
+coeficiente continuo negativo): el modelo principal del DiD deberia
+probar tambien una especificacion por bins/cuantiles, no solo
+tratamiento continuo lineal.
+
 ## Bite2022_obreros (indice de Kaitz)
 
 Rama: `feature/postpandemia-descartar-2012`. Scripts:

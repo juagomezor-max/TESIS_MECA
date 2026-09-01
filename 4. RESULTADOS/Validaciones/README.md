@@ -75,7 +75,22 @@ Encontrado el 2026-08-31 al auditar el inventario del repositorio (`INVENTARIO_R
 - **Re-corrido el 2026-08-31** (mismo script, sin modificar, insumos identicos a los de agosto): **reproduce exactamente** los valores del commit `15105d6` (0.57pp y 1.7pp) -- sin discrepancia. Salida ahora **versionada**: `atricion_por_quintil_exposicion_eam.csv` (copiada del path no versionado donde el script la escribe por diseño, `1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/`, igual que el resto de los scripts `diagnostico_*`/`auditar_*`/`construir_*` del proyecto).
 - **Limitaciones frente a lo que probablemente necesita el trabajo pendiente de esta rama**: nivel firma (no establecimiento), presencia/ausencia binaria (no separa perdida de planta vs. desaparicion completa, a diferencia del Paso 3.8 de `feature/panel-establecimiento`), y no usa `Bite2022_obreros` (no existia aun) ni controles de sector/departamento.
 
+## Extension del diagnostico de atricion diferencial (4 piezas nuevas)
+
+Script: `3. SCRIPTS/extender_diagnostico_atricion_diferencial.R`. Salidas: `atricion_a_tasa_por_quintil_con_se.csv`, `atricion_b_especificacion_continua.csv`, `atricion_c_placebo_2017_2018_2019.csv`, `atricion_c_placebo_especificacion_continua.csv`, `atricion_d_descomposicion_umbral.csv`.
+
+**(a) Tasa por quintil con SE e IC 95%:** brecha Q5-Q1 = 0.57pp en 2023 (IC [-0.78, 1.92], p=0.412) y 1.70pp en 2024 (IC [-0.46, 3.85], p=0.122). No se detecta atricion diferencial atribuible al choque de 2023, pero el IC 95% de 2024 no permite descartar una brecha real de hasta ~3.9pp -- ausencia de significancia no es evidencia de ausencia de efecto (N chica, potencia limitada).
+
+**(b) Especificacion continua (LPM, controles sector+tamaño):** coeficiente **negativo** en ambos años (2024 con controles: -0.00304 por 10pp, p=0.111) -- opuesto al signo del gap Q5-Q1. **No monotonico**: implica que el modelo principal del DiD deberia probar tambien bins/cuantiles de exposicion, no solo tratamiento continuo lineal.
+
+**(c) PLACEBO 2017->2018/2019, doble lectura:**
+1. *Como amenaza de seleccion*: DESCARTADA. El patron pre-choque (2019: 3.93pp, IC [1.81, 6.05], p=0.0003) es igual o mayor que el post-choque -- la atricion diferencial, en la magnitud que existe, ya estaba ahi antes de 2023.
+2. *Como caracterizacion del tratamiento*: la exposicion cruda SI esta correlacionada con dinamicas de salida preexistentes, explicadas por composicion sectorial/tamaño (desaparece con controles: 2019 sin controles p=0.004, con controles p=0.513). **Mismo patron que las validaciones de tendencias paralelas de este documento**: la identificacion depende de `sector(CIIU4)*anio` + `tamano*anio`, no de la exposicion cruda sola.
+
+**(d) Descomposicion via proxy del umbral de cobertura EAM:** umbral verificado en la ficha metodologica oficial de DANE (10+ personal ocupado O valor de produccion indexado por IPP industrial, base $500M desde 2016). La macrobase no tiene variable de motivo de salida -- proxy usa SOLO la pata de empleo (PERTOTAL<10), NO la pata de produccion (requeriria deflactor IPP, no verificado). 35-47% de las salidas son candidatas a umbral (proporcion similar en real y placebo, tampoco distingue 2023).
+
 ## Pendiente
 
-- Adaptar el diagnostico de atricion diferencial a nivel ESTABLECIMIENTO (`Exposure2022_obreros_est`) y/o con `Bite2022_obreros` como exposicion alternativa -- el antecedente a nivel firma ya esta corrido, reproducido y versionado arriba, no necesita repetirse, pero no cubre el nivel de analisis de esta rama.
+- Adaptar el diagnostico de atricion diferencial a nivel ESTABLECIMIENTO (`Exposure2022_obreros_est`) y/o con `Bite2022_obreros` como exposicion alternativa -- el antecedente a nivel firma y su extension ya estan corridos y versionados arriba, no necesita repetirse, pero no cubre el nivel de analisis de esta rama.
+- Verificar la pata de valor de produccion del umbral de cobertura EAM (requiere deflactor IPP industrial indexado desde 2016) para completar la descomposicion (d).
 - Investigar la causa de la divergencia de Bite2022_obreros antes de decidir si se descarta como robustez principal o se corrige el diseño.
