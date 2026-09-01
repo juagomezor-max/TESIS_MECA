@@ -605,6 +605,103 @@ departamento). El diseño "dentro de firma" (delta_f(e),t) tiene una
 base empirica solida para identificar, no solo una justificacion
 teorica.
 
+## Paso 3.3 — Distribucion comparativa: establecimiento vs. firma (2022)
+
+Script: `3. SCRIPTS/comparar_distribucion_exposure_establecimiento_vs_firma.R`.
+
+| Nivel | N | Media | Mediana | DE | p10 | p25 | p50 | p75 | p90 | % =0 | % =1 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Establecimiento | 6,761 | 0.601 | 0.633 | 0.231 | 0.286 | 0.466 | 0.633 | 0.769 | 0.875 | 3.03% | 2.48% |
+| Firma | 6,180 | 0.602 | 0.632 | 0.226 | 0.292 | 0.472 | 0.632 | 0.769 | 0.870 | 2.88% | 2.01% |
+
+**La dispersion MARGINAL (sobre toda la poblacion) es practicamente
+igual entre los dos niveles** (razon DE=1.019x, IQR=1.02x, rango
+p90-p10=1.02x) -- NO mayor a nivel planta que a nivel firma. Esto no
+contradice la heterogeneidad interna del Paso 3.2 (variacion DENTRO de
+cada firma multiplanta): son preguntas distintas. La razon aritmetica de
+por que la dispersion marginal casi no cambia: los establecimientos de
+firmas multiplanta son solo 12.6% del total (843 de 6,761), asi que su
+variacion interna, aunque sustancial dentro de cada firma, pesa poco en
+la distribucion agregada de TODA la poblacion.
+
+## Paso 3.4 — Estructura multiplanta 2022 (parte 2): frecuencias y peso economico
+
+Script: `3. SCRIPTS/descriptivos_estructura_multiplanta_2022_parte2.R`.
+
+### Frecuencia de establecimientos por firma (TODAS las firmas, N=6,186)
+
+| N establecimientos | Firmas | % |
+|---|---|---|
+| 1 (monoplanta) | 5,924 | 95.76% |
+| 2 | 155 | 2.51% |
+| 3 | 45 | 0.73% |
+| 4 | 21 | 0.34% |
+| 5+ | 41 | 0.66% |
+
+### Departamentos distintos entre las 262 firmas multiplanta
+
+| N departamentos | Firmas | % |
+|---|---|---|
+| 1 (todas sus plantas en el mismo depto.) | 81 | 30.9% |
+| 2 | 112 | 42.8% |
+| 3 | 25 | 9.5% |
+| 4-11 | 46 | 17.6% |
+| 16 | 1 | 0.4% |
+
+81 de 262 (30.9%) tienen todas sus plantas en el mismo departamento.
+
+### Peso economico de las firmas multiplanta -- EL NUMERO CLAVE
+
+| Metrica | Valor |
+|---|---|
+| Firmas totales panel 2022 | 6,186 |
+| Firmas multiplanta (`Multi_f`) | 262 |
+| % de firmas multiplanta | 4.24% |
+| Empleo total muestra 2022 (PERTOTAL, suma) | 710,060 |
+| Empleo en firmas multiplanta (PERTOTAL, suma) | 152,227 |
+| **% del empleo total que concentran** | **21.44%** |
+
+**Las 262 firmas multiplanta son el 4.24% de las firmas pero concentran
+el 21.44% del empleo total de la muestra 2022** -- factor ~5x entre peso
+poblacional y peso economico. Este es el numero que define si el diseño
+"dentro de firma" es central o marginal: cubre una porcion no trivial
+del empleo manufacturero, no es un ejercicio de robustez marginal.
+
+Nota de reconciliacion menor: el denominador de firmas puede reportarse
+como 6,186 (todas las firmas del panel 2022) o 6,180 (firmas con
+`Exposure2022_obreros` valida en 2022, 6 menos) -- la diferencia es
+marginal y no cambia la conclusion (~4.24% en ambos casos).
+
+## Paso 3.5 — Nivel de exposicion: plantas multiplanta vs. monoplanta
+
+Script: `3. SCRIPTS/comparar_exposure_est_multiplanta_vs_monoplanta.R`.
+Pregunta DISTINTA de la variacion interna (Paso 3.2): ¿el NIVEL de
+exposicion de una planta de firma multiplanta es sistematicamente
+distinto al de una planta monoplanta (heterogeneidad ENTRE grupos, no
+DENTRO de uno)?
+
+| Grupo | N establecimientos | N firmas | Media | Mediana | DE | p10 | p90 |
+|---|---|---|---|---|---|---|---|
+| Multiplanta | 843 | 262 | 0.584 | 0.610 | 0.250 | 0.222 | 0.894 |
+| Monoplanta | 5,918 | 5,918 | 0.604 | 0.636 | 0.228 | 0.290 | 0.872 |
+
+Diferencia de medias: -0.0202 (multiplanta ligeramente MENOS expuesta en
+promedio). Prueba t de Welch: t=-2.217, df=1049.9, **p=0.027** --
+estadisticamente significativa pero economicamente pequeña (2pp). Las
+plantas multiplanta tienen mayor dispersion (DE 0.250 vs 0.228) y p10
+notablemente mas bajo (0.222 vs 0.290), sugiriendo mas casos de baja
+exposicion en la cola izquierda del grupo multiplanta.
+
+### Nota clave: monoplanta = coincidencia por construccion
+
+**El 87.4% de los establecimientos (5,924 de 6,775 en 2022) pertenecen
+a firmas monoplanta**, donde `Exposure2022_obreros_est` (planta) y
+`Exposure2022_obreros` (firma) coinciden por construccion -- son el
+mismo calculo, porque la planta ES la firma. Toda la diferencia entre
+las dos medidas de exposicion, y por tanto el valor añadido del diseño
+"dentro de firma", se concentra en el 12.6% restante de establecimientos
+(843 de 6,775) que pertenecen a las 262 firmas multiplanta.
+
 ## Conclusion general del Paso 2
 
 `DPTO` tiene cobertura perfecta (100%, 17/17 anios) y es estable en el
