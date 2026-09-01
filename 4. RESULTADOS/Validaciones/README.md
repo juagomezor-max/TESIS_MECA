@@ -1,6 +1,6 @@
 # Validaciones
 
-Salidas de las validaciones de identificacion (tendencias paralelas 2015-2019; atricion diferencial, pendiente) desarrolladas en la rama `feature/atricion-tendencias-paralelas`.
+Salidas de las validaciones de identificacion (tendencias paralelas 2015-2019; atricion diferencial, antecedente a nivel firma ya corrido -- ver seccion "Antecedente" mas abajo, pendiente adaptar a nivel establecimiento) desarrolladas en la rama `feature/atricion-tendencias-paralelas`.
 
 Todas las validaciones de esta carpeta comparten el mismo panel base: 2015-2019 (pre-choque de salario minimo de 2023), sin excluir firmas/establecimientos atipicos (a diferencia de investigaciones previas de la rama `feature/postpandemia-descartar-2012`, que si excluian un grupo especifico diagnosticado para `Exposure2022_obreros` Q4 -- esa exclusion no se reusa aqui porque no esta validada para las medidas y niveles de agregacion usados en esta carpeta).
 
@@ -64,7 +64,18 @@ Estudio de evento: `i(ANIO_F, exposicion_10pp, ref="2015") | NORDEST + CIIU4^ANI
 
 `Exposure2022_obreros` (composicion ocupacional) pasa la validacion de tendencias paralelas de forma robusta, tanto a nivel de empresa como de establecimiento, en las 4 dimensiones de empleo. `Bite2022_obreros` (indice de Kaitz) no la pasa en 3 de 4 dimensiones y los controles de sector/departamento no resuelven el problema -- no deberia usarse como especificacion principal del DiD sin investigar antes la causa de esa divergencia (queda pendiente).
 
+## Antecedente: atricion diferencial por quintil de exposicion (nivel FIRMA, ya corrido)
+
+Encontrado el 2026-08-31 al auditar el inventario del repositorio (`INVENTARIO_REPO.md`, rama `feature/panel-establecimiento`): el diagnostico de atricion diferencial YA se corrio el 2026-08-09, en la rama `feature/exposicion-obreros-operarios` (ya fusionada a `main`), antes de que existiera esta carpeta `Validaciones/` -- por eso nunca quedo documentado aqui.
+
+- **Script**: `3. SCRIPTS/diagnostico_atricion_diferencial_exposicion_eam.R`.
+- **Commit**: `15105d6`, "Diagnosticar atricion diferencial por quintil de exposicion (2022->2023/2024)", 2026-08-09 17:11:58.
+- **Que mide**: para las 6,186 firmas presentes en el panel en 2022 (año base), verifica presencia real en 2023 y en 2024 (no asumida, contra el panel deduplicado), desagregado por quintil de `Exposure2022_obreros` **a nivel FIRMA** (no a nivel establecimiento -- `Exposure2022_obreros_est` no existia todavia el 9 de agosto).
+- **Resultado (tomado del mensaje del commit, la salida CSV no esta versionada -- ver advertencia abajo)**: diferencia Q5-Q1 = **0.57pp en 2023** y **1.7pp en 2024** -- tasas de salida similares entre quintiles (2-3% en 2023, 5-9% en 2024), sin patron monotonico claro por exposicion. **No hay señal de atricion diferencial que amenace la comparacion pre/post 2023**, a nivel firma.
+- **ADVERTENCIA -- salida no versionada**: el CSV (`atricion_por_quintil_exposicion_eam.csv`) se escribe a `1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/` (gitignored) y nunca se comiteo. Los numeros de arriba se conservan UNICAMENTE en el mensaje del commit `15105d6`, no en un archivo del repo -- si se necesita el CSV en si, hay que re-correr el script (sus insumos no han cambiado de definicion desde agosto, ver auditoria completa en el historial de conversacion del 2026-08-31).
+- **Limitaciones frente a lo que probablemente necesita el trabajo pendiente de esta rama**: nivel firma (no establecimiento), presencia/ausencia binaria (no separa perdida de planta vs. desaparicion completa, a diferencia del Paso 3.8 de `feature/panel-establecimiento`), y no usa `Bite2022_obreros` (no existia aun) ni controles de sector/departamento.
+
 ## Pendiente
 
-- Validacion de atricion diferencial por quintil de exposicion (nombre de la rama, aun no desarrollada en esta carpeta).
+- Adaptar el diagnostico de atricion diferencial a nivel ESTABLECIMIENTO (`Exposure2022_obreros_est`) y/o con `Bite2022_obreros` como exposicion alternativa -- el antecedente a nivel firma ya esta documentado arriba y no necesita repetirse, pero no cubre el nivel de analisis de esta rama.
 - Investigar la causa de la divergencia de Bite2022_obreros antes de decidir si se descarta como robustez principal o se corrige el diseño.

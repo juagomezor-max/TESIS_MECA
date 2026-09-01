@@ -889,6 +889,19 @@ asi:
   especificacion principal por el problema de composicion arriba
   descrito.
 
+## Nota: antecedente de atricion diferencial encontrado en el inventario (Fase 1/2 de limpieza)
+
+Al auditar `INVENTARIO_REPO.md`, se encontro que
+`3. SCRIPTS/diagnostico_atricion_diferencial_exposicion_eam.R` (commit
+`15105d6`, 2026-08-09, ya en `main`) YA corrio un diagnostico de
+atricion diferencial por quintil de `Exposure2022_obreros` (nivel
+FIRMA) 2022->2023/2024, con resultado "sin señal de atricion
+diferencial" (diferencia Q5-Q1: 0.57pp en 2023, 1.7pp en 2024).
+Documentacion completa del hallazgo, la auditoria de sus insumos, y sus
+limitaciones frente al trabajo pendiente de esta rama:
+`0. PREPARACION/notas_exposicion_obreros_eam.md` (seccion "Antecedente:
+atricion diferencial...") y `4. RESULTADOS/Validaciones/README.md`.
+
 ## Conclusion general del Paso 2
 
 `DPTO` tiene cobertura perfecta (100%, 17/17 anios) y es estable en el

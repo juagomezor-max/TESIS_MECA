@@ -36,6 +36,48 @@ La macrobase EAM cubre **2008-2024** (no 2016-2025 como se asumia al inicio, y *
 3. **Que medida de exposicion usar en la estimacion econometrica**: `Exposure2022` (nivel salarial) y `Exposure2022_obreros` (composicion ocupacional) no son intercambiables (correlacion 0.36). La eleccion entre una, otra, o ambas como robustez, es una decision de la tesis, no tecnica.
 4. **CIIU3 vs CIIU4**: si mas adelante se necesita sector de forma longitudinal en todo el panel 2008-2024, CIIU3 y CIIU4 deben tratarse como variables categoricas distintas (no concatenarse).
 
+## Antecedente: atricion diferencial por quintil de exposicion (nivel firma, 2022->2023/2024)
+
+Distinto de la caida GLOBAL de empresas en el panel (punto 2 arriba, sin
+resolver): esto es especificamente si la SALIDA del panel alrededor del
+choque de 2023 es diferencial por nivel de exposicion (lo que
+amenazaria la comparacion pre/post del DiD).
+
+**Ya se corrio** el 2026-08-09, en esta misma rama
+(`feature/exposicion-obreros-operarios`), justo despues de construir y
+validar `Exposure2022_obreros` (Paso 5/6/7) -- por eso no quedo en el
+resumen final (Paso 7) ni en `README_EXPOSICION_OBREROS.md`, ambos
+escritos minutos antes. Encontrado el 2026-08-31 al auditar el
+inventario del repositorio en la rama `feature/panel-establecimiento`
+(`INVENTARIO_REPO.md`).
+
+- Script: `3. SCRIPTS/diagnostico_atricion_diferencial_exposicion_eam.R`.
+- Commit: `15105d6` (2026-08-09 17:11:58).
+- Mide: de las 6,186 firmas presentes en 2022, cuantas siguen
+  apareciendo en el panel deduplicado en 2023 y en 2024, por separado,
+  desagregado por quintil de `Exposure2022_obreros` (nivel FIRMA).
+- **Resultado (del mensaje del commit -- el CSV de salida NO esta
+  versionado, ver advertencia):** diferencia Q5-Q1 = 0.57pp en 2023 y
+  1.7pp en 2024; tasas de salida similares entre quintiles (2-3% en
+  2023, 5-9% en 2024), sin patron monotonico por exposicion. **No hay
+  señal de atricion diferencial que amenace la comparacion pre/post
+  2023, a nivel firma.**
+- **ADVERTENCIA:** la salida (`atricion_por_quintil_exposicion_eam.csv`)
+  se escribe a `1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/`
+  (gitignored) y nunca se comiteo. Los numeros de arriba viven
+  UNICAMENTE en el mensaje del commit `15105d6` -- si se necesita el
+  archivo en si, hay que re-correr el script (sus insumos,
+  `conteo_personal_categoria_eam.rds` y `exposicion_obreros_eam.rds`,
+  no han cambiado de definicion desde agosto: ambos scripts que los
+  generan tienen un unico commit en toda su historia).
+- **No cubre** (limitaciones frente al trabajo pendiente de
+  `feature/panel-establecimiento`/`feature/atricion-tendencias-paralelas`):
+  nivel establecimiento (`Exposure2022_obreros_est`), separacion entre
+  perdida de planta y desaparicion completa (a diferencia del Paso 3.8
+  de `feature/panel-establecimiento`), y `Bite2022_obreros` como
+  exposicion alternativa (no existia aun el 9 de agosto).
+- Documentado tambien en `4. RESULTADOS/Validaciones/README.md`.
+
 ## Bite2022_obreros (indice de Kaitz)
 
 Rama: `feature/postpandemia-descartar-2012`. Scripts:
