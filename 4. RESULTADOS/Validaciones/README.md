@@ -18,17 +18,19 @@ Definidas a partir de las columnas C4R de personal ocupado de la EAM (confirmada
 ### 1. `validacion_tendencias_paralelas_empleo_bite.csv`
 Script: `3. SCRIPTS/validar_tendencias_paralelas_empleo_bite.R`.
 Exposicion: **Bite2022_obreros** (indice de Kaitz: SM_2023 anualizado / salario promedio de obreros en 2022), discretizada en quintiles (misma funcion `make_quintiles` que usa `Exposure2022_obreros`).
-Nivel: empresa (NORDEMP). Efectos fijos: NORDEMP (+ CIIU4*anio + DPTO*anio en la especificacion con controles).
+Nivel: empresa (NORDEMP). Efectos fijos: NORDEMP (+ CIIU4*anio + DPTO*anio en la especificacion con controles). **Cluster: NORDEMP** (corregido 2026-09-01, ver aviso abajo).
 Prueba: F conjunto de `i(quintil_bite2022_obreros, anio_lineal, ref="Q1 - Muy baja")`.
+
+> **⚠ CONCLUSION ANTERIOR CORREGIDA (2026-09-01).** La tabla y la conclusion de esta seccion se recalcularon: la version original del script NO clusterizaba los errores estandar (usaba el default IID de `fixest`), a diferencia de las otras 2 validaciones de esta pagina, que si clusterizan por NORDEMP. La tabla de abajo ya refleja la inferencia CORREGIDA (clusterizada). Comparacion completa IID-vs-cluster, conservada para auditoria: `comparacion_inferencia_iid_vs_cluster_bite_ftest.csv` / `comparacion_inferencia_iid_vs_cluster_bite_coeficientes.csv` (`3. SCRIPTS/comparar_inferencia_iid_vs_cluster_bite.R`). Ver `INDICE_RESULTADOS.md` para el detalle fila por fila.
 
 | Variable | Sin controles (F / p) | Con sector*anio + dpto*anio (F / p) |
 |---|---|---|
-| empleo_total | 5.81 / 1.1e-4 | 5.07 / 4.4e-4 |
-| empleo_permanente | 2.50 / 0.040 | 2.14 / 0.072 |
-| empleo_temporal | 4.62 / 0.001 | 4.45 / 0.0014 |
-| participacion_permanente | 15.0 / 2.9e-12 | 14.6 / 6.7e-12 |
+| empleo_total | 2.42 / 0.047 | 2.31 / 0.056 |
+| empleo_permanente | 1.03 / 0.389 | 1.15 / 0.330 |
+| empleo_temporal | 1.80 / 0.126 | 1.75 / 0.136 |
+| participacion_permanente | **8.04 / 1.9e-6** | **7.71 / 3.5e-6** |
 
-**Rechaza tendencias paralelas en 3 de 4 dimensiones, incluso con controles.** `participacion_permanente` es el caso mas problematico: los controles casi no mueven el p-valor. `empleo_permanente` es el unico que deja de ser significativo al 5% con controles (p=0.072, sigue siendo marginal). Bite2022_obreros tiene un problema de identificacion en este diseño que no esta resuelto por controles de sector/region.
+**Con la inferencia correcta (clusterizada), Bite2022_obreros rechaza tendencias paralelas en 1 de 4 dimensiones, no en 3 de 4 como se reporto originalmente.** `empleo_total`, `empleo_permanente` y `empleo_temporal` dejaban de rechazar al 5% (o quedan al borde) una vez clusterizado -- esa parte del hallazgo anterior era un artefacto de inferencia, no una propiedad de la medida. **`participacion_permanente` es la excepcion: sigue rechazando con fuerza** (p=1.9e-6 sin controles, p=3.5e-6 con controles) y **`Exposure2022_obreros` NO rechaza esa misma dimension** (p=0.873, ya clusterizado desde el inicio, ver seccion 3) -- esa divergencia especifica es real, no un artefacto, y sigue siendo un motivo valido para preferir `Exposure2022_obreros` como especificacion principal.
 
 ### 2. `evento_tendencias_2015_2019_*.png` + `tabla_evento_tendencias_2015_2019_exposure.csv`
 Script: `3. SCRIPTS/validar_tendencias_paralelas_empleo_exposure_grafico.R`.
@@ -62,7 +64,7 @@ Estudio de evento: `i(ANIO_F, exposicion_10pp, ref="2015") | NORDEST + CIIU4^ANI
 
 ## Conclusion consolidada
 
-`Exposure2022_obreros` (composicion ocupacional) pasa la validacion de tendencias paralelas de forma robusta, tanto a nivel de empresa como de establecimiento, en las 4 dimensiones de empleo. `Bite2022_obreros` (indice de Kaitz) no la pasa en 3 de 4 dimensiones y los controles de sector/departamento no resuelven el problema -- no deberia usarse como especificacion principal del DiD sin investigar antes la causa de esa divergencia (queda pendiente).
+`Exposure2022_obreros` (composicion ocupacional) pasa la validacion de tendencias paralelas de forma robusta, tanto a nivel de empresa como de establecimiento, en las 4 dimensiones de empleo. `Bite2022_obreros` (indice de Kaitz), con la inferencia CORREGIDA (clusterizada por NORDEMP, 2026-09-01), no la pasa en 1 de 4 dimensiones (`participacion_permanente`) -- las otras 3 (`empleo_total`, `empleo_permanente`, `empleo_temporal`) que originalmente parecian rechazar eran un artefacto de errores estandar IID, no un problema real de la medida. La divergencia que SI persiste (`participacion_permanente`) sigue siendo un motivo valido para preferir `Exposure2022_obreros` como especificacion principal del DiD, pero el alcance del problema de Bite2022_obreros es mucho mas acotado de lo que se penso originalmente.
 
 ## Antecedente: atricion diferencial por quintil de exposicion (nivel FIRMA, ya corrido)
 

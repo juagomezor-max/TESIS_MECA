@@ -40,6 +40,24 @@
 # para que la comparacion sea transparente (misma logica que
 # investigar_validez_test_pretendencias.R, Paso 2).
 #
+# CORRECCION 2026-09-01 (ver INDICE_RESULTADOS.md, fila 28, y
+# comparar_inferencia_iid_vs_cluster_bite.R): la version original de
+# este script NO especificaba cluster=, asi que fixest usaba su default
+# IID -- inconsistente con los otros 2 scripts de tendencias paralelas
+# (Exposure2022_obreros a nivel firma y establecimiento), que si
+# clusterizan por NORDEMP. Se corrige aqui agregando cluster = ~NORDEMP
+# (UNICO cambio respecto a la version anterior -- misma formula, mismos
+# efectos fijos, mismos controles, misma muestra, misma ventana
+# 2015-2019). Resultado: 4 de 8 filas (variable x especificacion) dejan
+# de rechazar tendencias paralelas al 5% con la inferencia correcta
+# (empleo_total con controles, empleo_permanente sin controles,
+# empleo_temporal ambas especificaciones) -- eran artefacto de
+# inferencia. `participacion_permanente` SIGUE rechazando con fuerza en
+# ambas especificaciones (p=1.9e-6 y 3.5e-6 clusterizado) -- esa
+# divergencia especifica frente a Exposure2022_obreros es real, no un
+# artefacto. La comparacion completa IID-vs-cluster queda preservada en
+# comparacion_inferencia_iid_vs_cluster_bite_ftest.csv.
+#
 # Salidas (versionadas, en 4. RESULTADOS/Validaciones/):
 # - validacion_tendencias_paralelas_empleo_bite.csv
 # - validacion_tendencias_paralelas_empleo_bite_coeficientes.csv (2026-09-01: coeficientes tidy con SE e IC 95%)
@@ -184,17 +202,14 @@ correr_test_f <- function(data, var_y, etiqueta, fe_adicionales = NULL) {
   formula_modelo <- stats::as.formula(paste0(
     var_y, " ~ anio_lineal + i(quintil_bite2022_obreros, anio_lineal, ref = '", QUINTIL_REFERENCIA, "') | ", fe
   ))
-  modelo <- fixest::feols(formula_modelo, data = data, warn = FALSE, notes = FALSE)
+  modelo <- fixest::feols(formula_modelo, data = data, cluster = ~NORDEMP, warn = FALSE, notes = FALSE)
   comparacion <- fixest::wald(modelo, keep = "quintil_bite2022_obreros", print = FALSE)
 
   # --- Exportacion adicional (NO cambia la especificacion): tabla tidy
   # de coeficientes con SE e IC 95%, y metadatos exactos del modelo.
-  # HALLAZGO (no corregido aqui, solo reportado): este script NO
-  # especifica cluster= ni vcov= en feols(), asi que fixest usa su
-  # default de errores estandar IID -- verificado empiricamente, no
-  # asumido -- a diferencia de validar_tendencias_paralelas_establecimiento.R
-  # y validar_tendencias_paralelas_empleo_exposure_grafico.R, que si
-  # clusterizan explicitamente por NORDEMP. ---
+  # Cluster = ~NORDEMP agregado el 2026-09-01 (ver cabecera del
+  # script): antes este script usaba el default IID de fixest,
+  # inconsistente con los otros 2 scripts de tendencias paralelas. ---
   clave <- paste(var_y, etiqueta)
   coeficientes_list[[clave]] <<- extraer_coeficientes_tidy_fixest(modelo, var_y, paste0("Q1 - Muy baja (ref.); especificacion: ", etiqueta))
   vars_regresion <- c(var_y, "anio_lineal", "quintil_bite2022_obreros", "NORDEMP")
@@ -205,8 +220,8 @@ correr_test_f <- function(data, var_y, etiqueta, fe_adicionales = NULL) {
     especificacion = etiqueta,
     efectos_fijos = fe,
     controles = if (is.null(fe_adicionales)) "Ninguno" else "sector (CIIU4) x anio, departamento (DPTO) x anio",
-    variable_cluster = "Ninguna -- errores estandar IID (default de fixest, verificado empiricamente; el script no especifica cluster= ni vcov=)",
-    n_clusters = NA_integer_,
+    variable_cluster = "NORDEMP (corregido 2026-09-01; antes IID -- ver comparacion_inferencia_iid_vs_cluster_bite_ftest.csv)",
+    n_clusters = dplyr::n_distinct(filas_completas$NORDEMP),
     n_obs = stats::nobs(modelo),
     n_obs_reconstruido_coincide = nrow(filas_completas) == stats::nobs(modelo),
     ventana = "2015-2019 (pre-choque, NO ampliada)",

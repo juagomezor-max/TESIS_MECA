@@ -1,0 +1,9 @@
+variable,especificacion,n_obs,f_stat_iid,df1_iid,df2_iid,p_value_iid,f_stat_cluster,df1_cluster,df2_cluster,p_value_cluster,rechaza_al_5pct_iid,rechaza_al_5pct_cluster,conclusion_cambia
+empleo_total,Sin controles,24696,5.812,4,19673,1.137e-4,2.417,4,5017,0.04658,TRUE,TRUE,FALSE
+empleo_total,Con sector*anio + departamento*anio,24693,5.07,4,18996,4.412e-4,2.308,4,5017,0.05573,TRUE,FALSE,TRUE
+empleo_permanente,Sin controles,24696,2.5,4,19673,0.04048,1.033,4,5017,0.3886,TRUE,FALSE,TRUE
+empleo_permanente,Con sector*anio + departamento*anio,24693,2.145,4,18996,0.07249,1.151,4,5017,0.3305,FALSE,FALSE,FALSE
+empleo_temporal,Sin controles,24696,4.617,4,19673,0.001003,1.798,4,5017,0.1262,TRUE,FALSE,TRUE
+empleo_temporal,Con sector*anio + departamento*anio,24693,4.446,4,18996,0.001364,1.749,4,5017,0.1363,TRUE,FALSE,TRUE
+participacion_permanente,Sin controles,24689,15.025,4,19666,2.886e-12,8.038,4,5017,1.864e-6,TRUE,TRUE,FALSE
+participacion_permanente,Con sector*anio + departamento*anio,24686,14.593,4,18989,6.653e-12,7.709,4,5017,3.446e-6,TRUE,TRUE,FALSE

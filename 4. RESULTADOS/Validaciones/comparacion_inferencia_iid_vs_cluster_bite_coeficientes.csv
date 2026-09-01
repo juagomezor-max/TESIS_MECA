@@ -1,0 +1,37 @@
+variable,especificacion,term,estimate,std_error_iid,p_value_iid,std_error_cluster,p_value_cluster,razon_se_cluster_sobre_iid
+empleo_total,Sin controles,anio_lineal,4.136427,0.664471,4.909e-10,1.333157,0.001928,2.006
+empleo_total,Sin controles,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-2.758333,0.94026,0.003355,1.651638,0.09497,1.757
+empleo_total,Sin controles,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-2.718837,0.938094,0.003757,1.475349,0.06541,1.573
+empleo_total,Sin controles,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-3.997526,0.940113,2.127e-5,1.498511,0.007663,1.594
+empleo_total,Sin controles,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-3.843735,0.941662,4.485e-5,1.413115,0.00655,1.501
+empleo_total,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-2.903867,0.977602,0.002978,1.660125,0.08032,1.698
+empleo_total,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-2.386812,0.985193,0.01542,1.465362,0.1034,1.487
+empleo_total,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-3.985891,0.992999,5.993e-5,1.509079,0.008285,1.52
+empleo_total,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-3.805491,1.002239,1.469e-4,1.462954,0.009316,1.46
+empleo_permanente,Sin controles,anio_lineal,2.429349,0.467666,2.072e-7,0.963252,0.0117,2.06
+empleo_permanente,Sin controles,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-1.808831,0.661771,0.006276,1.170396,0.1223,1.769
+empleo_permanente,Sin controles,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-0.772608,0.660247,0.2419,1.073128,0.4716,1.625
+empleo_permanente,Sin controles,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-1.344366,0.661667,0.04219,1.029405,0.1916,1.556
+empleo_permanente,Sin controles,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-1.658338,0.662758,0.01235,1.087302,0.1273,1.641
+empleo_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-1.66037,0.69362,0.01669,1.218048,0.1729,1.756
+empleo_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-0.304771,0.699006,0.6628,1.113048,0.7842,1.592
+empleo_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-1.079969,0.704544,0.1253,1.078607,0.3167,1.531
+empleo_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-1.428436,0.7111,0.04458,1.131577,0.2069,1.591
+empleo_temporal,Sin controles,anio_lineal,1.392188,0.447576,0.00187,0.884077,0.1154,1.975
+empleo_temporal,Sin controles,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-0.750988,0.633342,0.2357,1.140851,0.5104,1.801
+empleo_temporal,Sin controles,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-1.718073,0.631883,0.006554,0.954257,0.07185,1.51
+empleo_temporal,Sin controles,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-2.402137,0.633243,1.49e-4,1.04973,0.02216,1.658
+empleo_temporal,Sin controles,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-1.878995,0.634286,0.003056,0.960068,0.05039,1.514
+empleo_temporal,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,-1.072241,0.659433,0.104,1.15375,0.3528,1.75
+empleo_temporal,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q3 - Media:anio_lineal,-1.851035,0.664554,0.005352,0.979568,0.05886,1.474
+empleo_temporal,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,-2.627659,0.669819,8.778e-5,1.090156,0.01597,1.628
+empleo_temporal,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,-2.040664,0.676052,0.002544,1.021784,0.04586,1.511
+participacion_permanente,Sin controles,anio_lineal,-0.410927,0.159246,0.009874,0.198011,0.03801,1.243
+participacion_permanente,Sin controles,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,0.617435,0.225312,0.006143,0.28984,0.0332,1.286
+participacion_permanente,Sin controles,quintil_bite2022_obreros::Q3 - Media:anio_lineal,0.900459,0.224764,6.192e-5,0.29333,0.002154,1.305
+participacion_permanente,Sin controles,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,1.581633,0.225248,2.263e-12,0.314593,5.141e-7,1.397
+participacion_permanente,Sin controles,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,1.315992,0.225674,5.583e-9,0.310676,2.317e-5,1.377
+participacion_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q2 - Baja:anio_lineal,0.724466,0.235075,0.00206,0.30239,0.01662,1.286
+participacion_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q3 - Media:anio_lineal,0.835695,0.236872,4.196e-4,0.306567,0.006433,1.294
+participacion_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q4 - Alta:anio_lineal,1.650492,0.238745,4.889e-12,0.332682,7.238e-7,1.393
+participacion_permanente,Con sector*anio + departamento*anio,quintil_bite2022_obreros::Q5 - Muy alta:anio_lineal,1.457969,0.241009,1.481e-9,0.330283,1.035e-5,1.37
