@@ -66,9 +66,39 @@ Estudio de evento: `i(ANIO_F, exposicion_10pp, ref="2015") | NORDEST + CIIU4^ANI
 
 `Exposure2022_obreros` (composicion ocupacional) pasa la validacion de tendencias paralelas de forma robusta, tanto a nivel de empresa como de establecimiento, en las 4 dimensiones de empleo. `Bite2022_obreros` (indice de Kaitz), con la inferencia CORREGIDA (clusterizada por NORDEMP, 2026-09-01), no la pasa en 1 de 4 dimensiones (`participacion_permanente`) -- las otras 3 (`empleo_total`, `empleo_permanente`, `empleo_temporal`) que originalmente parecian rechazar eran un artefacto de errores estandar IID, no un problema real de la medida. La divergencia que SI persiste (`participacion_permanente`) sigue siendo un motivo valido para preferir `Exposure2022_obreros` como especificacion principal del DiD, pero el alcance del problema de Bite2022_obreros es mucho mas acotado de lo que se penso originalmente.
 
+## Matriz de comparacion funcional (2x2) y contraste grafico de la hipotesis (2026-09-02)
+
+La "Conclusion consolidada" de arriba compara Exposure (continua, event-study anio-a-anio) contra Bite (quintiles, tendencia lineal) -- forma funcional y estadistico de prueba DISTINTOS. Un F conjunto sobre dummies de anio tiene mas potencia contra desviaciones no lineales; un test de tendencia lineal tiene mas potencia contra desviaciones monotonicas. `comparar_matriz_funcional_exposure_bite.R` corrio las 2 celdas que faltaban (Exposure en quintiles+lineal, Bite en event-study), mismos FE y cluster (`NORDEMP + CIIU4^ANIO_F + DPTO^ANIO_F`, `cluster=~NORDEMP`), mismo panel 2015-2019 -- tabla completa en `matriz_comparacion_funcional_exposure_bite.csv`.
+
+| Medida | Forma funcional | F (participacion_permanente) | p |
+|---|---|---|---|
+| Exposure2022_obreros | continua, event-study | 0.308 | 0.873 |
+| Exposure2022_obreros | quintiles, tendencia lineal | 1.52 | 0.193 |
+| Bite2022_obreros | continua, event-study | 2.35 | 0.052 |
+| Bite2022_obreros | quintiles, tendencia lineal | 7.71 | 0.0000035 |
+
+**Interpretacion:**
+
+- Bajo el MISMO test, Bite es sistematicamente mas debil que Exposure en `participacion_permanente` (0.052 vs 0.873 en event-study; 3.5e-6 vs 0.193 en tendencia lineal). La divergencia es real y consistente en direccion -- no depende de que test se use.
+- El test de tendencia lineal es el apropiado cuando la desviacion pre-choque es monotonica, y el F sobre dummies de anio pierde potencia contra esa forma especifica. El patron observado (Bite rechaza mucho mas fuerte en tendencia lineal que en event-study) es el esperado ante una tendencia previa MONOTONICA en Bite, no evidencia de que el hallazgo original fuera un artefacto de eleccion de test.
+- **Implicacion: `Bite2022_obreros` no es utilizable como especificacion para `participacion_permanente`.**
+- Un p de 0.052 no es un aprobado: el 5% es una convencion, no una frontera con contenido economico. Bite tampoco pasa el chequeo de tendencias paralelas en `participacion_permanente` bajo event-study.
+
+### Contraste grafico de la hipotesis de tendencia monotonica
+
+Si la razon de que Bite rechace con tanta fuerza en tendencia lineal es que su desviacion pre-choque 2015-2019 es monotonica (mientras que la de Exposure no lo es), eso deberia verse en las medias de `participacion_permanente` por quintil y anio. Grafico: `participacion_permanente_por_quintil_bite_vs_exposure.png`; tabla: `participacion_permanente_por_quintil_bite_vs_exposure.csv`.
+
+**Evidencia encontrada (descriptiva, no un test estadistico -- consistente o inconsistente con la hipotesis, no confirmacion):**
+
+- **Bite**: la brecha Q5-Q1 en `participacion_permanente` CRECE de forma monotonica cada anio, 2015-2019: 9.35pp -> 9.79pp -> 10.88pp -> 13.00pp -> 14.79pp (crece en los 4 pasos, sin reversiones). El quintil Q5 (mas expuesto) sube de forma monotonica los 5 anios (75.11% -> 75.80% -> 76.25% -> 77.95% -> 78.92%). En 2019, el orden de los 5 quintiles es perfectamente monotonico (Q1=64.14 < Q2=70.59 < Q3=75.52 < Q4=78.57 < Q5=78.92).
+- **Exposure**: la brecha Q5-Q1 es mas plana y NO crece de forma monotonica: -10.27pp -> -10.52pp -> -10.20pp -> -11.11pp -> -11.96pp (se angosta entre 2016 y 2017 antes de volver a ensancharse). Los quintiles individuales se mueven poco (rango total <1.5pp en Q5 a lo largo de los 5 anios, contra >3.8pp en el Q5 de Bite). En 2019, el orden de los 5 quintiles NO es monotonico (Q1=71.20 > Q2=67.32 < Q3=67.83 > Q4=63.92 > Q5=59.24 -- Q3 rompe el patron).
+- **Lectura**: el patron observado es CONSISTENTE con la hipotesis -- Bite muestra una divergencia pre-choque mayor en magnitud y mas monotonica en forma que Exposure, en la misma direccion que predice la hipotesis. No es una confirmacion causal (son medias descriptivas de una sola muestra, sin prueba formal de la forma funcional de la tendencia en si), pero el patron visual no contradice la explicacion de que Bite2022_obreros tiene una tendencia previa monotonica que Exposure2022_obreros no tiene.
+
 ## Antecedente: atricion diferencial por quintil de exposicion (nivel FIRMA, ya corrido)
 
 Encontrado el 2026-08-31 al auditar el inventario del repositorio (`INVENTARIO_REPO.md`, rama `feature/panel-establecimiento`): el diagnostico de atricion diferencial YA se corrio el 2026-08-09, en la rama `feature/exposicion-obreros-operarios` (ya fusionada a `main`), antes de que existiera esta carpeta `Validaciones/` -- por eso nunca quedo documentado aqui.
+
+> **CORRECCION (2026-09-02).** "Ya fusionada a `main`" es impreciso. El contenido relevante para ESTE antecedente si esta en `main`: el commit `15105d6` (2026-08-09, citado abajo) es ancestro de `main`, y `diagnostico_atricion_diferencial_exposicion_eam.R` sigue en el arbol de trabajo. Pero la rama `feature/exposicion-obreros-operarios` como tal **nunca se fusiono por completo**: al 2026-09-02 tiene un commit adicional sin fusionar (`add6577`, 2026-08-25, autor Nicolas Jacome), que agrega una seccion de diagnostico de cobertura de obreros/salarios 2022 a nivel establecimiento al script exploratorio del compañero (`3. SCRIPTS/3. SCRIPTS/construir_base analitica.R`, nunca validado ni citado en `CIFRAS_CLAVE.csv` ni en `INDICE_RESULTADOS.md`). Esa rama se conserva sin borrar hasta decidir que hacer con ese commit -- ver `README.md` de la raiz, seccion Historial.
 
 - **Script**: `3. SCRIPTS/diagnostico_atricion_diferencial_exposicion_eam.R`.
 - **Commit**: `15105d6`, "Diagnosticar atricion diferencial por quintil de exposicion (2022->2023/2024)", 2026-08-09 17:11:58.
