@@ -34,7 +34,13 @@
 # de la exposicion (Exposure: continua, event-study año-a-año: Bite:
 # quintiles, tendencia lineal), no los controles ni el cluster -- se
 # documenta explicitamente en la columna "especificacion" para que no
-# quede implicita.
+# quede implicita. Verificado releyendo la formula real en
+# 04_validaciones.R (no solo este comentario): ambos fixest::feols()
+# usan literalmente "| NORDEMP + CIIU4^ANIO_F + DPTO^ANIO_F" y
+# "cluster = ~NORDEMP" (2026-09-01). Las filas de Exposure en el nombre
+# ahora tambien dicen "(con controles)", antes solo lo decian las de
+# Bite -- misma especificacion en ambas, la asimetria era solo de
+# etiqueta visible, no de contenido.
 #
 # Requiere que run_all.R Y opcional_establecimiento.R ya se hayan corrido.
 #
@@ -120,21 +126,21 @@ cifras <- dplyr::bind_rows(
   fila("Atricion: brecha Q5-Q1 2019 (placebo, pp)", 3.93, obtener(atricion_placebo, "anio_seguimiento == 2019", "brecha_q5_q1_pp"),
        "atricion_c_placebo_2017_2018_2019.csv (feature/estimacion-preliminar)", ESPEC_ATRICION),
 
-  fila("Tendencias paralelas Exposure -- empleo_total F", 0.767, obtener(pretend_exposure, "variable == 'empleo_total'", "f_stat"),
+  fila("Tendencias paralelas Exposure (con controles) -- empleo_total F", 0.767, obtener(pretend_exposure, "variable == 'empleo_total'", "f_stat"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main, script validar_tendencias_paralelas_empleo_exposure_grafico.R)", ESPEC_EXPOSURE),
-  fila("Tendencias paralelas Exposure -- empleo_total p", 0.5463, obtener(pretend_exposure, "variable == 'empleo_total'", "p_value"),
+  fila("Tendencias paralelas Exposure (con controles) -- empleo_total p", 0.5463, obtener(pretend_exposure, "variable == 'empleo_total'", "p_value"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main)", ESPEC_EXPOSURE),
-  fila("Tendencias paralelas Exposure -- empleo_permanente F", 1.031, obtener(pretend_exposure, "variable == 'empleo_permanente'", "f_stat"),
+  fila("Tendencias paralelas Exposure (con controles) -- empleo_permanente F", 1.031, obtener(pretend_exposure, "variable == 'empleo_permanente'", "f_stat"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main)", ESPEC_EXPOSURE),
-  fila("Tendencias paralelas Exposure -- empleo_permanente p", 0.3898, obtener(pretend_exposure, "variable == 'empleo_permanente'", "p_value"),
+  fila("Tendencias paralelas Exposure (con controles) -- empleo_permanente p", 0.3898, obtener(pretend_exposure, "variable == 'empleo_permanente'", "p_value"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main)", ESPEC_EXPOSURE),
-  fila("Tendencias paralelas Exposure -- empleo_temporal F", 1.556, obtener(pretend_exposure, "variable == 'empleo_temporal'", "f_stat"),
+  fila("Tendencias paralelas Exposure (con controles) -- empleo_temporal F", 1.556, obtener(pretend_exposure, "variable == 'empleo_temporal'", "f_stat"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main)", ESPEC_EXPOSURE),
-  fila("Tendencias paralelas Exposure -- empleo_temporal p", 0.1832, obtener(pretend_exposure, "variable == 'empleo_temporal'", "p_value"),
+  fila("Tendencias paralelas Exposure (con controles) -- empleo_temporal p", 0.1832, obtener(pretend_exposure, "variable == 'empleo_temporal'", "p_value"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main)", ESPEC_EXPOSURE),
-  fila("Tendencias paralelas Exposure -- participacion_permanente F", 0.308, obtener(pretend_exposure, "variable == 'participacion_permanente'", "f_stat"),
+  fila("Tendencias paralelas Exposure (con controles) -- participacion_permanente F", 0.308, obtener(pretend_exposure, "variable == 'participacion_permanente'", "f_stat"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main)", ESPEC_EXPOSURE),
-  fila("Tendencias paralelas Exposure -- participacion_permanente p", 0.8729, obtener(pretend_exposure, "variable == 'participacion_permanente'", "p_value"),
+  fila("Tendencias paralelas Exposure (con controles) -- participacion_permanente p", 0.8729, obtener(pretend_exposure, "variable == 'participacion_permanente'", "p_value"),
        "tabla_evento_tendencias_2015_2019_exposure.csv (main)", ESPEC_EXPOSURE),
 
   fila("Tendencias paralelas Bite (CLUSTERIZADO, con controles) -- empleo_total F", 2.308, obtener(pretend_bite, "variable == 'empleo_total'", "f_stat"),
