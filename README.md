@@ -158,6 +158,9 @@ El repositorio acumulo 48 scripts y 84 salidas en varias ramas de trabajo mientr
 | `archivo/estimacion-preliminar` | `397e349` | Nota de preanalisis, exportacion ampliada de tendencias paralelas (coeficientes + metadatos), correccion de clustering de `Bite2022_obreros` (`cluster = ~NORDEMP`, antes IID). |
 | `archivo/panel-formal` | `da04873` | Trabajo **pendiente y no fusionado a main**: panel formal a nivel establecimiento, Paso 1 completo (68,447 filas / 9,919 establecimientos), Paso 2 escrito pero nunca ejecutado (interrumpido). No representa resultados verificados. |
 | `archivo/simplificacion` | `29271be` | Rama donde se construyo el pipeline analitico simplificado (01-05 + `opcional_establecimiento.R` + `verificar_cifras_clave.R`), ya fusionada a `main` en `f3bf8fe`. |
+| `archivo/exposicion-obreros-operarios` | `add6577` | **UNICA EXCEPCION a "main como unica rama".** Etiqueta el commit sin fusionar de `feature/exposicion-obreros-operarios` (autor Nicolas Jacome, 2026-08-25): agrega una seccion de diagnostico de cobertura de obreros/salarios 2022 a nivel establecimiento al script exploratorio del compañero, nunca validada ni citada en `CIFRAS_CLAVE.csv`/`INDICE_RESULTADOS.md`. **La rama remota `feature/exposicion-obreros-operarios` NO se borro**: es trabajo de Nicolas y la decision de borrarla es suya, no de esta consolidacion. |
+
+Todas las demas ramas de trabajo (`feature/panel-establecimiento`, `feature/estimacion-preliminar`, `feature/panel-formal`, `simplificacion`, `feature/atricion-tendencias-paralelas`) se borraron, local y remoto, tras confirmar que sus etiquetas de archivo llegaron a origin.
 
 `4. RESULTADOS/Validaciones/CIFRAS_CLAVE.csv` es el control de calidad que conecta ambos mundos: cada cifra que produce el pipeline nuevo se compara, con su especificacion exacta y su tolerancia documentada, contra el valor ya reportado en el trabajo archivado.
 

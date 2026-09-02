@@ -53,11 +53,23 @@ Las 3 tablas de F conjunto ya existentes (`tabla_evento_tendencias_establecimien
 
 **Conclusión revisada (reemplaza la de la fila 28 anterior y la de "Conclusion consolidada" del README de Validaciones):** Bite2022_obreros no tiene un problema de identificación en 3 de 4 dimensiones como se pensó originalmente — ese hallazgo era un artefacto de errores estándar IID no clusterizados. El problema real está acotado a **1 de 4 dimensiones** (`participacion_permanente`), donde la divergencia frente a `Exposure2022_obreros` es genuina y persiste con la inferencia correcta. `Exposure2022_obreros` sigue siendo la especificación principal recomendada, pero el caso contra `Bite2022_obreros` es más débil de lo documentado hasta ahora.
 
+## CONCLUSIÓN OPERATIVA 2026-09-02: Bite2022_obreros no es utilizable para participacion_permanente
+
+**Motivación:** la fila 30 comparaba Exposure (continua, event-study) contra Bite (quintiles, tendencia lineal) — forma funcional y estadístico de prueba distintos. `comparar_matriz_funcional_exposure_bite.R` corrió las 2 celdas que faltaban (mismos FE y `cluster=~NORDEMP`, mismo panel 2015-2019) para que la comparación fuera posible también controlando por forma funcional.
+
+| # | Tema | Hallazgo | Cifra clave | Script | Archivo | Documentado en |
+|---|---|---|---|---|---|---|
+| 31 | **Matriz 2x2 Exposure/Bite x forma funcional** | Bajo el MISMO test, Bite es sistemáticamente más débil que Exposure en `participacion_permanente`: event-study (p=0.052 Bite vs. p=0.873 Exposure), tendencia lineal (p=3.5e-6 Bite vs. p=0.193 Exposure). La divergencia es real y consistente en dirección, no depende de qué test se use | F=2.35/p=0.052 (Bite, event-study); F=1.52/p=0.193 (Exposure, quintiles+lineal) | `comparar_matriz_funcional_exposure_bite.R` | `matriz_comparacion_funcional_exposure_bite.csv` | `README.md` de `Validaciones/`, sección "Matriz de comparación funcional" |
+| 32 | **Contraste gráfico: tendencia previa monótona en Bite, no en Exposure** | La brecha Q5-Q1 de `participacion_permanente` 2015-2019 crece de forma monótona cada año en Bite (9.35→9.79→10.88→13.00→14.79pp); en Exposure es más plana y NO monótona (se angosta 2016→2017). Evidencia descriptiva CONSISTENTE con la hipótesis de tendencia previa monótona en Bite, no una confirmación causal | Brecha Q5-Q1 2019: 14.79pp (Bite) vs. -11.96pp (Exposure) | `graficar_participacion_permanente_por_quintil_bite_vs_exposure.R` | `participacion_permanente_por_quintil_bite_vs_exposure.csv` / `.png` | `README.md` de `Validaciones/`, sección "Matriz de comparación funcional" |
+
+**Conclusión operativa (reemplaza el matiz de "caso más débil de lo documentado" de la fila 30):** `Exposure2022_obreros` es la medida utilizable para `participacion_permanente` en el diseño DiD. `Bite2022_obreros` **no lo es** para esa dimensión — no por un artefacto de inferencia (eso ya se descartó en la corrección de 2026-09-01) ni por la elección de test (la brecha persiste bajo el mismo test en ambas medidas), sino porque tiene una tendencia previa 2015-2019 monótona por quintil que `Exposure2022_obreros` no tiene. Un p=0.052 en la forma funcional más favorable a Bite no se trata como un aprobado: el umbral del 5% es una convención, no una frontera con contenido económico, y Bite tampoco pasa el chequeo bajo esa forma.
+
 ## Conclusiones metodológicas transversales (aparecen en más de un tema)
 
 - **La identificación depende de `sector(CIIU4)×año` + `tamaño×año`, no de la exposición cruda.** Aparece de forma independiente en: las validaciones de tendencias paralelas (`README.md` de `Validaciones/`) y en la extensión del diagnóstico de atrición (fila 21 de esta tabla, placebo 2019).
 - **La relación exposición-salida no es monotónica** (fila 19): el modelo principal del DiD debería probar también bins/cuantiles de exposición, no solo tratamiento continuo lineal — recomendación que aplica más allá de la atrición, a cualquier especificación continua de `Exposure2022_obreros`.
 - **No hay evidencia de que el choque de 2023 induzca atrición diferencial ni pérdida de planta selectiva** (filas 16, 17, 18, 20): tanto a nivel de las 262 firmas multiplanta como a nivel de toda la muestra, con el matiz de que el IC 95% no descarta un efecto moderado (fila 18) y de que el patrón placebo pre-existe (fila 20).
+- **`Bite2022_obreros` no es utilizable para `participacion_permanente`** (filas 31-32): tiene una tendencia previa 2015-2019 monótona por quintil que `Exposure2022_obreros` no tiene — no es un artefacto de inferencia ni de elección de test.
 
 ## Limitaciones explícitas pendientes
 
