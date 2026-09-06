@@ -42,6 +42,36 @@
 # Bite -- misma especificacion en ambas, la asimetria era solo de
 # etiqueta visible, no de contenido.
 #
+# BRECHA DE REPRODUCIBILIDAD CERRADA (2026-09-05): ~10 scripts en
+# validaciones/construccion/verificaciones seguian leyendo
+# bite_obreros_eam.rds, exposicion_obreros_eam.rds y
+# salarios_promedio_categoria_eam.rds -- archivos cuyo generador se
+# retiro en el commit 591a752 bajo la premisa (nunca antes verificada)
+# de que pipeline/02_construir_exposicion.R ya reproducia su funcion.
+# Se verifico celda a celda por NORDEMP (n=6186, 2022) ANTES de tocar
+# ningun script: Exposure2022_obreros y Bite2022_obreros coinciden
+# EXACTAMENTE (diferencia maxima 0) contra los archivos retirados;
+# salario_promedio_obrero (no persistido en exposicion_firma_eam.rds,
+# recalculado aqui con la formula exacta de 02_construir_exposicion.R:
+# C3R2C1/(C4R2C1+C4R2C2)) tambien coincide EXACTAMENTE. Las 3
+# comparaciones quedan abajo como filas de este control, releidas cada
+# vez que se corre este script -- NO se hardcodea el resultado como un
+# hecho historico, porque los 2 archivos retirados usados en la
+# comparacion (bite_obreros_eam.rds, exposicion_obreros_eam.rds) siguen
+# existiendo en disco, solo se movieron a
+# descriptivos_exposicion/_archivo_obsoleto_2026-09-05/ (no se
+# borraron). salarios_promedio_categoria_eam.rds NO se archivo: trae
+# salario_promedio_administrativo y salario_promedio_prof_tecnico, que
+# ningun script del pipeline nuevo reproduce -- sigue siendo insumo
+# activo de diagnosticos_validacion_exposicion_obreros_eam.R.
+#
+# Nota sobre la regla de tolerancia para estas 3 filas especificas: el
+# valor esperado es 0 (no deberia haber NINGUNA diferencia, no una
+# diferencia "pequeña"). `all.equal(0, producido, tolerance=0.01)` para
+# un objetivo de 0 usa diferencia ABSOLUTA (no relativa, que no esta
+# definida quando el objetivo es cero) -- sigue siendo la MISMA llamada
+# a `fila()` que las otras 33 filas, sin caso especial en el codigo.
+#
 # Requiere que run_all.R Y opcional_establecimiento.R ya se hayan corrido.
 #
 # Salida (versionada, 4. RESULTADOS/Validaciones/):
@@ -68,6 +98,47 @@ corr_planta_firma <- leer("simplificado_establecimiento_correlacion_planta_firma
 multiplanta <- leer("simplificado_establecimiento_multiplanta.csv")
 umbral <- leer("simplificado_establecimiento_umbral_variacion.csv")
 cohorte <- leer("simplificado_establecimiento_cohorte_balanceada.csv")
+
+# ------------------------------------------------------------------
+# Brecha de reproducibilidad (2026-09-05): pipeline nuevo (exposicion_
+# firma_eam.rds) vs. los 3 archivos retirados en 591a752 -- ver nota en
+# la cabecera. Comparacion celda a celda por NORDEMP, diferencia maxima
+# absoluta (esperado: 0 en las 3).
+# ------------------------------------------------------------------
+
+archivo_obsoleto_dir <- file.path(paths$bases_derivadas_exposicion, "_archivo_obsoleto_2026-09-05")
+safe_divide_qc <- function(num, den) ifelse(is.na(num) | is.na(den) | den == 0, NA_real_, num / den)
+
+exposicion_firma_qc <- readr::read_rds(file.path(paths$bases_derivadas_exposicion, "exposicion_firma_eam.rds"))
+panel_firma_qc <- readr::read_rds(file.path(paths$bases_derivadas_exposicion, "panel_firma_eam.rds")) %>%
+  dplyr::filter(ANIO == 2022)
+
+diff_maxima <- function(nuevo, viejo, col_nuevo, col_viejo) {
+  m <- dplyr::inner_join(
+    nuevo %>% dplyr::select(NORDEMP, valor_nuevo = dplyr::all_of(col_nuevo)),
+    viejo %>% dplyr::select(NORDEMP, valor_viejo = dplyr::all_of(col_viejo)),
+    by = "NORDEMP"
+  ) %>%
+    dplyr::filter(!is.na(valor_nuevo), !is.na(valor_viejo))
+  if (nrow(m) == 0) stop("diff_maxima: 0 filas comparables -- revisar antes de reportar coincidencia.")
+  max(abs(m$valor_nuevo - m$valor_viejo))
+}
+
+exposicion_obreros_viejo <- readr::read_rds(file.path(archivo_obsoleto_dir, "exposicion_obreros_eam.rds")) %>%
+  dplyr::filter(ANIO == 2022) %>% dplyr::mutate(NORDEMP = as.character(NORDEMP)) %>%
+  dplyr::distinct(NORDEMP, .keep_all = TRUE)
+bite_obreros_viejo <- readr::read_rds(file.path(archivo_obsoleto_dir, "bite_obreros_eam.rds")) %>%
+  dplyr::filter(ANIO == 2022) %>% dplyr::mutate(NORDEMP = as.character(NORDEMP)) %>%
+  dplyr::distinct(NORDEMP, .keep_all = TRUE)
+salarios_viejo <- readr::read_rds(file.path(paths$bases_derivadas_exposicion, "salarios_promedio_categoria_eam.rds")) %>%
+  dplyr::filter(ANIO == 2022) %>% dplyr::mutate(NORDEMP = as.character(NORDEMP)) %>%
+  dplyr::distinct(NORDEMP, .keep_all = TRUE)
+
+diff_exposure <- diff_maxima(exposicion_firma_qc, exposicion_obreros_viejo, "Exposure2022_obreros", "Exposure2022_obreros")
+diff_bite <- diff_maxima(exposicion_firma_qc, bite_obreros_viejo, "Bite2022_obreros", "Bite2022_obreros")
+salario_nuevo_qc <- panel_firma_qc %>%
+  dplyr::transmute(NORDEMP = as.character(NORDEMP), salario_promedio_obrero = safe_divide_qc(C3R2C1, C4R2C1 + C4R2C2))
+diff_salario <- diff_maxima(salario_nuevo_qc, salarios_viejo, "salario_promedio_obrero", "salario_promedio_obrero")
 
 obtener <- function(tabla, filtro_expr, columna) {
   mascara <- eval(parse(text = filtro_expr), envir = tabla)
@@ -103,6 +174,7 @@ ESPEC_CORRELACION <- "N/A -- correlacion bivariada (Pearson/Spearman), no es un 
 ESPEC_ATRICION <- "Proporcion binomial por celda quintil-anio; SE analitico sqrt(p(1-p)/n); NO es un modelo de regresion -- no aplica variable de cluster (celdas independientes por construccion)"
 ESPEC_EXPOSURE <- "Y ~ i(ANIO_F, exposicion_10pp, ref='2015') | NORDEMP + CIIU4^ANIO_F + DPTO^ANIO_F; cluster=~NORDEMP; exposicion CONTINUA (10pp), estudio de evento anio-a-anio"
 ESPEC_BITE <- "Y ~ anio_lineal + i(quintil_bite, anio_lineal, ref='Q1') | NORDEMP + CIIU4^ANIO_F + DPTO^ANIO_F; cluster=~NORDEMP; exposicion en QUINTILES, tendencia LINEAL (no anio-a-anio) -- MISMOS FE/controles/cluster que Exposure (verificado), forma funcional distinta"
+ESPEC_EQUIVALENCIA_RETIRADOS <- "N/A -- verificacion de equivalencia celda a celda (max |diferencia| por NORDEMP, 2022) entre el pipeline nuevo y el archivo retirado en 591a752, no es un modelo de regresion ni una cifra reportada en la tesis. Esperado=0 (deberia ser identico, no solo cercano)."
 
 cifras <- dplyr::bind_rows(
   fila("Establecimientos activos 2022", 6775, obtener(denom_est, "metrica == 'Establecimientos activos 2022'", "valor"),
@@ -175,7 +247,14 @@ cifras <- dplyr::bind_rows(
   fila("Firmas cohorte balanceada (>=2 plantas, 9 anios)", 181, obtener(cohorte, "grepl('mantienen', metrica)", "valor"),
        "descriptivos_panel_efectivo_especificacion_b_persistencia_262.csv (main)", ESPEC_NA),
   fila("Correlacion Exposure2022_obreros_est (planta) vs Exposure2022_obreros (firma)", 0.964, corr_planta_firma$correlacion_pearson,
-       "Valor esperado ORIGINAL provino de CONSOLA (mensaje de construir_exposicion_obreros_establecimiento_eam.R en main, NUNCA se guardo como archivo -- laguna de documentacion de esa epoca). El pipeline nuevo SI lo guarda: simplificado_establecimiento_correlacion_planta_firma.csv (opcional_establecimiento.R), respaldo auditable a partir de ahora.", ESPEC_CORRELACION)
+       "Valor esperado ORIGINAL provino de CONSOLA (mensaje de construir_exposicion_obreros_establecimiento_eam.R en main, NUNCA se guardo como archivo -- laguna de documentacion de esa epoca). El pipeline nuevo SI lo guarda: simplificado_establecimiento_correlacion_planta_firma.csv (opcional_establecimiento.R), respaldo auditable a partir de ahora.", ESPEC_CORRELACION),
+
+  fila("Equivalencia Exposure2022_obreros: pipeline nuevo vs. exposicion_obreros_eam.rds (retirado)", 0, diff_exposure,
+       "exposicion_obreros_eam.rds (generado por construir_exposicion_obreros_eam.R, retirado en commit 591a752) -- movido a descriptivos_exposicion/_archivo_obsoleto_2026-09-05/, n=6180 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS),
+  fila("Equivalencia Bite2022_obreros: pipeline nuevo vs. bite_obreros_eam.rds (retirado)", 0, diff_bite,
+       "bite_obreros_eam.rds (generado por construir_bite_obreros_eam.R, retirado en commit 591a752) -- movido a descriptivos_exposicion/_archivo_obsoleto_2026-09-05/, n=5099 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS),
+  fila("Equivalencia salario_promedio_obrero: pipeline nuevo (recalculado) vs. salarios_promedio_categoria_eam.rds", 0, diff_salario,
+       "salarios_promedio_categoria_eam.rds (generado por construir_salarios_promedio_categoria_eam.R, retirado en commit 591a752, PERO el archivo de datos NO se archivo -- sigue activo, ver nota de cabecera). Pipeline nuevo recalcula con la formula exacta de 02_construir_exposicion.R: C3R2C1/(C4R2C1+C4R2C2). n=5103 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS)
 )
 
 readr::write_csv(cifras, file.path(out_dir, "CIFRAS_CLAVE.csv"))

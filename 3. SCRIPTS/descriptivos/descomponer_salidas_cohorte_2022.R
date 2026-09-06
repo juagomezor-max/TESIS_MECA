@@ -53,10 +53,9 @@ firmas_262 <- n_est_por_firma_anio %>%
 
 # Exposicion a nivel FIRMA en 2022 (Exposure2022_obreros, ya construida
 # en la rama feature/exposicion-obreros-operarios, ya en main).
-exposicion_firma_path <- file.path(data_dir, "exposicion_obreros_eam.rds")
-if (!file.exists(exposicion_firma_path)) stop("Falta exposicion_obreros_eam.rds.")
+exposicion_firma_path <- file.path(data_dir, "exposicion_firma_eam.rds")
+if (!file.exists(exposicion_firma_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 exposicion_firma_2022 <- readr::read_rds(exposicion_firma_path) %>%
-  dplyr::filter(ANIO == 2022) %>%
   dplyr::distinct(NORDEMP, Exposure2022_obreros) %>%
   dplyr::mutate(NORDEMP = as.character(NORDEMP))
 

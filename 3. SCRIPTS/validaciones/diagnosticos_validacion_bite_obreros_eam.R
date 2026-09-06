@@ -25,8 +25,8 @@ leer_o_fallar <- function(path, mensaje) {
 }
 
 bite_obreros <- leer_o_fallar(
-  file.path(data_dir, "bite_obreros_eam.rds"),
-  "Falta bite_obreros_eam.rds. Corre construir_bite_obreros_eam.R (Paso 2) primero."
+  file.path(data_dir, "exposicion_firma_eam.rds"),
+  "Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero."
 )
 base_original <- leer_o_fallar(
   file.path(data_dir, "base_reducida_exposicion_eam.rds"),
@@ -41,7 +41,6 @@ save_plot <- function(plot_obj, filename, width = 9, height = 6) {
 }
 
 bite_baseline <- bite_obreros %>%
-  dplyr::filter(ANIO == ANIO_BASE_EXPOSICION) %>%
   dplyr::distinct(NORDEMP, Exposure2022_obreros, Bite2022_obreros) %>%
   dplyr::filter(!is.na(Bite2022_obreros))
 

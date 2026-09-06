@@ -92,8 +92,8 @@ conteo_path <- file.path(data_dir, "conteo_personal_categoria_eam.rds")
 if (!file.exists(conteo_path)) stop("Falta conteo_personal_categoria_eam.rds.")
 conteo <- readr::read_rds(conteo_path) %>% dplyr::select(NORDEMP, ANIO, empleo_total = empleo_total_categorias)
 
-bite_path <- file.path(data_dir, "bite_obreros_eam.rds")
-if (!file.exists(bite_path)) stop("Falta bite_obreros_eam.rds.")
+bite_path <- file.path(data_dir, "exposicion_firma_eam.rds")
+if (!file.exists(bite_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 bite_baseline <- readr::read_rds(bite_path) %>%
   dplyr::distinct(NORDEMP, Bite2022_obreros) %>%
   dplyr::filter(!is.na(Bite2022_obreros)) %>%

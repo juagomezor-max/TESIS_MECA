@@ -40,8 +40,8 @@ leer_o_fallar <- function(path, mensaje) {
   readr::read_rds(path)
 }
 
-bite_obreros <- leer_o_fallar(file.path(data_dir, "bite_obreros_eam.rds"), "Falta bite_obreros_eam.rds (Paso 2).")
-salarios <- leer_o_fallar(file.path(data_dir, "salarios_promedio_categoria_eam.rds"), "Falta salarios_promedio_categoria_eam.rds.")
+bite_obreros <- leer_o_fallar(file.path(data_dir, "exposicion_firma_eam.rds"), "Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
+panel_firma_para_salario <- leer_o_fallar(file.path(data_dir, "panel_firma_eam.rds"), "Falta panel_firma_eam.rds. Corre pipeline/01_construir_base.R primero.")
 
 # Misma funcion y mismos parametros que descriptivo_exposicion_eam.R Seccion 4.
 winsorize <- function(x, probs = c(0.01, 0.99)) {
@@ -53,6 +53,15 @@ winsorize <- function(x, probs = c(0.01, 0.99)) {
 safe_divide <- function(num, den) {
   ifelse(is.na(num) | is.na(den) | den == 0, NA_real_, num / den)
 }
+
+# salarios_promedio_categoria_eam.rds fue retirado: exposicion_firma_eam.rds
+# no guarda salario_promedio_obrero (solo Bite2022_obreros, ya dividido), asi
+# que se recalcula aqui con la MISMA formula de 02_construir_exposicion.R
+# (C3R2C1 / (C4R2C1+C4R2C2), sin winsorizar -- ver header) -- verificado
+# celda a celda contra el archivo retirado antes de este cambio (0
+# diferencias en las 5,103 firmas con valor en ambos).
+salarios <- panel_firma_para_salario %>%
+  dplyr::transmute(NORDEMP, ANIO, salario_promedio_obrero = safe_divide(C3R2C1, C4R2C1 + C4R2C2))
 
 # ------------------------------------------------------------------
 # 1) Bite winsorizado vs original
@@ -67,7 +76,6 @@ salario_2022 <- salarios %>%
   )
 
 base_comparacion <- bite_obreros %>%
-  dplyr::filter(ANIO == ANIO_BASE_EXPOSICION) %>%
   dplyr::distinct(NORDEMP, Exposure2022_obreros, Bite2022_obreros) %>%
   dplyr::left_join(salario_2022 %>% dplyr::select(NORDEMP, Bite2022_obreros_winsorizado), by = "NORDEMP") %>%
   dplyr::filter(!is.na(Exposure2022_obreros))

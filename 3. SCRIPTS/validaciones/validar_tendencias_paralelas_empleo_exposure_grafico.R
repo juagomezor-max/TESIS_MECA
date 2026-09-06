@@ -121,8 +121,8 @@ conteo <- readr::read_rds(conteo_path) %>%
 # 3) Exposure2022_obreros (continua, ya winsorizada).
 # ------------------------------------------------------------------
 
-exposicion_path <- file.path(data_dir, "exposicion_obreros_eam.rds")
-if (!file.exists(exposicion_path)) stop("Falta exposicion_obreros_eam.rds. Corre construir_exposicion_obreros_eam.R primero.")
+exposicion_path <- file.path(data_dir, "exposicion_firma_eam.rds")
+if (!file.exists(exposicion_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 
 exposicion_baseline <- readr::read_rds(exposicion_path) %>%
   dplyr::distinct(NORDEMP, Exposure2022_obreros) %>%

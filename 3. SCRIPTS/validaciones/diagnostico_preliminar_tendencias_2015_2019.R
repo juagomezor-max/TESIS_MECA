@@ -33,11 +33,11 @@ paths <- ensure_project_structure()
 plot_dir <- paths$resultados_exposicion
 data_dir <- paths$bases_derivadas_exposicion
 
-exposicion_path <- file.path(data_dir, "exposicion_obreros_eam.rds")
+exposicion_path <- file.path(data_dir, "exposicion_firma_eam.rds")
 if (!file.exists(exposicion_path)) {
   stop(
-    "Falta exposicion_obreros_eam.rds (quintiles de Exposure2022_obreros). ",
-    "Corre construir_exposicion_obreros_eam.R (rama feature/exposicion-obreros-operarios) primero."
+    "Falta exposicion_firma_eam.rds (quintiles de Exposure2022_obreros). ",
+    "Corre pipeline/02_construir_exposicion.R primero."
   )
 }
 

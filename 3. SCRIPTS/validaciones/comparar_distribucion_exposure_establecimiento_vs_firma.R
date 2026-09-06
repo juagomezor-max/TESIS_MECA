@@ -25,10 +25,10 @@ out_dir <- paths$resultados_validaciones
 ANIO_BASE <- 2022
 
 exposicion_est_path <- file.path(data_dir, "exposicion_obreros_establecimiento_eam.rds")
-exposicion_firma_path <- file.path(data_dir, "exposicion_obreros_eam.rds")
+exposicion_firma_path <- file.path(data_dir, "exposicion_firma_eam.rds")
 
 if (!file.exists(exposicion_est_path)) stop("Falta exposicion_obreros_establecimiento_eam.rds. Corre construir_exposicion_obreros_establecimiento_eam.R primero.")
-if (!file.exists(exposicion_firma_path)) stop("Falta exposicion_obreros_eam.rds. Corre construir_exposicion_obreros_eam.R primero.")
+if (!file.exists(exposicion_firma_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 
 exposure_est <- readr::read_rds(exposicion_est_path) %>%
   dplyr::filter(ANIO == ANIO_BASE) %>%
@@ -37,7 +37,6 @@ exposure_est <- readr::read_rds(exposicion_est_path) %>%
   dplyr::pull(Exposure2022_obreros_est)
 
 exposure_firma <- readr::read_rds(exposicion_firma_path) %>%
-  dplyr::filter(ANIO == ANIO_BASE) %>%
   dplyr::distinct(NORDEMP, Exposure2022_obreros) %>%
   dplyr::filter(!is.na(Exposure2022_obreros)) %>%
   dplyr::pull(Exposure2022_obreros)

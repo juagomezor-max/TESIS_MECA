@@ -23,10 +23,10 @@ data_dir <- paths$bases_derivadas_exposicion
 ANIO_BASE_EXPOSICION <- 2022
 
 conteo_path <- file.path(data_dir, "conteo_personal_categoria_eam.rds")
-exposicion_path <- file.path(data_dir, "exposicion_obreros_eam.rds")
+exposicion_path <- file.path(data_dir, "exposicion_firma_eam.rds")
 
 if (!file.exists(conteo_path)) stop("Falta conteo_personal_categoria_eam.rds. Corre el Paso 3 primero.")
-if (!file.exists(exposicion_path)) stop("Falta exposicion_obreros_eam.rds. Corre el Paso 5 primero.")
+if (!file.exists(exposicion_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 
 conteo <- readr::read_rds(conteo_path)
 exposicion <- readr::read_rds(exposicion_path)
@@ -37,7 +37,6 @@ exposicion <- readr::read_rds(exposicion_path)
 # ------------------------------------------------------------------
 
 firmas_base <- exposicion %>%
-  dplyr::filter(ANIO == ANIO_BASE_EXPOSICION) %>%
   dplyr::distinct(NORDEMP, quintil_exposure2022_obreros)
 
 n_firmas_base <- nrow(firmas_base)

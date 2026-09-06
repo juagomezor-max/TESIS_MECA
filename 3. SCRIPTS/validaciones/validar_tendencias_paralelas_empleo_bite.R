@@ -167,8 +167,8 @@ conteo <- readr::read_rds(conteo_path) %>%
 #    quintil_exposure2022_obreros).
 # ------------------------------------------------------------------
 
-bite_path <- file.path(data_dir, "bite_obreros_eam.rds")
-if (!file.exists(bite_path)) stop("Falta bite_obreros_eam.rds. Corre construir_bite_obreros_eam.R primero.")
+bite_path <- file.path(data_dir, "exposicion_firma_eam.rds")
+if (!file.exists(bite_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 
 bite_baseline <- readr::read_rds(bite_path) %>%
   dplyr::distinct(NORDEMP, Bite2022_obreros) %>%

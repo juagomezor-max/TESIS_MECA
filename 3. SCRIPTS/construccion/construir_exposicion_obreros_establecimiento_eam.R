@@ -119,10 +119,9 @@ script_header("Exposure2022_obreros_est construida (nivel establecimiento)")
 message("Establecimientos con Exposure2022_obreros_est valida en ", ANIO_BASE_EXPOSICION, ": ", sum(!is.na(baseline$Exposure2022_obreros_est)))
 message("Filas NORDEST-ANIO en el panel: ", nrow(exposicion_establecimiento))
 
-exposicion_empresa_path <- file.path(data_output_dir, "exposicion_obreros_eam.rds")
+exposicion_empresa_path <- file.path(data_output_dir, "exposicion_firma_eam.rds")
 if (file.exists(exposicion_empresa_path)) {
   exposicion_empresa <- readr::read_rds(exposicion_empresa_path) %>%
-    dplyr::filter(ANIO == ANIO_BASE_EXPOSICION) %>%
     dplyr::distinct(NORDEMP, Exposure2022_obreros)
 
   comparacion <- exposicion_establecimiento %>%

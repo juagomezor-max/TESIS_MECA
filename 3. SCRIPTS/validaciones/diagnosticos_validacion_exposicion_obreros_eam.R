@@ -31,13 +31,20 @@ conteo <- leer_o_fallar(
   file.path(data_dir, "conteo_personal_categoria_eam.rds"),
   "Falta conteo_personal_categoria_eam.rds. Corre el Paso 3 primero."
 )
+# NO se retira: salarios_promedio_categoria_eam.rds trae
+# salario_promedio_administrativo y salario_promedio_prof_tecnico,
+# columnas que pipeline/02_construir_exposicion.R NUNCA reprodujo (solo
+# calcula salario_promedio_obrero, y ni siquiera lo persiste -- solo su
+# derivado Bite2022_obreros). La seccion 4 de este script (tabla_salarios_
+# promedio_por_categoria.csv) necesita las 3 categorias, asi que este
+# archivo sigue siendo un insumo activo sin sustituto.
 salarios <- leer_o_fallar(
   file.path(data_dir, "salarios_promedio_categoria_eam.rds"),
-  "Falta salarios_promedio_categoria_eam.rds. Corre el Paso 4 primero."
+  "Falta salarios_promedio_categoria_eam.rds."
 )
 exposicion_obreros <- leer_o_fallar(
-  file.path(data_dir, "exposicion_obreros_eam.rds"),
-  "Falta exposicion_obreros_eam.rds. Corre el Paso 5 primero."
+  file.path(data_dir, "exposicion_firma_eam.rds"),
+  "Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero."
 )
 base_original <- leer_o_fallar(
   file.path(data_dir, "base_reducida_exposicion_eam.rds"),
@@ -75,7 +82,6 @@ readr::write_csv(cobertura_categorias, file.path(plot_dir, "tabla_cobertura_cate
 # ------------------------------------------------------------------
 
 nueva_baseline <- exposicion_obreros %>%
-  dplyr::filter(ANIO == ANIO_BASE_EXPOSICION) %>%
   dplyr::distinct(NORDEMP, Exposure2022_obreros)
 
 original_baseline <- base_original %>%

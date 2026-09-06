@@ -67,9 +67,9 @@ data_dir <- paths$bases_derivadas_exposicion
 out_dir <- paths$resultados_validaciones
 
 conteo_path <- file.path(data_dir, "conteo_personal_categoria_eam.rds")
-exposicion_path <- file.path(data_dir, "exposicion_obreros_eam.rds")
+exposicion_path <- file.path(data_dir, "exposicion_firma_eam.rds")
 if (!file.exists(conteo_path)) stop("Falta conteo_personal_categoria_eam.rds.")
-if (!file.exists(exposicion_path)) stop("Falta exposicion_obreros_eam.rds.")
+if (!file.exists(exposicion_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 
 conteo <- readr::read_rds(conteo_path)
 exposicion <- readr::read_rds(exposicion_path)
@@ -101,8 +101,11 @@ tamano_de <- function(pertotal) {
 # ====================================================================
 
 construir_cohorte <- function(anio_base, anios_seguimiento) {
+  # exposicion (exposicion_firma_eam.rds) no tiene columna ANIO -- es
+  # siempre la linea base 2022, no filtra por anio_base. Solo se usa en
+  # la rama anio_base==2022; el placebo (anio_base=2017) recalcula fresco
+  # abajo, sin tocar esta variable.
   firmas_base <- exposicion %>%
-    dplyr::filter(ANIO == anio_base) %>%
     dplyr::distinct(NORDEMP, Exposure2022_obreros, quintil_exposure2022_obreros)
 
   if (anio_base != 2022) {
