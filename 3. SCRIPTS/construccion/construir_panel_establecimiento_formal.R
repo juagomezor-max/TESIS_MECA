@@ -67,7 +67,11 @@
 #    para deduplicar (a diferencia de NORDEMP-ANIO en 01_construir_base.R).
 #
 # Salidas (no versionadas, 1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/):
-# - panel_establecimiento_formal.rds/.csv
+# - panel_establecimiento_formal.rds/.csv (incluye costo_laboral_total y
+#   salario_promedio desde 2026-09-05, agregadas para el chequeo de
+#   "primer eslabon" -- ver validaciones/validar_primer_eslabon_costo_laboral.R.
+#   Formula de fallback EXACTA, ya validada en 3 scripts, ver bloque de
+#   calculo abajo -- NO reinventada.)
 
 source(file.path("3. SCRIPTS", "pipeline", "_utils_proyecto.R"))
 
@@ -111,7 +115,15 @@ cols_temporal <- c(
   "C4R3C1", "C4R3C2", "C4R4C1", "C4R4C2", "C4R3C3", "C4R3C4", "C4R4C3", "C4R4C4",
   "C4R1C5N", "C4R1C6N", "C4R2C5E", "C4R2C6E", "C4R1C7N", "C4R1C8N", "C4R2C7E", "C4R2C8E"
 )
-cols_numericas <- unique(c(cols_obreros, cols_administrativos, cols_prof_tecnico, cols_permanente, cols_temporal))
+cols_costo_laboral <- c(
+  # costo_laboral_total: formula de fallback EXACTA, ya validada en
+  # pipeline/descriptivo_exposicion_eam.R (linea 269),
+  # validaciones/investigar_divergencia_pretendencias_2018_2019.R y
+  # validaciones/diagnostico_preliminar_tendencias_2015_2019.R -- no
+  # re-derivada aqui, ver bloque de calculo abajo.
+  "C3R10C3", "SALPEYTE", "PRESPYTE", "SALARPER", "PRESSPER", "REMUTEMP"
+)
+cols_numericas <- unique(c(cols_obreros, cols_administrativos, cols_prof_tecnico, cols_permanente, cols_temporal, cols_costo_laboral))
 
 macro_base <- readr::read_rds(paths$macro_base_eam)
 names(macro_base) <- toupper(names(macro_base))
@@ -212,7 +224,20 @@ panel_ventana <- base_establecimiento %>%
     empleo_permanente = rowSums(dplyr::across(dplyr::all_of(cols_permanente)), na.rm = TRUE),
     empleo_temporal = rowSums(dplyr::across(dplyr::all_of(cols_temporal)), na.rm = TRUE),
     participacion_permanente = safe_divide(empleo_permanente, empleo_total) * 100,
-    tamano_empresa = tamano_de(empleo_total)
+    tamano_empresa = tamano_de(empleo_total),
+    # costo_laboral_total / salario_promedio: formula de fallback EXACTA
+    # (no reinventada, ver "cols_costo_laboral" arriba). Con las 6
+    # columnas siempre presentes (Paso 0, 2026-09-05), la rama C3R10C3
+    # siempre se toma -- se deja la cadena completa por fidelidad al
+    # patron ya validado, no solo la primera rama.
+    costo_laboral_total = if ("C3R10C3" %in% names(.)) {
+      C3R10C3
+    } else if (all(c("SALPEYTE", "PRESPYTE") %in% names(.))) {
+      SALPEYTE + PRESPYTE
+    } else {
+      SALARPER + PRESSPER + REMUTEMP
+    },
+    salario_promedio = safe_divide(costo_laboral_total, empleo_total)
   ) %>%
   dplyr::left_join(dpto_fijo_tabla, by = "NORDEST") %>%
   dplyr::mutate(
@@ -224,7 +249,8 @@ panel_ventana <- base_establecimiento %>%
   ) %>%
   dplyr::select(
     NORDEST, NORDEMP, ANIO, ANIO_F, anio_lineal, CIIU4, DPTO_fijo,
-    tamano_empresa, empleo_total, empleo_permanente, empleo_temporal, participacion_permanente
+    tamano_empresa, empleo_total, empleo_permanente, empleo_temporal, participacion_permanente,
+    costo_laboral_total, salario_promedio
   )
 
 n_sin_dpto_fijo <- sum(is.na(panel_ventana$DPTO_fijo))
@@ -253,5 +279,10 @@ print(panel_ventana %>% dplyr::distinct(NORDEST) %>% dplyr::left_join(dpto_fijo_
 message("")
 message("Casos 'cambio_sostenido' sin reporte en 2022 (fallback a moda usado): ", n_fallback)
 message("Filas con DPTO_fijo faltante tras el join (deberia ser 0): ", n_sin_dpto_fijo)
+message("")
+message("Cobertura de costo_laboral_total / salario_promedio (agregadas 2026-09-05, 'primer eslabon'):")
+message("  Filas totales: ", nrow(panel_ventana))
+message("  Filas con costo_laboral_total NA: ", sum(is.na(panel_ventana$costo_laboral_total)))
+message("  Filas con salario_promedio NA: ", sum(is.na(panel_ventana$salario_promedio)))
 message("")
 message("Base exportada en: ", file.path(data_dir, "panel_establecimiento_formal.rds"))

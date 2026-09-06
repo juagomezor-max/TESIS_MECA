@@ -1,0 +1,17 @@
+variable,especificacion,term,estimate,std.error,statistic,p.value,conf.low,conf.high,grupo_base_omitido
+asinh_salario_promedio,Sin controles,ANIO_F::2016:exposicion_10pp,0.009237,6.61e-4,13.9704,1.086e-43,0.00794,0.010533,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2017:exposicion_10pp,0.017908,5.99e-4,29.9036,1.2749999999999996e-183,0.016734,0.019082,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2018:exposicion_10pp,0.025529,6.18e-4,41.2941,0,0.024317,0.026741,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2019:exposicion_10pp,0.035369,6.56e-4,53.8793,0,0.034082,0.036656,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2021:exposicion_10pp,0.05111,8.28e-4,61.7369,0,0.049487,0.052733,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2022:exposicion_10pp,0.061588,9.33e-4,65.9785,0,0.059758,0.063417,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2023:exposicion_10pp,0.077582,0.001022,75.8757,0,0.075577,0.079586,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2024:exposicion_10pp,0.091583,7.87e-4,116.4047,0,0.09004,0.093125,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2016:exposicion_10pp,-3.47e-4,0.002349,-0.1478,0.8825,-0.004953,0.004259,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2017:exposicion_10pp,0.001487,0.002075,0.7168,0.4735,-0.002581,0.005556,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2018:exposicion_10pp,-0.002072,0.002044,-1.0136,0.3108,-0.00608,0.001935,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2019:exposicion_10pp,-0.004387,0.002326,-1.8863,0.0593,-0.008946,1.72e-4,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2021:exposicion_10pp,-0.005626,0.003763,-1.4951,0.1349,-0.013002,0.001751,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2022:exposicion_10pp,-0.006703,0.003075,-2.1796,0.02932,-0.012731,-6.74e-4,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2023:exposicion_10pp,-0.009108,0.004119,-2.2109,0.02708,-0.017183,-0.001032,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2024:exposicion_10pp,-0.001423,0.002565,-0.5547,0.5791,-0.00645,0.003605,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio

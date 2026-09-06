@@ -80,10 +80,18 @@ cols_salario_promedio <- c(
   "C3R2C2",  # salario_promedio_administrativo (commit e149152, antes de retirarse en 591a752)
   "C3R2PT"   # salario_promedio_prof_tecnico (commit e149152, antes de retirarse en 591a752)
 )
+cols_costo_laboral <- c(
+  # costo_laboral_total (formula de fallback ya validada en
+  # pipeline/descriptivo_exposicion_eam.R, validaciones/
+  # investigar_divergencia_pretendencias_2018_2019.R y validaciones/
+  # diagnostico_preliminar_tendencias_2015_2019.R, 2026-09-05) --
+  # requiere las 6 columnas de la cadena de respaldo disponibles.
+  "C3R10C3", "SALPEYTE", "PRESPYTE", "SALARPER", "PRESSPER", "REMUTEMP"
+)
 
 cols_numericas <- unique(c(
   cols_obreros, cols_administrativos, cols_prof_tecnico, cols_propietarios,
-  cols_permanente, cols_temporal, cols_salario_promedio, "PERTOTAL"
+  cols_permanente, cols_temporal, cols_salario_promedio, cols_costo_laboral, "PERTOTAL"
 ))
 
 macro_base <- readr::read_rds(paths$macro_base_eam)
