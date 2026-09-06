@@ -69,8 +69,8 @@ first_existing_var <- function(data, candidates) {
 #    sector/tamano) del diagnostico preliminar.
 # ------------------------------------------------------------------
 
-exposicion_path <- file.path(data_dir, "exposicion_obreros_eam.rds")
-if (!file.exists(exposicion_path)) stop("Falta exposicion_obreros_eam.rds.")
+exposicion_path <- file.path(data_dir, "exposicion_firma_eam.rds")
+if (!file.exists(exposicion_path)) stop("Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero.")
 
 quintiles <- readr::read_rds(exposicion_path) %>%
   dplyr::distinct(NORDEMP, quintil_exposure2022_obreros) %>%
