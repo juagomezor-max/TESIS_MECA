@@ -124,6 +124,18 @@ Con los 3 controles, **ninguna de las 4 dimensiones principales rechaza tendenci
 
 **Lectura:** las 4 rechazan con fuerza SIN controles, y ninguna rechaza CON controles -- el mismo patron transversal ya documentado en este proyecto (la identificacion depende de `sector*anio` + `tamano*anio` + `departamento*anio`, no de la exposicion cruda) aparece tambien en estas 4 variables de mecanismo. Como son extensiones, no outcomes principales, esto no altera ninguna conclusion del DiD central -- se deja registrado para cuando se explore el mecanismo del efecto.
 
+### Chequeo de robustez: Exposure2022_obreros (firma) vs. Exposure2022_obreros_est (establecimiento)
+
+Script: `3. SCRIPTS/validaciones/validar_pretendencias_panel_formal_exposure_est.R` -- COPIA exacta del script de arriba, unico cambio: `Exposure2022_obreros_est` (propia de cada establecimiento, ANIO_BASE 2022, union DIRECTA por `NORDEST`) en vez de `Exposure2022_obreros` (de la firma dueña, union por `NORDEMP`). Tabla lado a lado: `comparacion_pretendencias_panel_formal_firma_vs_establecimiento.csv` (16 filas).
+
+**De las 16 celdas (8 dimensiones x 2 especificaciones), 1 cambia de conclusion al 5%:** `empleo_total`, especificacion SIN controles (firma: F=1.90/p=0.107, no rechaza; establecimiento: F=2.63/p=0.033, rechaza). **Con los 3 controles -- la especificacion recomendada -- ambas versiones coinciden en las 8 dimensiones, incluida `empleo_total`** (firma p=0.728, establecimiento p=0.843). Las 15 celdas restantes coinciden en conclusion (rechaza/no rechaza) entre las dos versiones de exposicion.
+
+**Correlacion Exposure2022_obreros vs. Exposure2022_obreros_est, recalculada EN LA MUESTRA de esta validacion** (no se asume el 0.964 ya reportado sobre el universo completo de 2022): Pearson = 0.963, Spearman = 0.959 (n=6,660 establecimientos) -- practicamente identica a la cifra historica, esperable porque la mayoria de la muestra es monoplanta. Tabla: `correlacion_exposure_firma_vs_establecimiento_muestra_pretendencias.csv`.
+
+**Multiplanta vs. monoplanta en esta muestra** (donde las 2 versiones de exposicion pueden diferir vs. donde coinciden por construccion): 806 establecimientos multiplanta (12.1%) y 5,854 monoplanta (87.9%). Tabla: `resumen_multiplanta_muestra_pretendencias.csv`.
+
+**Especificacion principal para el panel de establecimiento:** dado que las conclusiones NO cambian en la especificacion CON controles (la recomendada) en ninguna de las 8 dimensiones, y que la correlacion entre ambas medidas de exposicion es muy alta (0.963) en esta muestra, se mantiene **`Exposure2022_obreros` (firma) como especificacion principal**, por parsimonia y continuidad con el resto del proyecto (que usa esta misma medida a nivel firma en todas las demas validaciones). `Exposure2022_obreros_est` queda documentada como chequeo de robustez disponible, no descartada -- util especificamente para analisis que exploten variacion DENTRO de firmas multiplanta (la "especificacion B" de `NOTA_PREANALISIS.md`), donde por definicion `Exposure2022_obreros` (firma) no varia entre plantas de una misma firma y `Exposure2022_obreros_est` si.
+
 ## Antecedente: atricion diferencial por quintil de exposicion (nivel FIRMA, ya corrido)
 
 Encontrado el 2026-08-31 al auditar el inventario del repositorio (`INVENTARIO_REPO.md`, rama `feature/panel-establecimiento`): el diagnostico de atricion diferencial YA se corrio el 2026-08-09, en la rama `feature/exposicion-obreros-operarios` (ya fusionada a `main`), antes de que existiera esta carpeta `Validaciones/` -- por eso nunca quedo documentado aqui.

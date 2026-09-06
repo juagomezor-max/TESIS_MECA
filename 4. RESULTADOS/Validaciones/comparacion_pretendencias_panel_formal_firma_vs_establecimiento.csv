@@ -1,0 +1,17 @@
+variable,tipo_dimension,especificacion,f_stat_firma,p_value_firma,f_stat_establecimiento,p_value_establecimiento,rechaza_firma,rechaza_establecimiento,cambia_conclusion
+empleo_total,principal,Sin controles,1.901,0.1073,2.633,0.03247,FALSE,TRUE,TRUE
+empleo_total,principal,Con sector*anio + tamano*anio + departamento*anio,0.511,0.7278,0.352,0.843,FALSE,FALSE,FALSE
+empleo_permanente,principal,Sin controles,2.695,0.02924,3.83,0.004114,TRUE,TRUE,FALSE
+empleo_permanente,principal,Con sector*anio + tamano*anio + departamento*anio,0.709,0.586,0.475,0.7544,FALSE,FALSE,FALSE
+empleo_temporal,principal,Sin controles,0.72,0.5783,0.627,0.643,FALSE,FALSE,FALSE
+empleo_temporal,principal,Con sector*anio + tamano*anio + departamento*anio,1.032,0.389,0.684,0.6029,FALSE,FALSE,FALSE
+participacion_permanente,principal,Sin controles,1.517,0.1941,1.435,0.2195,FALSE,FALSE,FALSE
+participacion_permanente,principal,Con sector*anio + tamano*anio + departamento*anio,0.301,0.8773,0.247,0.9115,FALSE,FALSE,FALSE
+asinh_C3R23C3,mecanismo_extension,Sin controles,6.024,7.802e-5,7.185,9.089e-6,TRUE,TRUE,FALSE
+asinh_C3R23C3,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,0.175,0.9514,0.14,0.9672,FALSE,FALSE,FALSE
+asinh_C3R41C3,mecanismo_extension,Sin controles,9.182,2.152e-7,9.678,8.446e-8,TRUE,TRUE,FALSE
+asinh_C3R41C3,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,0.818,0.5137,1.122,0.344,FALSE,FALSE,FALSE
+asinh_C7R10C2,mecanismo_extension,Sin controles,13.259,9.312e-11,12.888,1.891e-10,TRUE,TRUE,FALSE
+asinh_C7R10C2,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,1.296,0.269,1.514,0.1951,FALSE,FALSE,FALSE
+asinh_VALORVEN,mecanismo_extension,Sin controles,21.406,1.485e-17,24.283,5.783000000000001e-20,TRUE,TRUE,FALSE
+asinh_VALORVEN,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,0.51,0.7283,0.842,0.498,FALSE,FALSE,FALSE
