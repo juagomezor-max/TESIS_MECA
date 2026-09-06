@@ -1,0 +1,17 @@
+variable,especificacion,term,estimate,std.error,statistic,p.value,conf.low,conf.high,grupo_base_omitido
+asinh_salario_promedio,Sin controles,ANIO_F::2016:bite_1sd,0.020017,0.001395,14.3533,7.873e-46,0.017283,0.022751,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2017:bite_1sd,0.037858,0.001505,25.1492,1.1489999999999997e-131,0.034907,0.040809,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2018:bite_1sd,0.054397,0.001712,31.7665,3.226999999999999e-202,0.05104,0.057754,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2019:bite_1sd,0.076281,0.00202,37.7596,2.4339999999999986e-275,0.07232,0.080241,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2021:bite_1sd,0.110457,0.002773,39.828,2.9279999999999986e-302,0.10502,0.115894,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2022:bite_1sd,0.130268,0.003676,35.4382,4.194999999999997e-246,0.123062,0.13747500000000001,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2023:bite_1sd,0.172221,0.00291,59.1743,0,0.166515,0.177927,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Sin controles,ANIO_F::2024:bite_1sd,0.202358,0.002928,69.1068,0,0.196618,0.208099,2015 (ref.); especificacion: Sin controles
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2016:bite_1sd,-9.83e-4,0.003976,-0.2473,0.8047,-0.008778,0.006811,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2017:bite_1sd,-0.00538,0.004357,-1.2348,0.2169,-0.013921,0.003161,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2018:bite_1sd,-0.010886,0.004957,-2.1961,0.02813,-0.020605,-0.001168,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2019:bite_1sd,-0.020344,0.005236,-3.8858,1.033e-4,-0.030608,-0.01008,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2021:bite_1sd,-0.034647,0.007387,-4.6901,2.802e-6,-0.049129,-0.020165,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2022:bite_1sd,-0.077438,0.009194,-8.423,4.718e-17,-0.095461,-0.059414,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2023:bite_1sd,-0.033046,0.006898,-4.791,1.707e-6,-0.046569,-0.019524,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_salario_promedio,Con sector*anio + tamano*anio + departamento*anio,ANIO_F::2024:bite_1sd,-0.023937,0.006077,-3.9387,8.302e-5,-0.035852,-0.012023,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
