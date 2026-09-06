@@ -3200,3 +3200,46 @@ tabla_cercania_sml_2022 <- salarios_obreros_validos_2022 |>
   )
 
 tabla_cercania_sml_2022
+
+
+porcentaje_multiestablecimiento_2022 <- base_analitica |>
+  dplyr::filter(ANIO == 2022) |>
+  dplyr::distinct(NORDEMP, NORDEST) |>
+  dplyr::count(NORDEMP, name = "numero_establecimientos") |>
+  dplyr::summarise(
+    total_empresas = dplyr::n(),
+    empresas_multiestablecimiento =
+      sum(numero_establecimientos > 1),
+    porcentaje_multiestablecimiento =
+      100 * mean(numero_establecimientos > 1)
+  )
+
+porcentaje_multiestablecimiento_2022
+
+# ============================================================
+# 54. GUARDAR PUNTO DE PARTIDA PARA NUEVOS MODELOS
+# ============================================================
+
+checkpoint_decisiones_firma <- list(
+  fecha_creacion = Sys.Date(),
+  base_analitica = base_analitica,
+  panel_principal = panel_principal,
+  panel_balanceado = if (exists("panel_balanceado")) {
+    panel_balanceado
+  } else {
+    NULL
+  }
+)
+
+ruta_checkpoint <- file.path(
+  "1. DATOS",
+  "6. BASES_DERIVADAS",
+  "checkpoint_decisiones_firma_2023.rds"
+)
+
+saveRDS(
+  checkpoint_decisiones_firma,
+  ruta_checkpoint
+)
+
+message("Checkpoint guardado en: ", ruta_checkpoint)
