@@ -18,7 +18,7 @@ When you click the **Knit** button a document will be generated that includes bo
 
 setwd("C:/Users/njaco/OneDrive/Documentos/Mestría en Economía Aplicada/Semestre 3/Big Data y Machine Learning/Repositorios/TESIS_MECA")
 
-source("3. SCRIPTS/analisis_eam_eac.R")
+source("3. SCRIPTS/pipeline/analisis_eam_eac.R")
 
 ```
 

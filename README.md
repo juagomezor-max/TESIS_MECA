@@ -56,7 +56,7 @@ Esto permite mantener el repositorio liviano en Git y, al mismo tiempo, preserva
 La forma mas simple de correr el pipeline EAM completo es:
 
 ```powershell
-Rscript "3. SCRIPTS/00_ejecutar_flujo_eam.R"
+Rscript "3. SCRIPTS/pipeline/00_ejecutar_flujo_eam.R"
 ```
 
 Ese script ejecuta, en orden:
@@ -72,17 +72,17 @@ Ese script ejecuta, en orden:
 Si quieres correr partes del flujo por separado:
 
 ```powershell
-Rscript "3. SCRIPTS/analisis_eam_eac.R" EAM
-Rscript "3. SCRIPTS/construir_diccionario_maestro.R"
-Rscript "3. SCRIPTS/construir_macro_base_eam.R"
-Rscript "3. SCRIPTS/diagnostico_panel_nordemp_eam.R"
-Rscript "3. SCRIPTS/descriptivo_exposicion_eam.R"
+Rscript "3. SCRIPTS/pipeline/analisis_eam_eac.R" EAM
+Rscript "3. SCRIPTS/pipeline/construir_diccionario_maestro.R"
+Rscript "3. SCRIPTS/pipeline/construir_macro_base_eam.R"
+Rscript "3. SCRIPTS/pipeline/diagnostico_panel_nordemp_eam.R"
+Rscript "3. SCRIPTS/pipeline/descriptivo_exposicion_eam.R"
 ```
 
 Tambien puedes usar:
 
 ```powershell
-Rscript "3. SCRIPTS/00_limpiar_temporales.R"
+Rscript "3. SCRIPTS/pipeline/00_limpiar_temporales.R"
 ```
 
 para reiniciar temporales regenerables en `2. PROCESAMIENTO/`.
@@ -138,12 +138,12 @@ Detalle completo de cada script, formulas y su derivacion (que script de `main` 
 
 ### Como correrlo de cero
 
-Requiere que ya exista `1. DATOS/5. MACROBASE/macro_base_eam.rds` (este pipeline **parte de la macrobase ya construida, no reconstruye el ETL desde los DTA crudos** -- para eso, correr primero `3. SCRIPTS/00_ejecutar_flujo_eam.R`, seccion "Flujo recomendado" arriba):
+Requiere que ya exista `1. DATOS/5. MACROBASE/macro_base_eam.rds` (este pipeline **parte de la macrobase ya construida, no reconstruye el ETL desde los DTA crudos** -- para eso, correr primero `3. SCRIPTS/pipeline/00_ejecutar_flujo_eam.R`, seccion "Flujo recomendado" arriba):
 
 ```r
-source("3. SCRIPTS/run_all.R")                  # 01 a 05, nucleo minimo (nivel firma)
-source("3. SCRIPTS/opcional_establecimiento.R")  # modulo opcional (nivel establecimiento)
-source("3. SCRIPTS/verificar_cifras_clave.R")    # control de calidad -> CIFRAS_CLAVE.csv
+source("3. SCRIPTS/pipeline/run_all.R")                  # 01 a 05, nucleo minimo (nivel firma)
+source("3. SCRIPTS/pipeline/opcional_establecimiento.R")  # modulo opcional (nivel establecimiento)
+source("3. SCRIPTS/pipeline/verificar_cifras_clave.R")    # control de calidad -> CIFRAS_CLAVE.csv
 ```
 
 Salidas en `4. RESULTADOS/Validaciones/simplificado_*.csv` y `4. RESULTADOS/Validaciones/CIFRAS_CLAVE.csv`.
