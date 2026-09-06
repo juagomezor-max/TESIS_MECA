@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<title>DiD estatico -- empleo (Especificacion A)</title>
+<style>body{font-family:Consolas,Menlo,monospace;background:#fff;color:#111;padding:24px;}
+h1{font-family:sans-serif;font-size:18px;} pre{font-size:13px;line-height:1.4;white-space:pre;overflow-x:auto;}</style>
+</head><body>
+<h1>Estimacion DiD principal -- empleo (Especificacion A: DiD estatico, 8 modelos)</h1>
+<pre>
+                           empleo_total_sin empleo_total_.. empleo_permanen.. empleo_permanen...1                     empleo_tempor..                   empleo_tempor...1                        participacion_permanente_sin                        participacion_permanente_con
+Outcome                        Empleo total    Empleo total Empleo permanente   Empleo permanente Empleo temporal (directo + agencia) Empleo temporal (directo + agencia) Participacion de permanentes en el empleo total (%) Participacion de permanentes en el empleo total (%)
+Controles                                No              Si                No                  Si                                  No                                  Si                                                  No                                                  Si
+Dependent Var.:                Empleo total    Empleo total Empleo permanente   Empleo permanente                     Empleo temporal                     Empleo temporal                        Participacion permanente (%)                        Participacion permanente (%)
+                                                                                                                                                                                                                                                                                 
+Post2023 x Exposure (10pp) -0.1643 (0.3880) 0.5477 (0.3520)  -0.2048 (0.2739)     0.3991 (0.2839)                     0.0605 (0.2300)                     0.1488 (0.2306)                                   -0.2179. (0.1276)                                    -0.1568 (0.1495)
+Fixed-Effects:             ---------------- --------------- -----------------   -----------------                     ---------------                     ---------------                        ----------------------------                        ----------------------------
+NORDEST                                 Yes             Yes               Yes                 Yes                                 Yes                                 Yes                                                 Yes                                                 Yes
+ANIO_F                                  Yes             Yes               Yes                 Yes                                 Yes                                 Yes                                                 Yes                                                 Yes
+CIIU4-ANIO_F                             No             Yes                No                 Yes                                  No                                 Yes                                                  No                                                 Yes
+tamano_empresa-ANIO_F                    No             Yes                No                 Yes                                  No                                 Yes                                                  No                                                 Yes
+DPTO_fijo-ANIO_F                         No             Yes                No                 Yes                                  No                                 Yes                                                  No                                                 Yes
+__________________________ ________________ _______________ _________________   _________________                     _______________                     _______________                        ____________________________                        ____________________________
+S.E.: Clustered                 by: NORDEMP     by: NORDEMP       by: NORDEMP         by: NORDEMP                         by: NORDEMP                         by: NORDEMP                                         by: NORDEMP                                         by: NORDEMP
+Observations                         59,492          59,491            59,492              59,491                              59,492                              59,491                                              59,412                                              59,411
+R2                                  0.88823         0.91852           0.86054             0.88484                             0.83515                             0.85946                                             0.75474                                             0.76434
+---
+Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+</pre>
+</body></html>
