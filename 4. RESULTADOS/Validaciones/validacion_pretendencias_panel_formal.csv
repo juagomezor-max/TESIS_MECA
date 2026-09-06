@@ -1,0 +1,17 @@
+variable,tipo_dimension,especificacion,n_obs,n_establecimientos,n_firmas,f_stat,df1,df2,p_value
+empleo_total,principal,Sin controles,33011,6879,6104,1.901,4,6084,0.1073
+empleo_total,principal,Con sector*anio + tamano*anio + departamento*anio,33010,6879,6104,0.511,4,6084,0.7278
+empleo_permanente,principal,Sin controles,33011,6879,6104,2.695,4,6084,0.02924
+empleo_permanente,principal,Con sector*anio + tamano*anio + departamento*anio,33010,6879,6104,0.709,4,6084,0.586
+empleo_temporal,principal,Sin controles,33011,6879,6104,0.72,4,6084,0.5783
+empleo_temporal,principal,Con sector*anio + tamano*anio + departamento*anio,33010,6879,6104,1.032,4,6084,0.389
+participacion_permanente,principal,Sin controles,32972,6874,6104,1.517,4,6084,0.1941
+participacion_permanente,principal,Con sector*anio + tamano*anio + departamento*anio,32971,6874,6104,0.301,4,6084,0.8773
+asinh_C3R23C3,mecanismo_extension,Sin controles,33011,6879,6104,6.024,4,6084,7.802e-5
+asinh_C3R23C3,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,33010,6879,6104,0.175,4,6084,0.9514
+asinh_C3R41C3,mecanismo_extension,Sin controles,33011,6879,6104,9.182,4,6084,2.152e-7
+asinh_C3R41C3,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,33010,6879,6104,0.818,4,6084,0.5137
+asinh_C7R10C2,mecanismo_extension,Sin controles,33008,6878,6104,13.259,4,6084,9.312e-11
+asinh_C7R10C2,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,33007,6878,6104,1.296,4,6084,0.269
+asinh_VALORVEN,mecanismo_extension,Sin controles,33011,6879,6104,21.406,4,6084,1.485e-17
+asinh_VALORVEN,mecanismo_extension,Con sector*anio + tamano*anio + departamento*anio,33010,6879,6104,0.51,4,6084,0.7283

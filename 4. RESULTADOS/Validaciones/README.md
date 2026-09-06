@@ -94,6 +94,36 @@ Si la razon de que Bite rechace con tanta fuerza en tendencia lineal es que su d
 - **Exposure**: la brecha Q5-Q1 es mas plana y NO crece de forma monotonica: -10.27pp -> -10.52pp -> -10.20pp -> -11.11pp -> -11.96pp (se angosta entre 2016 y 2017 antes de volver a ensancharse). Los quintiles individuales se mueven poco (rango total <1.5pp en Q5 a lo largo de los 5 anios, contra >3.8pp en el Q5 de Bite). En 2019, el orden de los 5 quintiles NO es monotonico (Q1=71.20 > Q2=67.32 < Q3=67.83 > Q4=63.92 > Q5=59.24 -- Q3 rompe el patron).
 - **Lectura**: el patron observado es CONSISTENTE con la hipotesis -- Bite muestra una divergencia pre-choque mayor en magnitud y mas monotonica en forma que Exposure, en la misma direccion que predice la hipotesis. No es una confirmacion causal (son medias descriptivas de una sola muestra, sin prueba formal de la forma funcional de la tendencia en si), pero el patron visual no contradice la explicacion de que Bite2022_obreros tiene una tendencia previa monotonica que Exposure2022_obreros no tiene.
 
+## Pre-tendencias sobre el panel formal a nivel establecimiento (2026-09-02)
+
+Script: `3. SCRIPTS/validaciones/validar_pretendencias_panel_formal.R`. Corre sobre el **panel formal** reconstruido en `3. SCRIPTS/construccion/construir_panel_establecimiento_formal.R` (NORDEST-ANIO, 2015-2019+2021-2024, DPTO fijo por establecimiento, reconstruido desde cero SIN copiar el tag `archivo/panel-formal` -- ver `README.md` raiz, seccion Historial) -- **no es el mismo panel** que usa la seccion 3 de arriba (`validar_tendencias_paralelas_establecimiento.R`), que corre sobre una construccion anterior sin la regla de DPTO fijo ni los 3 controles obligatorios de esta version.
+
+Exposicion: **`Exposure2022_obreros` a nivel FIRMA** (no `Exposure2022_obreros_est`), unida al panel de establecimiento por `NORDEMP` -- cada planta hereda la exposicion de su firma dueña. Especificacion: `i(ANIO_F, exposicion_10pp, ref='2015') | NORDEST [+ CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO_fijo^ANIO_F]`, `cluster=~NORDEMP` siempre, corrida SIN y CON los 3 controles del panel formal (misma muestra filtrada en ambas, solo cambia la estructura de efectos fijos). Tabla completa: `validacion_pretendencias_panel_formal.csv` (+ `_coeficientes.csv` / `_metadatos.csv`).
+
+### Dimensiones PRINCIPALES (empleo) -- outcomes centrales del DiD
+
+| Variable | F sin controles / p | F con controles / p |
+|---|---|---|
+| empleo_total | 1.90 / 0.107 | 0.511 / 0.728 |
+| empleo_permanente | 2.70 / 0.029 | 0.709 / 0.586 |
+| empleo_temporal | 0.72 / 0.578 | 1.03 / 0.389 |
+| participacion_permanente | 1.52 / 0.194 | 0.301 / 0.877 |
+
+Con los 3 controles, **ninguna de las 4 dimensiones principales rechaza tendencias paralelas** -- consistente con el resultado ya establecido a nivel firma para `Exposure2022_obreros`.
+
+### Dimensiones de MECANISMO/EXTENSION -- ⚠ NO SON OUTCOMES PRINCIPALES DEL DISEÑO DiD
+
+**Marca explicita, para que quede sin ambiguedad:** las siguientes 4 variables son extensiones exploratorias sobre posibles MECANISMOS del efecto (via costos de mantenimiento/outsourcing, inversion, y ventas), no resultados centrales de la tesis. Pasar o no pasar este chequeo de pre-tendencias **no las convierte en resultado central** ni cambia la especificacion principal del DiD (que sigue siendo las 4 dimensiones de empleo de arriba, con `Exposure2022_obreros`). Se transforman con `asinh()` (admite ceros/negativos, a diferencia de `log()`) y **no se deflactan**: el efecto fijo `ANIO_F` ya absorbe cualquier tendencia de precios agregada comun a todas las firmas en un anio dado; no se usa el deflactor del script exploratorio de Nicolas (`3. SCRIPTS/exploratorio_nicolas/construir_base_analitica_nicolas.R`, nunca validado).
+
+| Variable (asinh) | Que mide | F sin controles / p | F con controles / p |
+|---|---|---|---|
+| `C3R23C3` | Mantenimiento, reparaciones, accesorios y repuestos | 6.02 / 7.8e-05 | 0.175 / 0.951 |
+| `C3R41C3` | Outsourcing / servicios contratados con terceros | 9.18 / 2.2e-07 | 0.818 / 0.514 |
+| `C7R10C2` | Total inversiones en activos fijos | 13.3 / 9.3e-11 | 1.30 / 0.269 |
+| `VALORVEN` | Valor de las ventas | 21.4 / 1.5e-17 | 0.51 / 0.728 |
+
+**Lectura:** las 4 rechazan con fuerza SIN controles, y ninguna rechaza CON controles -- el mismo patron transversal ya documentado en este proyecto (la identificacion depende de `sector*anio` + `tamano*anio` + `departamento*anio`, no de la exposicion cruda) aparece tambien en estas 4 variables de mecanismo. Como son extensiones, no outcomes principales, esto no altera ninguna conclusion del DiD central -- se deja registrado para cuando se explore el mecanismo del efecto.
+
 ## Antecedente: atricion diferencial por quintil de exposicion (nivel FIRMA, ya corrido)
 
 Encontrado el 2026-08-31 al auditar el inventario del repositorio (`INVENTARIO_REPO.md`, rama `feature/panel-establecimiento`): el diagnostico de atricion diferencial YA se corrio el 2026-08-09, en la rama `feature/exposicion-obreros-operarios` (ya fusionada a `main`), antes de que existiera esta carpeta `Validaciones/` -- por eso nunca quedo documentado aqui.

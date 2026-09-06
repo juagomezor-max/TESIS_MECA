@@ -1,0 +1,65 @@
+variable,tipo_dimension,term,estimate,std.error,statistic,p.value,conf.low,conf.high,grupo_base_omitido
+empleo_total,principal,ANIO_F::2016:exposicion_10pp,0.350547,0.19838,1.767,0.07727,-0.038348,0.739442,2015 (ref.); especificacion: Sin controles
+empleo_total,principal,ANIO_F::2017:exposicion_10pp,0.422058,0.197647,2.1354,0.03277,0.034601,0.809515,2015 (ref.); especificacion: Sin controles
+empleo_total,principal,ANIO_F::2018:exposicion_10pp,0.457737,0.198196,2.3095,0.02095,0.069202,0.846272,2015 (ref.); especificacion: Sin controles
+empleo_total,principal,ANIO_F::2019:exposicion_10pp,0.585882,0.215622,2.7172,0.006603,0.163187,1.008577,2015 (ref.); especificacion: Sin controles
+empleo_total,principal,ANIO_F::2016:exposicion_10pp,-0.502977,0.513664,-0.9792,0.3275,-1.509941,0.503987,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_total,principal,ANIO_F::2017:exposicion_10pp,-0.549918,0.538594,-1.021,0.3073,-1.605753,0.505916,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_total,principal,ANIO_F::2018:exposicion_10pp,-0.127921,0.476585,-0.2684,0.7884,-1.062196,0.806354,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_total,principal,ANIO_F::2019:exposicion_10pp,0.040518,0.497165,0.0815,0.935,-0.9341,1.015137,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_permanente,principal,ANIO_F::2016:exposicion_10pp,0.29167,0.132275,2.205,0.02749,0.032363,0.550976,2015 (ref.); especificacion: Sin controles
+empleo_permanente,principal,ANIO_F::2017:exposicion_10pp,0.435342,0.139621,3.118,0.001829,0.161635,0.709049,2015 (ref.); especificacion: Sin controles
+empleo_permanente,principal,ANIO_F::2018:exposicion_10pp,0.370687,0.140405,2.6401,0.008309,0.095444,0.645931,2015 (ref.); especificacion: Sin controles
+empleo_permanente,principal,ANIO_F::2019:exposicion_10pp,0.407859,0.153705,2.6535,0.007987,0.106542,0.709175,2015 (ref.); especificacion: Sin controles
+empleo_permanente,principal,ANIO_F::2016:exposicion_10pp,-0.271938,0.37933,-0.7169,0.4735,-1.015559,0.471683,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_permanente,principal,ANIO_F::2017:exposicion_10pp,-0.374751,0.411557,-0.9106,0.3626,-1.181547,0.432046,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_permanente,principal,ANIO_F::2018:exposicion_10pp,-0.328479,0.379258,-0.8661,0.3865,-1.07196,0.415001,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_permanente,principal,ANIO_F::2019:exposicion_10pp,0.009235,0.396706,0.0233,0.9814,-0.76845,0.786919,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_temporal,principal,ANIO_F::2016:exposicion_10pp,0.042613,0.137139,0.3107,0.756,-0.226227,0.311454,2015 (ref.); especificacion: Sin controles
+empleo_temporal,principal,ANIO_F::2017:exposicion_10pp,-0.041118,0.14106,-0.2915,0.7707,-0.317647,0.23541,2015 (ref.); especificacion: Sin controles
+empleo_temporal,principal,ANIO_F::2018:exposicion_10pp,0.053648,0.143297,0.3744,0.7081,-0.227264,0.33456,2015 (ref.); especificacion: Sin controles
+empleo_temporal,principal,ANIO_F::2019:exposicion_10pp,0.133815,0.164201,0.8149,0.4151,-0.188078,0.455708,2015 (ref.); especificacion: Sin controles
+empleo_temporal,principal,ANIO_F::2016:exposicion_10pp,-0.202004,0.278722,-0.7248,0.4686,-0.748397,0.344389,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_temporal,principal,ANIO_F::2017:exposicion_10pp,-0.146534,0.308919,-0.4743,0.6353,-0.752125,0.459058,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_temporal,principal,ANIO_F::2018:exposicion_10pp,0.233988,0.297991,0.7852,0.4324,-0.35018,0.818156,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+empleo_temporal,principal,ANIO_F::2019:exposicion_10pp,0.105707,0.374704,0.2821,0.7779,-0.628845,0.84026,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+participacion_permanente,principal,ANIO_F::2016:exposicion_10pp,0.03098,0.050458,0.614,0.5393,-0.067935,0.129895,2015 (ref.); especificacion: Sin controles
+participacion_permanente,principal,ANIO_F::2017:exposicion_10pp,0.104915,0.057336,1.8298,0.06732,-0.007484,0.217314,2015 (ref.); especificacion: Sin controles
+participacion_permanente,principal,ANIO_F::2018:exposicion_10pp,0.06547,0.064572,1.0139,0.3107,-0.061114,0.192054,2015 (ref.); especificacion: Sin controles
+participacion_permanente,principal,ANIO_F::2019:exposicion_10pp,0.00756,0.070317,0.1075,0.9144,-0.130287,0.145407,2015 (ref.); especificacion: Sin controles
+participacion_permanente,principal,ANIO_F::2016:exposicion_10pp,0.024143,0.151158,0.1597,0.8731,-0.272181,0.320467,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+participacion_permanente,principal,ANIO_F::2017:exposicion_10pp,0.057967,0.181034,0.3202,0.7488,-0.296925,0.412858,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+participacion_permanente,principal,ANIO_F::2018:exposicion_10pp,-0.048345,0.19536,-0.2475,0.8046,-0.43132,0.33463,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+participacion_permanente,principal,ANIO_F::2019:exposicion_10pp,-0.13708,0.216316,-0.6337,0.5263,-0.561136,0.286976,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2016:exposicion_10pp,0.010509,0.003591,2.926,0.003447,0.003468,0.017549,2015 (ref.); especificacion: Sin controles
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2017:exposicion_10pp,0.012355,0.003896,3.1709,0.001527,0.004717,0.019993,2015 (ref.); especificacion: Sin controles
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2018:exposicion_10pp,0.011731,0.004325,2.7126,0.006695,0.003253,0.020209,2015 (ref.); especificacion: Sin controles
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2019:exposicion_10pp,0.021219,0.004586,4.6271,3.785e-6,0.012229,0.030208,2015 (ref.); especificacion: Sin controles
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2016:exposicion_10pp,-0.002933,0.013868,-0.2115,0.8325,-0.03012,0.024253,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2017:exposicion_10pp,-0.001277,0.015672,-0.0815,0.9351,-0.032,0.029447,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2018:exposicion_10pp,-0.009377,0.015421,-0.6081,0.5432,-0.039608,0.020854,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R23C3,mecanismo_extension,ANIO_F::2019:exposicion_10pp,-0.001496,0.015686,-0.0954,0.924,-0.032247,0.029254,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2016:exposicion_10pp,0.037661,0.01113,3.3837,7.197e-4,0.015842,0.05948,2015 (ref.); especificacion: Sin controles
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2017:exposicion_10pp,0.037892,0.011906,3.1827,0.001466,0.014553,0.061231,2015 (ref.); especificacion: Sin controles
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2018:exposicion_10pp,0.058877,0.01258,4.6804,2.926e-6,0.034217,0.083538,2015 (ref.); especificacion: Sin controles
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2019:exposicion_10pp,0.07777,0.013116,5.9294,3.207e-9,0.052058,0.103482,2015 (ref.); especificacion: Sin controles
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2016:exposicion_10pp,0.034887,0.033781,1.0327,0.3018,-0.031336,0.101109,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2017:exposicion_10pp,0.035323,0.035305,1.0005,0.3171,-0.033887,0.104532,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2018:exposicion_10pp,0.008619,0.037864,0.2276,0.8199,-0.065607,0.082846,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C3R41C3,mecanismo_extension,ANIO_F::2019:exposicion_10pp,-0.018602,0.038364,-0.4849,0.6278,-0.093808,0.056605,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2016:exposicion_10pp,-0.008971,0.011763,-0.7627,0.4457,-0.03203,0.014088,2015 (ref.); especificacion: Sin controles
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2017:exposicion_10pp,-0.073446,0.013362,-5.4966,4.029e-8,-0.09964,-0.047251,2015 (ref.); especificacion: Sin controles
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2018:exposicion_10pp,-0.074017,0.013354,-5.5425,3.107e-8,-0.100196,-0.047837,2015 (ref.); especificacion: Sin controles
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2019:exposicion_10pp,-0.069259,0.013939,-4.9686,6.928e-7,-0.096586,-0.041933,2015 (ref.); especificacion: Sin controles
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2016:exposicion_10pp,0.014934,0.038532,0.3876,0.6983,-0.060602,0.090471,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2017:exposicion_10pp,-0.013181,0.039824,-0.331,0.7407,-0.09125,0.064887,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2018:exposicion_10pp,-0.0289,0.041062,-0.7038,0.4816,-0.109396,0.051596,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_C7R10C2,mecanismo_extension,ANIO_F::2019:exposicion_10pp,-0.076198,0.043105,-1.7677,0.07716,-0.160699,0.008303,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2016:exposicion_10pp,0.007024,0.00211,3.3291,8.765e-4,0.002888,0.011161,2015 (ref.); especificacion: Sin controles
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2017:exposicion_10pp,0.004173,0.002304,1.8114,0.07013,-3.43e-4,0.00869,2015 (ref.); especificacion: Sin controles
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2018:exposicion_10pp,0.011647,0.002493,4.6713,3.057e-6,0.006759,0.016534,2015 (ref.); especificacion: Sin controles
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2019:exposicion_10pp,0.01976,0.002319,8.5224,1.949e-17,0.015215,0.024305,2015 (ref.); especificacion: Sin controles
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2016:exposicion_10pp,-0.001453,0.008054,-0.1804,0.8569,-0.017242,0.014337,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2017:exposicion_10pp,-0.002093,0.007435,-0.2815,0.7784,-0.016669,0.012483,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2018:exposicion_10pp,-0.007289,0.006634,-1.0986,0.272,-0.020294,0.005717,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
+asinh_VALORVEN,mecanismo_extension,ANIO_F::2019:exposicion_10pp,-0.006502,0.005954,-1.092,0.2749,-0.018174,0.00517,2015 (ref.); especificacion: Con sector*anio + tamano*anio + departamento*anio
