@@ -15,6 +15,11 @@
 #   validar_tendencias_paralelas_empleo_exposure_grafico.R (permanente/temporal),
 #   y construir_bite_obreros_eam.R (C3R2C1, salario obrero). Confirmadas
 #   estables 2008-2024 en verificar_estabilidad_columnas_c3r_c4r.R.
+# - C3R2C2 (salario administrativo) y C3R2PT (salario prof-tecnico):
+#   formula recuperada del commit e149152 (ANTES de retirarse en
+#   591a752), agregadas 2026-09-05 para cerrar el ultimo hueco de
+#   reproducibilidad de salarios_promedio_categoria_eam.rds -- ver
+#   pipeline/02_construir_exposicion.R.
 #
 # AJUSTE DE ALCANCE (documentado en README_SIMPLIFICACION.md): este script
 # CARGA la macrobase ya construida (1. DATOS/5. MACROBASE/macro_base_eam.rds).
@@ -70,11 +75,15 @@ cols_temporal <- c(
   "C4R3C1", "C4R3C2", "C4R4C1", "C4R4C2", "C4R3C3", "C4R3C4", "C4R4C3", "C4R4C4",
   "C4R1C5N", "C4R1C6N", "C4R2C5E", "C4R2C6E", "C4R1C7N", "C4R1C8N", "C4R2C7E", "C4R2C8E"
 )
-col_salario_obrero <- "C3R2C1"  # construir_bite_obreros_eam.R
+cols_salario_promedio <- c(
+  "C3R2C1",  # salario_promedio_obrero (construir_bite_obreros_eam.R)
+  "C3R2C2",  # salario_promedio_administrativo (commit e149152, antes de retirarse en 591a752)
+  "C3R2PT"   # salario_promedio_prof_tecnico (commit e149152, antes de retirarse en 591a752)
+)
 
 cols_numericas <- unique(c(
   cols_obreros, cols_administrativos, cols_prof_tecnico, cols_propietarios,
-  cols_permanente, cols_temporal, col_salario_obrero, "PERTOTAL"
+  cols_permanente, cols_temporal, cols_salario_promedio, "PERTOTAL"
 ))
 
 macro_base <- readr::read_rds(paths$macro_base_eam)

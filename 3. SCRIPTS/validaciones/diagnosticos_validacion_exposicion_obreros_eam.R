@@ -31,17 +31,30 @@ conteo <- leer_o_fallar(
   file.path(data_dir, "conteo_personal_categoria_eam.rds"),
   "Falta conteo_personal_categoria_eam.rds. Corre el Paso 3 primero."
 )
-# NO se retira: salarios_promedio_categoria_eam.rds trae
-# salario_promedio_administrativo y salario_promedio_prof_tecnico,
-# columnas que pipeline/02_construir_exposicion.R NUNCA reprodujo (solo
-# calcula salario_promedio_obrero, y ni siquiera lo persiste -- solo su
-# derivado Bite2022_obreros). La seccion 4 de este script (tabla_salarios_
-# promedio_por_categoria.csv) necesita las 3 categorias, asi que este
-# archivo sigue siendo un insumo activo sin sustituto.
-salarios <- leer_o_fallar(
-  file.path(data_dir, "salarios_promedio_categoria_eam.rds"),
-  "Falta salarios_promedio_categoria_eam.rds."
+# salarios_promedio_categoria_eam.rds RETIRADO (2026-09-05, ultimo
+# hueco de reproducibilidad cerrado): la seccion 4 de este script
+# (tabla_salarios_promedio_por_categoria.csv) necesita las 3 categorias
+# de salario para TODOS los anios 2008-2024 (no solo 2022), asi que no
+# se lee de exposicion_firma_eam.rds (que SOLO tiene la linea base
+# 2022, por diseño -- ver su propia cabecera). Se recalculan las 3 con
+# la MISMA formula ya viva en 02_construir_exposicion.R (costo
+# permanente / conteo permanente del mismo grupo), aplicada aqui a
+# TODOS los anios de panel_firma_eam.rds (que ya trae C3R2C1/C3R2C2/
+# C3R2PT para el panel completo desde que se agregaron en
+# 01_construir_base.R, 2026-09-05) -- no se re-implementa de memoria,
+# es la misma formula, solo sin restringir a ANIO_BASE_EXPOSICION.
+safe_divide_salarios <- function(num, den) ifelse(is.na(num) | is.na(den) | den == 0, NA_real_, num / den)
+panel_firma_para_salarios <- leer_o_fallar(
+  file.path(data_dir, "panel_firma_eam.rds"),
+  "Falta panel_firma_eam.rds. Corre pipeline/01_construir_base.R primero."
 )
+salarios <- panel_firma_para_salarios %>%
+  dplyr::transmute(
+    NORDEMP, ANIO,
+    salario_promedio_obrero = safe_divide_salarios(C3R2C1, C4R2C1 + C4R2C2),
+    salario_promedio_administrativo = safe_divide_salarios(C3R2C2, C4R2C3 + C4R2C4),
+    salario_promedio_prof_tecnico = safe_divide_salarios(C3R2PT, C4R1C3N + C4R1C4N + C4R2C3E + C4R2C4E)
+  )
 exposicion_obreros <- leer_o_fallar(
   file.path(data_dir, "exposicion_firma_eam.rds"),
   "Falta exposicion_firma_eam.rds. Corre pipeline/02_construir_exposicion.R primero."

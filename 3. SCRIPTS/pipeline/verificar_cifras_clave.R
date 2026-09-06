@@ -56,21 +56,32 @@
 # C3R2C1/(C4R2C1+C4R2C2)) tambien coincide EXACTAMENTE. Las 3
 # comparaciones quedan abajo como filas de este control, releidas cada
 # vez que se corre este script -- NO se hardcodea el resultado como un
-# hecho historico, porque los 2 archivos retirados usados en la
-# comparacion (bite_obreros_eam.rds, exposicion_obreros_eam.rds) siguen
-# existiendo en disco, solo se movieron a
+# hecho historico, porque los archivos retirados usados en la
+# comparacion siguen existiendo en disco, solo se movieron a
 # descriptivos_exposicion/_archivo_obsoleto_2026-09-05/ (no se
-# borraron). salarios_promedio_categoria_eam.rds NO se archivo: trae
-# salario_promedio_administrativo y salario_promedio_prof_tecnico, que
-# ningun script del pipeline nuevo reproduce -- sigue siendo insumo
-# activo de diagnosticos_validacion_exposicion_obreros_eam.R.
+# borraron).
 #
-# Nota sobre la regla de tolerancia para estas 3 filas especificas: el
-# valor esperado es 0 (no deberia haber NINGUNA diferencia, no una
-# diferencia "pequeña"). `all.equal(0, producido, tolerance=0.01)` para
-# un objetivo de 0 usa diferencia ABSOLUTA (no relativa, que no esta
-# definida quando el objetivo es cero) -- sigue siendo la MISMA llamada
-# a `fila()` que las otras 33 filas, sin caso especial en el codigo.
+# ULTIMO HUECO CERRADO (2026-09-05): salarios_promedio_categoria_eam.rds
+# traia salario_promedio_administrativo y salario_promedio_prof_tecnico,
+# que ningun script del pipeline nuevo reproducia -- diagnosticos_
+# validacion_exposicion_obreros_eam.R dependia de el sin sustituto. Se
+# agregaron ambas formulas a 02_construir_exposicion.R (recuperadas del
+# commit e149152, ANTES de retirarse en 591a752 -- no re-derivadas de
+# memoria), verificadas celda a celda (diferencia maxima 0, filas 37-38
+# abajo), y el script dependiente se migro a leerlas de
+# exposicion_firma_eam.rds (o de panel_firma_eam.rds cuando necesita el
+# panel completo 2008-2024, no solo la linea base 2022 -- ver ese
+# script). salarios_promedio_categoria_eam.rds tambien se archivo: ya
+# no queda ningun script en el arbol que dependa de un archivo retirado
+# en 591a752.
+#
+# Nota sobre la regla de tolerancia para las 5 filas de equivalencia
+# (34-38): el valor esperado es 0 (no deberia haber NINGUNA diferencia,
+# no una diferencia "pequeña"). `all.equal(0, producido, tolerance=0.01)`
+# para un objetivo de 0 usa diferencia ABSOLUTA (no relativa, que no
+# esta definida cuando el objetivo es cero) -- sigue siendo la MISMA
+# llamada a `fila()` que las otras 33 filas, sin caso especial en el
+# codigo.
 #
 # Requiere que run_all.R Y opcional_establecimiento.R ya se hayan corrido.
 #
@@ -130,7 +141,7 @@ exposicion_obreros_viejo <- readr::read_rds(file.path(archivo_obsoleto_dir, "exp
 bite_obreros_viejo <- readr::read_rds(file.path(archivo_obsoleto_dir, "bite_obreros_eam.rds")) %>%
   dplyr::filter(ANIO == 2022) %>% dplyr::mutate(NORDEMP = as.character(NORDEMP)) %>%
   dplyr::distinct(NORDEMP, .keep_all = TRUE)
-salarios_viejo <- readr::read_rds(file.path(paths$bases_derivadas_exposicion, "salarios_promedio_categoria_eam.rds")) %>%
+salarios_viejo <- readr::read_rds(file.path(archivo_obsoleto_dir, "salarios_promedio_categoria_eam.rds")) %>%
   dplyr::filter(ANIO == 2022) %>% dplyr::mutate(NORDEMP = as.character(NORDEMP)) %>%
   dplyr::distinct(NORDEMP, .keep_all = TRUE)
 
@@ -139,6 +150,8 @@ diff_bite <- diff_maxima(exposicion_firma_qc, bite_obreros_viejo, "Bite2022_obre
 salario_nuevo_qc <- panel_firma_qc %>%
   dplyr::transmute(NORDEMP = as.character(NORDEMP), salario_promedio_obrero = safe_divide_qc(C3R2C1, C4R2C1 + C4R2C2))
 diff_salario <- diff_maxima(salario_nuevo_qc, salarios_viejo, "salario_promedio_obrero", "salario_promedio_obrero")
+diff_salario_admin <- diff_maxima(exposicion_firma_qc, salarios_viejo, "salario_promedio_administrativo", "salario_promedio_administrativo")
+diff_salario_pt <- diff_maxima(exposicion_firma_qc, salarios_viejo, "salario_promedio_prof_tecnico", "salario_promedio_prof_tecnico")
 
 obtener <- function(tabla, filtro_expr, columna) {
   mascara <- eval(parse(text = filtro_expr), envir = tabla)
@@ -254,7 +267,11 @@ cifras <- dplyr::bind_rows(
   fila("Equivalencia Bite2022_obreros: pipeline nuevo vs. bite_obreros_eam.rds (retirado)", 0, diff_bite,
        "bite_obreros_eam.rds (generado por construir_bite_obreros_eam.R, retirado en commit 591a752) -- movido a descriptivos_exposicion/_archivo_obsoleto_2026-09-05/, n=5099 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS),
   fila("Equivalencia salario_promedio_obrero: pipeline nuevo (recalculado) vs. salarios_promedio_categoria_eam.rds", 0, diff_salario,
-       "salarios_promedio_categoria_eam.rds (generado por construir_salarios_promedio_categoria_eam.R, retirado en commit 591a752, PERO el archivo de datos NO se archivo -- sigue activo, ver nota de cabecera). Pipeline nuevo recalcula con la formula exacta de 02_construir_exposicion.R: C3R2C1/(C4R2C1+C4R2C2). n=5103 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS)
+       "salarios_promedio_categoria_eam.rds (generado por construir_salarios_promedio_categoria_eam.R, retirado en commit 591a752) -- movido a descriptivos_exposicion/_archivo_obsoleto_2026-09-05/. Pipeline nuevo recalcula con la formula exacta de 02_construir_exposicion.R: C3R2C1/(C4R2C1+C4R2C2). n=5103 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS),
+  fila("Equivalencia salario_promedio_administrativo: pipeline nuevo vs. salarios_promedio_categoria_eam.rds (retirado)", 0, diff_salario_admin,
+       "salarios_promedio_categoria_eam.rds (retirado en 591a752) -- movido a descriptivos_exposicion/_archivo_obsoleto_2026-09-05/. Formula recuperada del commit e149152 (ANTES de retirarse): C3R2C2/(C4R2C3+C4R2C4). n=5509 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS),
+  fila("Equivalencia salario_promedio_prof_tecnico: pipeline nuevo vs. salarios_promedio_categoria_eam.rds (retirado)", 0, diff_salario_pt,
+       "salarios_promedio_categoria_eam.rds (retirado en 591a752) -- movido a descriptivos_exposicion/_archivo_obsoleto_2026-09-05/. Formula recuperada del commit e149152 (ANTES de retirarse): C3R2PT/(C4R1C3N+C4R1C4N+C4R2C3E+C4R2C4E). n=3541 NORDEMP comparados 2026-09-05", ESPEC_EQUIVALENCIA_RETIRADOS)
 )
 
 readr::write_csv(cifras, file.path(out_dir, "CIFRAS_CLAVE.csv"))

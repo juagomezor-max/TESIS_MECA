@@ -27,8 +27,12 @@
 #
 # Salidas (no versionadas, 1. DATOS/6. BASES_DERIVADAS/descriptivos_exposicion/):
 # - exposicion_firma_eam.rds/.csv: NORDEMP, Exposure2022_obreros,
-#   quintil_exposure2022_obreros, Bite2022_obreros, quintil_bite2022_obreros
+#   quintil_exposure2022_obreros, Bite2022_obreros, quintil_bite2022_obreros,
+#   salario_promedio_administrativo, salario_promedio_prof_tecnico
 #   (atributo pre-choque, constante, sin ANIO -- se une al panel en 03).
+#   Las 2 ultimas se agregaron 2026-09-05 para cerrar el ultimo hueco de
+#   reproducibilidad de salarios_promedio_categoria_eam.rds (retirado en
+#   591a752) -- formula recuperada del commit e149152, no re-derivada.
 # - correlacion_exposure_bite.csv: Pearson/Spearman, para CIFRAS_CLAVE.csv.
 
 source(file.path("3. SCRIPTS", "pipeline", "_utils_proyecto.R"))
@@ -89,12 +93,25 @@ baseline_2022 <- panel_firma %>%
     # deben medir al mismo grupo (personal permanente) o el salario
     # promedio queda subestimado.
     personal_permanente_obrero = C4R2C1 + C4R2C2,
-    salario_promedio_obrero = safe_divide(C3R2C1, personal_permanente_obrero)
+    salario_promedio_obrero = safe_divide(C3R2C1, personal_permanente_obrero),
+    # salario_promedio_administrativo / salario_promedio_prof_tecnico:
+    # mismo patron (costo permanente / conteo permanente del MISMO
+    # grupo). Formula recuperada del commit e149152 (ANTES de retirarse
+    # en 591a752, ver construir_salarios_promedio_categoria_eam.R en
+    # ese commit) -- no re-derivada de memoria. personal_permanente_*
+    # coincide con las columnas ya usadas en cols_permanente de
+    # 01_construir_base.R.
+    personal_permanente_administrativo = C4R2C3 + C4R2C4,
+    salario_promedio_administrativo = safe_divide(C3R2C2, personal_permanente_administrativo),
+    personal_permanente_prof_tecnico = C4R1C3N + C4R1C4N + C4R2C3E + C4R2C4E,
+    salario_promedio_prof_tecnico = safe_divide(C3R2PT, personal_permanente_prof_tecnico)
   ) %>%
   dplyr::transmute(
     NORDEMP,
     Exposure2022_obreros = winsorize(participacion_obreros_raw),
-    Bite2022_obreros = safe_divide(SM_2023_ANUAL_MILES, salario_promedio_obrero)
+    Bite2022_obreros = safe_divide(SM_2023_ANUAL_MILES, salario_promedio_obrero),
+    salario_promedio_administrativo,
+    salario_promedio_prof_tecnico
   ) %>%
   dplyr::mutate(
     quintil_exposure2022_obreros = make_quintiles(Exposure2022_obreros),
