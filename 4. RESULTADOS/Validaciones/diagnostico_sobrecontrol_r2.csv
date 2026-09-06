@@ -1,0 +1,9 @@
+medida_exposicion,controles,n_obs,r2,uno_menos_r2
+Exposure2022_obreros (firma),CIIU4 + tamano_empresa + DPTO_fijo (los 3 juntos),6769,0.2185,0.7815
+Exposure2022_obreros (firma),Solo CIIU4,6769,0.208,0.792
+Exposure2022_obreros (firma),Solo tamano_empresa,6769,0.002,0.998
+Exposure2022_obreros (firma),Solo DPTO_fijo,6769,0.0203,0.9797
+Exposure2022_obreros_est (establecimiento),CIIU4 + tamano_empresa + DPTO_fijo (los 3 juntos),6761,0.2023,0.7977
+Exposure2022_obreros_est (establecimiento),Solo CIIU4,6761,0.1895,0.8105
+Exposure2022_obreros_est (establecimiento),Solo tamano_empresa,6761,0.0034,0.9966
+Exposure2022_obreros_est (establecimiento),Solo DPTO_fijo,6761,0.0192,0.9808
