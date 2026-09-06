@@ -1,0 +1,9 @@
+variable,ventana,especificacion,n_obs,n_firmas,f_stat,df1,df2,p_value
+empleo_total,Ventana corta (2015-2019),Sin controles,27671,5033,2.116,4,5017,0.0762
+empleo_total,Ventana corta (2015-2019),Con sector*anio + tamano*anio + departamento*anio,27668,5033,1.274,4,5017,0.2776
+empleo_total,Ventana PRE completa (2015-2019+2021-2022),Sin controles,38975,5099,7.401,6,5075,6.656e-8
+empleo_total,Ventana PRE completa (2015-2019+2021-2022),Con sector*anio + tamano*anio + departamento*anio,38972,5099,1.189,6,5075,0.3091
+empleo_temporal,Ventana corta (2015-2019),Sin controles,27671,5033,0.518,4,5017,0.7226
+empleo_temporal,Ventana corta (2015-2019),Con sector*anio + tamano*anio + departamento*anio,27668,5033,2.25,4,5017,0.06124
+empleo_temporal,Ventana PRE completa (2015-2019+2021-2022),Sin controles,38975,5099,3.215,6,5075,0.003748
+empleo_temporal,Ventana PRE completa (2015-2019+2021-2022),Con sector*anio + tamano*anio + departamento*anio,38972,5099,2.479,6,5075,0.0214

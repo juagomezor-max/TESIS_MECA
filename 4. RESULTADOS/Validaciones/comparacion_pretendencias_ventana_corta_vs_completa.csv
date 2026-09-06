@@ -1,0 +1,9 @@
+variable,especificacion,f_stat_ventana_corta,p_value_ventana_corta,f_stat_ventana_completa,p_value_ventana_completa,rechaza_ventana_corta,rechaza_ventana_completa,cambia_conclusion
+empleo_total,Sin controles,1.901,0.1073,9.625,1.446e-10,FALSE,TRUE,TRUE
+empleo_total,Con sector*anio + tamano*anio + departamento*anio,0.511,0.7278,1.185,0.3111,FALSE,FALSE,FALSE
+empleo_permanente,Sin controles,2.695,0.02924,5.942,3.357e-6,TRUE,TRUE,FALSE
+empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,0.709,0.586,0.794,0.5743,FALSE,FALSE,FALSE
+empleo_temporal,Sin controles,0.72,0.5783,5.797,4.94e-6,FALSE,TRUE,TRUE
+empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,1.032,0.389,2.043,0.05656,FALSE,FALSE,FALSE
+participacion_permanente,Sin controles,1.517,0.1941,1.307,0.2501,FALSE,FALSE,FALSE
+participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,0.301,0.8773,1.772,0.1006,FALSE,FALSE,FALSE
