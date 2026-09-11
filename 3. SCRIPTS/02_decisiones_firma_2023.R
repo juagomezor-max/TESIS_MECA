@@ -373,3 +373,393 @@ tabla_modelos_4 <- fixest::etable(
 )
 
 tabla_modelos_4
+
+
+# ============================================================
+# 5. TENDENCIAS DE LAS Y POR QUINTILES DE EXPOSICIÓN
+# ============================================================
+#
+# Esta sección divide los establecimientos en cinco grupos según
+# su exposición obrera de 2022. Luego muestra la evolución promedio
+# de cada resultado, normalizada respecto al nivel de cada quintil
+# en 2022.
+# ============================================================
+
+quintiles_exposicion <- muestra_principal_limpia |>
+  dplyr::distinct(NORDEST, Exposure2022_obreros) |>
+  dplyr::mutate(
+    quintil_exposicion = dplyr::ntile(
+      Exposure2022_obreros,
+      5
+    ),
+    quintil_exposicion = factor(
+      quintil_exposicion,
+      levels = 1:5,
+      labels = paste0("Quintil ", 1:5)
+    )
+  )
+
+tendencias_quintiles <- muestra_principal_limpia |>
+  dplyr::left_join(
+    quintiles_exposicion,
+    by = c("NORDEST", "Exposure2022_obreros")
+  ) |>
+  dplyr::group_by(ANIO, quintil_exposicion) |>
+  dplyr::summarise(
+    promedio_log_empleo =
+      mean(Y1_log_empleo_asalariado, na.rm = TRUE),
+    promedio_temporales =
+      mean(Y2_proporcion_temporales, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::group_by(quintil_exposicion) |>
+  dplyr::mutate(
+    cambio_empleo_2022 =
+      100 * (
+        promedio_log_empleo -
+          promedio_log_empleo[ANIO == 2022]
+      ),
+    cambio_temporales_2022 =
+      100 * (
+        promedio_temporales -
+          promedio_temporales[ANIO == 2022]
+      )
+  ) |>
+  dplyr::ungroup()
+
+# ------------------------------------------------------------
+# 5.1. GRÁFICA DEL NIVEL DE EMPLEO
+# ------------------------------------------------------------
+
+grafica_quintiles_empleo <- ggplot2::ggplot(
+  tendencias_quintiles,
+  ggplot2::aes(
+    x = ANIO,
+    y = cambio_empleo_2022,
+    color = quintil_exposicion,
+    group = quintil_exposicion
+  )
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::geom_vline(
+    xintercept = 2022.5,
+    linetype = "dashed"
+  ) +
+  ggplot2::labs(
+    title = "Cambio del empleo asalariado por quintil de exposición",
+    x = "Año",
+    y = "Cambio aproximado respecto a 2022 (%)",
+    color = "Exposición"
+  ) +
+  ggplot2::theme_minimal()
+
+grafica_quintiles_empleo
+
+# ------------------------------------------------------------
+# 5.2. GRÁFICA DE LA PROPORCIÓN DE TEMPORALES
+# ------------------------------------------------------------
+
+grafica_quintiles_temporales <- ggplot2::ggplot(
+  tendencias_quintiles,
+  ggplot2::aes(
+    x = ANIO,
+    y = cambio_temporales_2022,
+    color = quintil_exposicion,
+    group = quintil_exposicion
+  )
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::geom_vline(
+    xintercept = 2022.5,
+    linetype = "dashed"
+  ) +
+  ggplot2::labs(
+    title = "Cambio de la proporción temporal por quintil de exposición",
+    x = "Año",
+    y = "Cambio respecto a 2022 (puntos porcentuales)",
+    color = "Exposición"
+  ) +
+  ggplot2::theme_minimal()
+
+grafica_quintiles_temporales
+
+# ------------------------------------------------------------
+# 5.1. EMPLEO ASALARIADO EN NIVELES
+# ------------------------------------------------------------
+#
+# Esta gráfica muestra la evolución del empleo asalariado típico
+# de cada quintil de exposición, sin normalizar respecto a 2022.
+# ------------------------------------------------------------
+
+grafica_quintiles_empleo <- ggplot2::ggplot(
+  tendencias_quintiles,
+  ggplot2::aes(
+    x = ANIO,
+    y = exp(promedio_log_empleo),
+    color = quintil_exposicion,
+    group = quintil_exposicion
+  )
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::geom_vline(
+    xintercept = 2022.5,
+    linetype = "dashed"
+  ) +
+  ggplot2::labs(
+    title = "Empleo asalariado por quintil de exposición",
+    x = "Año",
+    y = "Empleo asalariado típico",
+    color = "Exposición"
+  ) +
+  ggplot2::theme_minimal()
+
+grafica_quintiles_empleo
+
+# ------------------------------------------------------------
+# 5.2. PROPORCIÓN TEMPORAL EN NIVELES
+# ------------------------------------------------------------
+#
+# Esta gráfica muestra la proporción temporal promedio real de
+# cada quintil, sin normalizar los valores respecto a 2022.
+# ------------------------------------------------------------
+
+grafica_quintiles_temporales <- ggplot2::ggplot(
+  tendencias_quintiles,
+  ggplot2::aes(
+    x = ANIO,
+    y = 100 * promedio_temporales,
+    color = quintil_exposicion,
+    group = quintil_exposicion
+  )
+) +
+  ggplot2::geom_line(linewidth = 1) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::geom_vline(
+    xintercept = 2022.5,
+    linetype = "dashed"
+  ) +
+  ggplot2::labs(
+    title = "Proporción temporal por quintil de exposición",
+    x = "Año",
+    y = "Proporción de temporales (%)",
+    color = "Exposición"
+  ) +
+  ggplot2::theme_minimal()
+
+grafica_quintiles_temporales
+
+# ============================================================
+# 6. ESTUDIOS DE EVENTO: FIRMAS DE UN SOLO ESTABLECIMIENTO
+# ============================================================
+#
+# Esta sección estima la relación entre exposición y cada Y año
+# por año. Se utiliza 2022 como referencia. Los años anteriores
+# permiten evaluar tendencias previas y 2023-2024 muestran la
+# respuesta posterior al aumento del salario mínimo.
+# ============================================================
+
+modelo_6_evento_Y1 <- fixest::feols(
+  Y1_log_empleo_asalariado ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST + ANIO,
+  data = muestra_principal_limpia,
+  cluster = ~NORDEMP
+)
+
+modelo_6_evento_Y2 <- fixest::feols(
+  Y2_proporcion_temporales ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST + ANIO,
+  data = muestra_principal_limpia,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 6.1. GRÁFICAS
+# ------------------------------------------------------------
+
+fixest::iplot(
+  modelo_6_evento_Y1,
+  ref.line = 0,
+  main = "Estudio de evento: empleo asalariado",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición",
+  ci_level = 0.95
+)
+
+fixest::iplot(
+  modelo_6_evento_Y2,
+  ref.line = 0,
+  main = "Estudio de evento: proporción temporal",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición",
+  ci_level = 0.95
+)
+
+# ------------------------------------------------------------
+# 6.2. PRUEBAS CONJUNTAS DE TENDENCIAS PREVIAS
+# ------------------------------------------------------------
+
+prueba_previa_Y1 <- fixest::wald(
+  modelo_6_evento_Y1,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_previa_Y2 <- fixest::wald(
+  modelo_6_evento_Y2,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_previa_Y1
+prueba_previa_Y2
+
+
+# ============================================================
+# 7. ROBUSTEZ: PANEL BALANCEADO 2017-2024
+# ============================================================
+#
+# Esta sección repite la especificación principal usando únicamente
+# establecimientos observados durante los ocho años. Esto evita que
+# los resultados reflejen cambios en la composición de la muestra.
+# ============================================================
+
+muestra_balanceada <- panel_balanceado |>
+  dplyr::mutate(
+    empleo_asalariado =
+      empleo_permanente +
+      empleo_temporal_directo +
+      empleo_temporal_agencia +
+      empleo_aprendices,
+    
+    empleo_temporal =
+      empleo_temporal_directo +
+      empleo_temporal_agencia,
+    
+    Y1_log_empleo_asalariado = dplyr::if_else(
+      empleo_asalariado > 0,
+      log(empleo_asalariado),
+      NA_real_
+    ),
+    
+    Y2_proporcion_temporales = dplyr::if_else(
+      empleo_asalariado > 0,
+      empleo_temporal / empleo_asalariado,
+      NA_real_
+    ),
+    
+    post_2023 = as.integer(ANIO >= 2023),
+    exposicion_10pp = Exposure2022_obreros * 10
+  ) |>
+  dplyr::filter(
+    ANIO >= 2017,
+    ANIO <= 2024,
+    empresa_multiestablecimiento_2022 == 0,
+    !NORDEST %in% establecimientos_con_cambio$NORDEST,
+    !is.na(Y1_log_empleo_asalariado),
+    !is.na(Y2_proporcion_temporales),
+    !is.na(exposicion_10pp)
+  )
+
+# Verificación de la muestra
+
+resumen_muestra_balanceada <- muestra_balanceada |>
+  dplyr::summarise(
+    observaciones = dplyr::n(),
+    empresas = dplyr::n_distinct(NORDEMP),
+    establecimientos = dplyr::n_distinct(NORDEST),
+    observaciones_por_establecimiento =
+      observaciones / establecimientos
+  )
+
+resumen_muestra_balanceada
+
+# ------------------------------------------------------------
+# 7.1. MODELOS PRINCIPALES
+# ------------------------------------------------------------
+
+modelo_7_Y1 <- fixest::feols(
+  Y1_log_empleo_asalariado ~
+    exposicion_10pp:post_2023 |
+    NORDEST + ANIO,
+  data = muestra_balanceada,
+  cluster = ~NORDEMP
+)
+
+modelo_7_Y2 <- fixest::feols(
+  Y2_proporcion_temporales ~
+    exposicion_10pp:post_2023 |
+    NORDEST + ANIO,
+  data = muestra_balanceada,
+  cluster = ~NORDEMP
+)
+
+fixest::etable(
+  modelo_7_Y1,
+  modelo_7_Y2,
+  headers = c(
+    "Log empleo asalariado",
+    "Proporción temporal"
+  ),
+  dict = c(
+    "exposicion_10pp:post_2023" =
+      "Exposición obrera (10 pp) × Post 2023"
+  ),
+  fitstat = ~n + r2,
+  se.below = TRUE
+)
+
+# ------------------------------------------------------------
+# 7.2. ESTUDIOS DE EVENTO
+# ------------------------------------------------------------
+
+modelo_7_evento_Y1 <- fixest::feols(
+  Y1_log_empleo_asalariado ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST + ANIO,
+  data = muestra_balanceada,
+  cluster = ~NORDEMP
+)
+
+modelo_7_evento_Y2 <- fixest::feols(
+  Y2_proporcion_temporales ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST + ANIO,
+  data = muestra_balanceada,
+  cluster = ~NORDEMP
+)
+
+fixest::iplot(
+  modelo_7_evento_Y1,
+  ref.line = 0,
+  main = "Estudio de evento: empleo — panel balanceado",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición"
+)
+
+fixest::iplot(
+  modelo_7_evento_Y2,
+  ref.line = 0,
+  main = "Estudio de evento: temporalidad — panel balanceado",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición"
+)
+
+# ------------------------------------------------------------
+# 7.3. PRUEBAS DE TENDENCIAS PREVIAS
+# ------------------------------------------------------------
+
+prueba_balanceada_Y1 <- fixest::wald(
+  modelo_7_evento_Y1,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_balanceada_Y2 <- fixest::wald(
+  modelo_7_evento_Y2,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_balanceada_Y1
+prueba_balanceada_Y2
