@@ -763,3 +763,333 @@ prueba_balanceada_Y2 <- fixest::wald(
 
 prueba_balanceada_Y1
 prueba_balanceada_Y2
+
+
+# ============================================================
+# 8. MODELOS CON EFECTOS FIJOS SECTOR-AÑO Y DEPARTAMENTO-AÑO
+# ============================================================
+#
+# Esta sección reestima los modelos principales para firmas de un
+# solo establecimiento. Además de los efectos fijos de establecimiento,
+# se controlan choques específicos de cada sector y departamento en
+# cada año.
+# ============================================================
+
+variables_necesarias_8 <- c(
+  "division_ciiu_2022",
+  "codigo_departamento_2022"
+)
+
+faltantes_8 <- setdiff(
+  variables_necesarias_8,
+  names(muestra_principal_limpia)
+)
+
+if (length(faltantes_8) > 0) {
+  stop(
+    "Faltan estas variables: ",
+    paste(faltantes_8, collapse = ", ")
+  )
+}
+
+muestra_principal_ajustada <- muestra_principal_limpia |>
+  dplyr::filter(
+    !is.na(division_ciiu_2022),
+    !is.na(codigo_departamento_2022)
+  ) |>
+  dplyr::mutate(
+    division_ciiu_2022 = factor(division_ciiu_2022),
+    codigo_departamento_2022 =
+      factor(codigo_departamento_2022)
+  )
+
+# ------------------------------------------------------------
+# 8.1. MODELOS PRINCIPALES PARA Y1 Y Y2
+# ------------------------------------------------------------
+
+modelo_8_Y1 <- fixest::feols(
+  Y1_log_empleo_asalariado ~
+    exposicion_10pp:post_2023 |
+    NORDEST +
+    division_ciiu_2022^ANIO +
+    codigo_departamento_2022^ANIO,
+  data = muestra_principal_ajustada,
+  cluster = ~NORDEMP
+)
+
+modelo_8_Y2 <- fixest::feols(
+  Y2_proporcion_temporales ~
+    exposicion_10pp:post_2023 |
+    NORDEST +
+    division_ciiu_2022^ANIO +
+    codigo_departamento_2022^ANIO,
+  data = muestra_principal_ajustada,
+  cluster = ~NORDEMP
+)
+
+tabla_modelos_8 <- fixest::etable(
+  modelo_8_Y1,
+  modelo_8_Y2,
+  headers = c(
+    "Log empleo asalariado",
+    "Proporción temporal"
+  ),
+  dict = c(
+    "exposicion_10pp:post_2023" =
+      "Exposición obrera (10 pp) × Post 2023"
+  ),
+  fitstat = ~n + r2,
+  se.below = TRUE
+)
+
+tabla_modelos_8
+
+# ------------------------------------------------------------
+# 8.2. ESTUDIOS DE EVENTO
+# ------------------------------------------------------------
+
+modelo_8_evento_Y1 <- fixest::feols(
+  Y1_log_empleo_asalariado ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST +
+    division_ciiu_2022^ANIO +
+    codigo_departamento_2022^ANIO,
+  data = muestra_principal_ajustada,
+  cluster = ~NORDEMP
+)
+
+modelo_8_evento_Y2 <- fixest::feols(
+  Y2_proporcion_temporales ~
+    i(ANIO, exposicion_10pp, ref = 2022) |
+    NORDEST +
+    division_ciiu_2022^ANIO +
+    codigo_departamento_2022^ANIO,
+  data = muestra_principal_ajustada,
+  cluster = ~NORDEMP
+)
+
+fixest::iplot(
+  modelo_8_evento_Y1,
+  ref.line = 0,
+  main = "Estudio de evento ajustado: empleo asalariado",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición"
+)
+
+fixest::iplot(
+  modelo_8_evento_Y2,
+  ref.line = 0,
+  main = "Estudio de evento ajustado: proporción temporal",
+  xlab = "Año",
+  ylab = "Efecto por 10 pp adicionales de exposición"
+)
+
+# ------------------------------------------------------------
+# 8.3. PRUEBAS CONJUNTAS DE TENDENCIAS PREVIAS
+# ------------------------------------------------------------
+
+prueba_ajustada_Y1 <- fixest::wald(
+  modelo_8_evento_Y1,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_ajustada_Y2 <- fixest::wald(
+  modelo_8_evento_Y2,
+  keep = "ANIO::(2017|2018|2019|2020|2021)"
+)
+
+prueba_ajustada_Y1
+prueba_ajustada_Y2
+
+
+# ============================================================
+# 9. MUESTRA BALANCEADA COMPLETA
+# ============================================================
+#
+# Esta sección construye una muestra con establecimientos observados
+# continuamente entre 2017 y 2024. Incluye firmas simples y múltiples,
+# y excluye establecimientos que cambiaron de empresa durante el periodo.
+# ============================================================
+
+variables_necesarias_9 <- c(
+  "NORDEMP",
+  "NORDEST",
+  "ANIO",
+  "empresa_multiestablecimiento_2022",
+  "Exposure2022_obreros",
+  "division_ciiu_2022",
+  "codigo_departamento_2022",
+  "empleo_permanente",
+  "empleo_temporal_directo",
+  "empleo_temporal_agencia",
+  "empleo_aprendices"
+)
+
+faltantes_9 <- setdiff(
+  variables_necesarias_9,
+  names(panel_balanceado)
+)
+
+if (length(faltantes_9) > 0) {
+  stop(
+    "Faltan estas variables: ",
+    paste(faltantes_9, collapse = ", ")
+  )
+}
+
+muestra_balanceada_completa <- panel_balanceado |>
+  dplyr::filter(
+    ANIO >= 2017,
+    ANIO <= 2024
+  ) |>
+  dplyr::mutate(
+    empleo_asalariado =
+      empleo_permanente +
+      empleo_temporal_directo +
+      empleo_temporal_agencia +
+      empleo_aprendices,
+    
+    empleo_temporal =
+      empleo_temporal_directo +
+      empleo_temporal_agencia,
+    
+    Y1_log_empleo_asalariado = dplyr::if_else(
+      empleo_asalariado > 0,
+      log(empleo_asalariado),
+      NA_real_
+    ),
+    
+    Y2_proporcion_temporales = dplyr::if_else(
+      empleo_asalariado > 0,
+      empleo_temporal / empleo_asalariado,
+      NA_real_
+    ),
+    
+    post_2023 = as.integer(ANIO >= 2023),
+    exposicion_10pp = Exposure2022_obreros * 10,
+    
+    division_ciiu_2022 = factor(division_ciiu_2022),
+    
+    codigo_departamento_2022 =
+      factor(codigo_departamento_2022)
+  ) |>
+  dplyr::filter(
+    !is.na(Y1_log_empleo_asalariado),
+    !is.na(Y2_proporcion_temporales),
+    !is.na(exposicion_10pp),
+    !is.na(empresa_multiestablecimiento_2022),
+    !is.na(division_ciiu_2022),
+    !is.na(codigo_departamento_2022)
+  ) |>
+  dplyr::group_by(NORDEST) |>
+  dplyr::filter(
+    dplyr::n_distinct(ANIO) == 8,
+    dplyr::n_distinct(NORDEMP) == 1
+  ) |>
+  dplyr::ungroup()
+
+# ------------------------------------------------------------
+# 9.1. VERIFICACIÓN DE LA MUESTRA
+# ------------------------------------------------------------
+
+resumen_muestra_balanceada_completa <-
+  muestra_balanceada_completa |>
+  dplyr::summarise(
+    observaciones = dplyr::n(),
+    establecimientos = dplyr::n_distinct(NORDEST),
+    empresas = dplyr::n_distinct(NORDEMP),
+    
+    firmas_simples = dplyr::n_distinct(
+      NORDEMP[empresa_multiestablecimiento_2022 == 0]
+    ),
+    
+    firmas_multi = dplyr::n_distinct(
+      NORDEMP[empresa_multiestablecimiento_2022 == 1]
+    ),
+    
+    observaciones_por_establecimiento =
+      observaciones / establecimientos
+  )
+
+resumen_muestra_balanceada_completa
+
+table(
+  muestra_balanceada_completa$ANIO
+)
+
+
+# ============================================================
+# 10. COMPARACIÓN ENTRE FIRMAS SIMPLES Y MULTIESTABLECIMIENTO
+# ============================================================
+#
+# Esta sección estima si la respuesta posterior asociada con la
+# exposición difiere entre firmas simples y multiestablecimiento.
+# Se utiliza incluye la muestra balanceada completa y efectos fijos
+# de establecimiento, sector-año y departamento-año.
+# ============================================================
+
+muestra_balanceada_completa <- muestra_balanceada_completa |>
+  dplyr::mutate(
+    multi_2022 = as.integer(
+      empresa_multiestablecimiento_2022 == 1
+    )
+  )
+
+# ------------------------------------------------------------
+# 10.1. MODELO PARA Y1: EMPLEO ASALARIADO
+# ------------------------------------------------------------
+
+modelo_10_Y1 <- fixest::feols(
+  Y1_log_empleo_asalariado ~
+    exposicion_10pp:post_2023 +
+    exposicion_10pp:post_2023:multi_2022 +
+    post_2023:multi_2022 |
+    NORDEST +
+    division_ciiu_2022^ANIO +
+    codigo_departamento_2022^ANIO,
+  data = muestra_balanceada_completa,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 10.2. MODELO PARA Y2: PROPORCIÓN TEMPORAL
+# ------------------------------------------------------------
+
+modelo_10_Y2 <- fixest::feols(
+  Y2_proporcion_temporales ~
+    exposicion_10pp:post_2023 +
+    exposicion_10pp:post_2023:multi_2022 +
+    post_2023:multi_2022 |
+    NORDEST +
+    division_ciiu_2022^ANIO +
+    codigo_departamento_2022^ANIO,
+  data = muestra_balanceada_completa,
+  cluster = ~NORDEMP
+)
+
+# ------------------------------------------------------------
+# 10.3. TABLA DE RESULTADOS
+# ------------------------------------------------------------
+
+tabla_modelos_10 <- fixest::etable(
+  modelo_10_Y1,
+  modelo_10_Y2,
+  headers = c(
+    "Log empleo asalariado",
+    "Proporción temporal"
+  ),
+  dict = c(
+    "exposicion_10pp:post_2023" =
+      "β1: Exposición × Post",
+    
+    "exposicion_10pp:post_2023:multi_2022" =
+      "β2: Exposición × Post × Multi",
+    
+    "post_2023:multi_2022" =
+      "β3: Post × Multi"
+  ),
+  fitstat = ~n + r2,
+  se.below = TRUE
+)
+
+tabla_modelos_10
