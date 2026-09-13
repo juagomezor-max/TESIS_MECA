@@ -1,0 +1,3 @@
+variable,n_obs,post_estimate,post_se,post_p,post_significativo_al_5pct,signo
+empleo_temporal,59491,-0.787718,0.305266,0.00989,TRUE,-
+participacion_permanente,59411,0.572132,0.171866,8.769e-4,TRUE,+

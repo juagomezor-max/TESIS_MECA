@@ -1,0 +1,15 @@
+variable,anio_excluido,n_obs,post_estimate,post_se,post_p,post_significativo_al_5pct,nota
+empleo_temporal,2015,53076,-0.652505,0.244876,0.007727,TRUE,NA
+empleo_temporal,2016,52885,-0.51939,0.233656,0.02626,TRUE,NA
+empleo_temporal,2017,52815,-0.543684,0.234501,0.02046,TRUE,NA
+empleo_temporal,2018,52757,-0.527963,0.235578,0.02505,TRUE,NA
+empleo_temporal,2019,52770,-0.587989,0.223451,0.008524,TRUE,NA
+empleo_temporal,2021,52767,-0.418275,0.226686,0.06506,FALSE,NA
+empleo_temporal,2022,52717,-0.532631,0.346248,0.124,FALSE,NA
+participacion_permanente,2015,53004,0.397823,0.140373,0.004611,TRUE,NA
+participacion_permanente,2016,52811,0.344828,0.138116,0.01256,TRUE,NA
+participacion_permanente,2017,52745,0.337856,0.139856,0.01573,TRUE,NA
+participacion_permanente,2018,52688,0.334029,0.138783,0.01612,TRUE,NA
+participacion_permanente,2019,52700,0.35891,0.136118,0.008391,TRUE,NA
+participacion_permanente,2021,52694,0.335232,0.140779,0.01728,TRUE,NA
+participacion_permanente,2022,52646,0.207742,0.19515,0.2871,FALSE,NA
