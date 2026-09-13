@@ -1,0 +1,17 @@
+medida,particion,grupo,n,baja_potencia_menor_30
+Exposure2022_obreros,Terciles,T1 - Baja,2060,FALSE
+Exposure2022_obreros,Terciles,T2 - Media,2060,FALSE
+Exposure2022_obreros,Terciles,T3 - Alta,2060,FALSE
+Exposure2022_obreros,Quintiles,Q1 - Muy baja,1236,FALSE
+Exposure2022_obreros,Quintiles,Q2 - Baja,1236,FALSE
+Exposure2022_obreros,Quintiles,Q3 - Media,1236,FALSE
+Exposure2022_obreros,Quintiles,Q4 - Alta,1236,FALSE
+Exposure2022_obreros,Quintiles,Q5 - Muy alta,1236,FALSE
+Bite2022_obreros,Terciles,T1 - Baja,1700,FALSE
+Bite2022_obreros,Terciles,T2 - Media,1700,FALSE
+Bite2022_obreros,Terciles,T3 - Alta,1699,FALSE
+Bite2022_obreros,Quintiles,Q1 - Muy baja,1020,FALSE
+Bite2022_obreros,Quintiles,Q2 - Baja,1020,FALSE
+Bite2022_obreros,Quintiles,Q3 - Media,1020,FALSE
+Bite2022_obreros,Quintiles,Q4 - Alta,1020,FALSE
+Bite2022_obreros,Quintiles,Q5 - Muy alta,1019,FALSE

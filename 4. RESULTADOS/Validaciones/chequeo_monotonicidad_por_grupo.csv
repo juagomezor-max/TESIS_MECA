@@ -1,0 +1,17 @@
+medida,particion,variable,secuencia_estimate,monotonica
+Bite2022_obreros,Quintiles,empleo_permanente,2.046 -> 0.684 -> 1.611 -> 2.041,FALSE
+Bite2022_obreros,Quintiles,empleo_temporal,-4.175 -> -3.294 -> -6.069 -> -5.308,FALSE
+Bite2022_obreros,Quintiles,empleo_total,-2.529 -> -2.659 -> -4.746 -> -3.515,FALSE
+Bite2022_obreros,Quintiles,participacion_permanente,2.091 -> 1.981 -> 3.136 -> 3.843,FALSE
+Bite2022_obreros,Terciles,empleo_permanente,3.258 -> 1.762,TRUE
+Bite2022_obreros,Terciles,empleo_temporal,-5.97 -> -6.386,TRUE
+Bite2022_obreros,Terciles,empleo_total,-2.776 -> -4.747,TRUE
+Bite2022_obreros,Terciles,participacion_permanente,2.046 -> 2.986,TRUE
+Exposure2022_obreros,Quintiles,empleo_permanente,-0.506 -> 4.123 -> -0.862 -> 4.072,FALSE
+Exposure2022_obreros,Quintiles,empleo_temporal,-0.634 -> 1.656 -> -1.154 -> 1.704,FALSE
+Exposure2022_obreros,Quintiles,empleo_total,-1.331 -> 5.855 -> -2.165 -> 5.866,FALSE
+Exposure2022_obreros,Quintiles,participacion_permanente,-0.932 -> -1.16 -> -1.334 -> -0.366,FALSE
+Exposure2022_obreros,Terciles,empleo_permanente,2.584 -> 1.407,TRUE
+Exposure2022_obreros,Terciles,empleo_temporal,-0.354 -> 1.086,TRUE
+Exposure2022_obreros,Terciles,empleo_total,2.216 -> 2.549,TRUE
+Exposure2022_obreros,Terciles,participacion_permanente,-0.944 -> -0.755,TRUE
