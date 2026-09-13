@@ -1,0 +1,7 @@
+medida,variable,particion,grupo,post_estimate_original,post_p_original,post_estimate_con_tendencia,post_p_con_tendencia,tendencia_estimate,tendencia_p,post_significativo_original,post_significativo_con_tendencia
+Bite2022_obreros,participacion_permanente,Terciles,T2 - Media,2.046257,0.003818,-1.373658,0.04564,0.672797,2.999e-5,TRUE,TRUE
+Bite2022_obreros,participacion_permanente,Terciles,T3 - Alta,2.985548,1.933e-4,-3.721949,1.298e-6,1.317259,1.019e-12,TRUE,TRUE
+Bite2022_obreros,participacion_permanente,Quintiles,Q2 - Baja,2.091128,0.01718,-0.291613,0.7433,0.471298,0.01539,TRUE,FALSE
+Bite2022_obreros,participacion_permanente,Quintiles,Q3 - Media,1.981058,0.01981,-2.440548,0.003975,0.871655,1.261e-5,TRUE,TRUE
+Bite2022_obreros,participacion_permanente,Quintiles,Q4 - Alta,3.136124,0.001095,-3.338703,3.263e-4,1.273041,1.99e-8,TRUE,TRUE
+Bite2022_obreros,participacion_permanente,Quintiles,Q5 - Muy alta,3.84324,1.332e-4,-4.029038,4.048e-5,1.546044,3.511e-11,TRUE,TRUE
