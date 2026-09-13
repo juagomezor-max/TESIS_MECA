@@ -1,0 +1,9 @@
+outcome,especificacion,estimate,std.error,statistic,p.value,conf.low,conf.high,n_obs,n_clusters
+empleo_total,Sin controles,-6.491569,1.163812,-5.5778,2.561e-8,-8.773142,-4.209997,49913,5099
+empleo_total,Con sector*anio + tamano*anio + departamento*anio,-1.16164,0.994944,-1.1675,0.243,-3.112158,0.788877,49910,5099
+empleo_permanente,Sin controles,-3.821097,0.849769,-4.4966,7.057e-6,-5.487009,-2.155186,49913,5099
+empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,0.611226,0.793952,0.7699,0.4414,-0.945261,2.167714,49910,5099
+empleo_temporal,Sin controles,-2.605749,0.643851,-4.0471,5.262e-5,-3.867973,-1.343525,49913,5099
+empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,-1.724138,0.689252,-2.5015,0.0124,-3.075368,-0.372908,49910,5099
+participacion_permanente,Sin controles,1.366657,0.355222,3.8473,1.209e-4,0.670269,2.063045,49854,5099
+participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,1.173361,0.418859,2.8013,0.005109,0.352216,1.994505,49851,5099

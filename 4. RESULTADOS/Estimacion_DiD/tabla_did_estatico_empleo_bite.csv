@@ -1,0 +1,16 @@
+,empleo_total_sin,empleo_total_..,empleo_permanent..,empleo_permanen..,empleo_temporal_..,empleo_tempora..,participacion_permanente_sin,participacion_permanente_con
+Outcome,Empleo total,Empleo total,Empleo permanente,Empleo permanente,Empleo temporal (directo + agencia),Empleo temporal (directo + agencia),Participacion de permanentes en el empleo total (%),Participacion de permanentes en el empleo total (%)
+Controles,No,Si,No,Si,No,Si,No,Si
+Dependent Var.:,Empleo total,Empleo total,Empleo permanente,Empleo permanente,Empleo temporal,Empleo temporal,Participacion permanente (%),Participacion permanente (%)
+ , , , , , , , , 
+Post2023 x Bite (1 SD),-6.492*** (1.164),-1.162 (0.9949),-3.821*** (0.8498),0.6112 (0.7940),-2.606*** (0.6439),-1.724* (0.6893),1.367*** (0.3552),1.173** (0.4189)
+Fixed-Effects:,-----------------,---------------,------------------,-----------------,------------------,----------------,----------------------------,----------------------------
+NORDEST,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ANIO_F,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+CIIU4-ANIO_F,No,Yes,No,Yes,No,Yes,No,Yes
+tamano_empresa-ANIO_F,No,Yes,No,Yes,No,Yes,No,Yes
+DPTO_fijo-ANIO_F,No,Yes,No,Yes,No,Yes,No,Yes
+______________________,_________________,_______________,__________________,_________________,__________________,________________,____________________________,____________________________
+S.E.: Clustered,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP
+Observations,"49,913","49,910","49,913","49,910","49,913","49,910","49,854","49,851"
+R2,0.89015,0.91879,0.86201,0.88625,0.83497,0.85915,0.71664,0.73197
