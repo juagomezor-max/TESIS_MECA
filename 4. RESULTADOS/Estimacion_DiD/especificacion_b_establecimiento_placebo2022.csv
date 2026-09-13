@@ -1,0 +1,33 @@
+medida,muestra,variable,estimate,std_error,p_value,significativo,n_obs,controles
+Exposure2022_obreros_est,Balanceada (181),empleo_total,-0.504271,1.47391,0.7327,FALSE,4377,FALSE
+Exposure2022_obreros_est,Balanceada (181),empleo_total,-2.439684,2.516571,0.3336,FALSE,4373,TRUE
+Exposure2022_obreros_est,Balanceada (181),empleo_permanente,-0.828516,1.197265,0.4898,FALSE,4377,FALSE
+Exposure2022_obreros_est,Balanceada (181),empleo_permanente,-3.005668,2.166354,0.167,FALSE,4373,TRUE
+Exposure2022_obreros_est,Balanceada (181),empleo_temporal,0.525346,0.736705,0.4767,FALSE,4377,FALSE
+Exposure2022_obreros_est,Balanceada (181),empleo_temporal,0.804528,1.084029,0.459,FALSE,4373,TRUE
+Exposure2022_obreros_est,Balanceada (181),participacion_permanente,-0.448813,0.281028,0.112,FALSE,4371,FALSE
+Exposure2022_obreros_est,Balanceada (181),participacion_permanente,-0.364297,0.450889,0.4202,FALSE,4367,TRUE
+Exposure2022_obreros_est,No balanceada (262),empleo_total,0.022743,1.423386,0.9873,FALSE,5364,FALSE
+Exposure2022_obreros_est,No balanceada (262),empleo_total,-0.828027,2.609313,0.7513,FALSE,5154,TRUE
+Exposure2022_obreros_est,No balanceada (262),empleo_permanente,-0.289958,1.102452,0.7928,FALSE,5364,FALSE
+Exposure2022_obreros_est,No balanceada (262),empleo_permanente,-1.895669,1.985542,0.3406,FALSE,5154,TRUE
+Exposure2022_obreros_est,No balanceada (262),empleo_temporal,0.521896,0.797749,0.5136,FALSE,5364,FALSE
+Exposure2022_obreros_est,No balanceada (262),empleo_temporal,1.276613,1.280713,0.3198,FALSE,5154,TRUE
+Exposure2022_obreros_est,No balanceada (262),participacion_permanente,-0.483231,0.325125,0.1384,FALSE,5358,FALSE
+Exposure2022_obreros_est,No balanceada (262),participacion_permanente,-0.412729,0.416386,0.3225,FALSE,5148,TRUE
+Bite2022_obreros,Balanceada (181),empleo_total,-6.740866,5.329717,0.2077,FALSE,4588,FALSE
+Bite2022_obreros,Balanceada (181),empleo_total,56.789914,81996.641919,0.9994,FALSE,4588,TRUE
+Bite2022_obreros,Balanceada (181),empleo_permanente,0.997236,3.063982,0.7452,FALSE,4588,FALSE
+Bite2022_obreros,Balanceada (181),empleo_permanente,0.90137,444731.195476,1,FALSE,4588,TRUE
+Bite2022_obreros,Balanceada (181),empleo_temporal,-7.144436,4.644965,0.1259,FALSE,4588,FALSE
+Bite2022_obreros,Balanceada (181),empleo_temporal,9.775144,375252.210255,1,FALSE,4588,TRUE
+Bite2022_obreros,Balanceada (181),participacion_permanente,1.572855,1.328148,0.238,FALSE,4558,FALSE
+Bite2022_obreros,Balanceada (181),participacion_permanente,NA,NA,NA,NA,4558,TRUE
+Bite2022_obreros,No balanceada (262),empleo_total,-15.781559,9.951609,0.1141,FALSE,5606,FALSE
+Bite2022_obreros,No balanceada (262),empleo_total,NA,NA,NA,NA,5414,TRUE
+Bite2022_obreros,No balanceada (262),empleo_permanente,-2.680723,6.458257,0.6784,FALSE,5606,FALSE
+Bite2022_obreros,No balanceada (262),empleo_permanente,NA,NA,NA,NA,5414,TRUE
+Bite2022_obreros,No balanceada (262),empleo_temporal,-12.375743,5.036371,0.01469,TRUE,5606,FALSE
+Bite2022_obreros,No balanceada (262),empleo_temporal,NA,NA,NA,NA,5414,TRUE
+Bite2022_obreros,No balanceada (262),participacion_permanente,3.081647,1.584737,0.05297,FALSE,5571,FALSE
+Bite2022_obreros,No balanceada (262),participacion_permanente,NA,NA,NA,NA,5376,TRUE
