@@ -48,9 +48,10 @@ Peso de empleo por variacion interna, descomposicion de salidas de la cohorte 20
 
 Cobertura de exposicion, consistencia cruzada multiplanta 2022, estabilidad de columnas C3R/C4R, exclusion de prestaciones del salario obrero, nombres de columnas de la macrobase.
 
-### `exploratorio_nicolas/` -- script exploratorio del compañero (nunca validado)
+### `exploratorio_nicolas/` -- scripts exploratorios del compañero (nunca validados)
 
-`construir_base_analitica_nicolas.R` (antes `3. SCRIPTS/3. SCRIPTS/construir_base analitica.R`, renombrado al mover para quitar el espacio y la carpeta anidada). Nunca validado ni usado en ninguna cifra reportada -- ver `0. PREPARACION/README_SIMPLIFICACION.md`.
+- `construir_base_analitica_nicolas.R` (antes `3. SCRIPTS/3. SCRIPTS/construir_base analitica.R`, renombrado al mover para quitar el espacio y la carpeta anidada). Nunca validado ni usado en ninguna cifra reportada -- ver `0. PREPARACION/README_SIMPLIFICACION.md`.
+- `02_decisiones_firma_2023.R` (fusionado 2026-09-06 desde `feature/exposicion-obreros-operarios`): analisis DiD **independiente** del choque de 2023, con decisiones de muestra y outcome DISTINTAS de la especificacion principal de la raiz (`log(empleo_asalariado)` incluyendo aprendices y `proporcion_temporales`, no las 4 dimensiones de `empleo_total`/`empleo_permanente`/`empleo_temporal`/`participacion_permanente`; ventana 2017-2024, no 2015-2024; muestra restringida a firmas de un solo establecimiento en 2022, con una seccion aparte comparando mono vs. multiestablecimiento). Depende de un checkpoint que genera la seccion 54 de `construir_base_analitica_nicolas.R`. **No se ha reconciliado ni verificado** contra la especificacion principal (`3. SCRIPTS/estimacion/estimar_did_principal_empleo.R`) -- queda como lo entrego Nicolas, sin tocar su logica.
 
 ## En la raiz de esta carpeta
 
