@@ -1,0 +1,2 @@
+medida,particion,variable,control,n_obs,f_conjunto,df1_conjunto,df2_conjunto,p_conjunto,rechaza_conjunto_al_5pct,f_no_lineal,df1_no_lineal,df2_no_lineal,p_no_lineal,lineal_es_suficiente,p_conjunto_sin_tendencia,p_no_lineal_sin_tendencia
+Exposure2022_obreros,Quintiles,empleo_total,"CON tendencia lineal pre-existente por grupo (i(grupo, anio_lineal, ref))",59491,0.393,4,6178,0.814,FALSE,0.52,3,6178,0.6685,TRUE,0.00194,0.0027
