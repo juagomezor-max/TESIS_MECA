@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<title>Tabla 3 -- Robustez a tendencia lineal pre-existente (8 celdas) + cuadratica para Exposure</title>
+<style>body{font-family:Arial,sans-serif;padding:24px;} table{border-collapse:collapse;font-size:13px;} th,td{border:1px solid #999;padding:5px 8px;text-align:left;} th{background:#eee;} h1{font-size:18px;}</style>
+</head><body>
+<h1>Tabla 3 -- Robustez a tendencia lineal pre-existente (8 celdas) + cuadratica para Exposure</h1>
+<table>
+<tr><th>variable</th><th>Medida</th><th>p_original</th><th>p_con_tendencia_lineal</th><th>p_con_tendencia_cuadratica</th><th>signo_original</th><th>signo_con_tendencia</th><th>Estado</th></tr>
+<tr><td>empleo_total</td><td>Exposure2022_obreros</td><td>0.119800</td><td>0.67890</td><td>NA</td><td> 0.547708</td><td>-0.137611</td><td>Nulo estable (no cambio en ninguna prueba)</td></tr>
+<tr><td>empleo_permanente</td><td>Exposure2022_obreros</td><td>0.159800</td><td>0.13650</td><td>NA</td><td> 0.399127</td><td> 0.369233</td><td>Nulo estable (no cambio en ninguna prueba)</td></tr>
+<tr><td>empleo_temporal</td><td>Exposure2022_obreros</td><td>0.518700</td><td>0.02125</td><td>0.0098900</td><td> 0.148822</td><td>-0.536471</td><td>NO ROBUSTO (cerrado 2026-09-13, ver BORRADOR_RESULTADOS.md seccion 3.2)</td></tr>
+<tr><td>participacion_permanente</td><td>Exposure2022_obreros</td><td>0.294600</td><td>0.01609</td><td>0.0008769</td><td>-0.156757</td><td> 0.334561</td><td>NO ROBUSTO (cerrado 2026-09-13, ver BORRADOR_RESULTADOS.md seccion 3.2)</td></tr>
+<tr><td>empleo_total</td><td>Bite2022_obreros</td><td>0.243000</td><td>0.44010</td><td>NA</td><td>-1.161640</td><td> 0.736299</td><td>Nulo estable (no cambio en ninguna prueba)</td></tr>
+<tr><td>empleo_permanente</td><td>Bite2022_obreros</td><td>0.441400</td><td>0.50320</td><td>NA</td><td> 0.611226</td><td>-0.450782</td><td>Nulo estable (no cambio en ninguna prueba)</td></tr>
+<tr><td>empleo_temporal</td><td>Bite2022_obreros</td><td>0.012400</td><td>0.08631</td><td>NA</td><td>-1.724138</td><td> 1.108205</td><td>Efecto original NO se sostiene -- desaparece con tendencia (resuelto, ver seccion 4.2)</td></tr>
+<tr><td>participacion_permanente</td><td>Bite2022_obreros</td><td>0.005109</td><td>0.05232</td><td>NA</td><td> 1.173361</td><td>-0.844311</td><td>Efecto original NO se sostiene -- desaparece con tendencia (resuelto, ver seccion 4.2)</td></tr>
+</table>
+<p style='font-size:12px;color:#444;max-width:900px;'>Fuente: validaciones/validar_post_controlando_tendencia_lineal.R (columnas lineal) y validar_robustez_forma_funcional_tendencia_exposure.R (columna cuadratica, solo Exposure/empleo_temporal/participacion_permanente). La columna Estado refleja la conclusion YA CERRADA en BORRADOR_RESULTADOS.md (no se re-decide en esta tabla).</p>
+</body></html>

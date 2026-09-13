@@ -1,0 +1,17 @@
+,empleo_total_..,empleo_total_..,empleo_permanen..,empleo_permanen..,empleo_tempor..,empleo_tempora..,participacion_permanen..,participacion_permanen..
+Outcome,Empleo total,Empleo total,Empleo permanente,Empleo permanente,Empleo temporal,Empleo temporal,Participacion permanente (%),Participacion permanente (%)
+Medida,Exposure2022_obreros,Bite2022_obreros,Exposure2022_obreros,Bite2022_obreros,Exposure2022_obreros,Bite2022_obreros,Exposure2022_obreros,Bite2022_obreros
+Dependent Var.:,empleo_total,empleo_total,empleo_permanente,empleo_permanente,empleo_temporal,empleo_temporal,participacion_permanente,participacion_permanente
+ , , , , , , , , 
+Post2023 x Exposure (10pp),0.5477 (0.3520),  ,0.3991 (0.2839),  ,0.1488 (0.2306),  ,-0.1568 (0.1495),  
+Post2023 x Bite (1 SD),  ,-1.162 (0.9949),  ,0.6112 (0.7940),  ,-1.724* (0.6893),  ,1.173** (0.4189)
+Fixed-Effects:,---------------,---------------,-----------------,-----------------,---------------,----------------,------------------------,------------------------
+NORDEST,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ANIO_F,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+CIIU4-ANIO_F,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+tamano_empresa-ANIO_F,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+DPTO_fijo-ANIO_F,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+__________________________,_______________,_______________,_________________,_________________,_______________,________________,________________________,________________________
+S.E.: Clustered,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP,by: NORDEMP
+Observations,"59,491","49,910","59,491","49,910","59,491","49,910","59,411","49,851"
+R2,0.91852,0.91879,0.88484,0.88625,0.85946,0.85915,0.76434,0.73197

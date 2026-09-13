@@ -1,0 +1,9 @@
+variable,Medida,p_original,p_con_tendencia_lineal,p_con_tendencia_cuadratica,signo_original,signo_con_tendencia,Estado
+empleo_total,Exposure2022_obreros,0.1198,0.6789,NA,0.547708,-0.137611,Nulo estable (no cambio en ninguna prueba)
+empleo_permanente,Exposure2022_obreros,0.1598,0.1365,NA,0.399127,0.369233,Nulo estable (no cambio en ninguna prueba)
+empleo_temporal,Exposure2022_obreros,0.5187,0.02125,0.00989,0.148822,-0.536471,"NO ROBUSTO (cerrado 2026-09-13, ver BORRADOR_RESULTADOS.md seccion 3.2)"
+participacion_permanente,Exposure2022_obreros,0.2946,0.01609,8.769e-4,-0.156757,0.334561,"NO ROBUSTO (cerrado 2026-09-13, ver BORRADOR_RESULTADOS.md seccion 3.2)"
+empleo_total,Bite2022_obreros,0.243,0.4401,NA,-1.16164,0.736299,Nulo estable (no cambio en ninguna prueba)
+empleo_permanente,Bite2022_obreros,0.4414,0.5032,NA,0.611226,-0.450782,Nulo estable (no cambio en ninguna prueba)
+empleo_temporal,Bite2022_obreros,0.0124,0.08631,NA,-1.724138,1.108205,"Efecto original NO se sostiene -- desaparece con tendencia (resuelto, ver seccion 4.2)"
+participacion_permanente,Bite2022_obreros,0.005109,0.05232,NA,1.173361,-0.844311,"Efecto original NO se sostiene -- desaparece con tendencia (resuelto, ver seccion 4.2)"

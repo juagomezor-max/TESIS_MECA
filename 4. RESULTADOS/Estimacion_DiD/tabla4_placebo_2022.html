@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<title>Tabla 4 -- Placebo 2022 (salario minimo real cayo -3,05pp): contraste 2021-&gt;2022 vs. incremento tipico 2016-2019</title>
+<style>body{font-family:Arial,sans-serif;padding:24px;} table{border-collapse:collapse;font-size:13px;} th,td{border:1px solid #999;padding:5px 8px;text-align:left;} th{background:#eee;} h1{font-size:18px;}</style>
+</head><body>
+<h1>Tabla 4 -- Placebo 2022 (salario minimo real cayo -3,05pp): contraste 2021-&gt;2022 vs. incremento tipico 2016-2019</h1>
+<table>
+<tr><th>Medida</th><th>variable</th><th>especificacion</th><th>contraste</th><th>t_stat</th><th>p_value</th><th>Atipico</th></tr>
+<tr><td>Exposure2022_obreros</td><td>empleo_total</td><td>Sin controles</td><td> 0.704478</td><td> 5.113</td><td>3.259e-07</td><td>SI</td></tr>
+<tr><td>Exposure2022_obreros</td><td>empleo_total</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td>-0.074724</td><td>-0.216</td><td>8.288e-01</td><td>NO</td></tr>
+<tr><td>Exposure2022_obreros</td><td>empleo_permanente</td><td>Sin controles</td><td> 0.307832</td><td> 3.848</td><td>1.202e-04</td><td>SI</td></tr>
+<tr><td>Exposure2022_obreros</td><td>empleo_permanente</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td> 0.074621</td><td> 0.327</td><td>7.439e-01</td><td>NO</td></tr>
+<tr><td>Exposure2022_obreros</td><td>empleo_temporal</td><td>Sin controles</td><td> 0.407558</td><td> 3.933</td><td>8.486e-05</td><td>SI</td></tr>
+<tr><td>Exposure2022_obreros</td><td>empleo_temporal</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td>-0.137647</td><td>-0.485</td><td>6.279e-01</td><td>NO</td></tr>
+<tr><td>Exposure2022_obreros</td><td>participacion_permanente</td><td>Sin controles</td><td>-0.031902</td><td>-0.728</td><td>4.664e-01</td><td>NO</td></tr>
+<tr><td>Exposure2022_obreros</td><td>participacion_permanente</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td>-0.147798</td><td>-1.079</td><td>2.809e-01</td><td>NO</td></tr>
+<tr><td>Bite2022_obreros</td><td>empleo_total</td><td>Sin controles</td><td> 1.349564</td><td> 4.594</td><td>4.456e-06</td><td>SI</td></tr>
+<tr><td>Bite2022_obreros</td><td>empleo_total</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td> 0.104621</td><td> 0.097</td><td>9.227e-01</td><td>NO</td></tr>
+<tr><td>Bite2022_obreros</td><td>empleo_permanente</td><td>Sin controles</td><td> 0.622692</td><td> 3.253</td><td>1.150e-03</td><td>SI</td></tr>
+<tr><td>Bite2022_obreros</td><td>empleo_permanente</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td> 0.210402</td><td> 0.309</td><td>7.570e-01</td><td>NO</td></tr>
+<tr><td>Bite2022_obreros</td><td>empleo_temporal</td><td>Sin controles</td><td> 0.754477</td><td> 3.913</td><td>9.222e-05</td><td>SI</td></tr>
+<tr><td>Bite2022_obreros</td><td>empleo_temporal</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td>-0.102758</td><td>-0.151</td><td>8.802e-01</td><td>NO</td></tr>
+<tr><td>Bite2022_obreros</td><td>participacion_permanente</td><td>Sin controles</td><td> 0.163658</td><td> 1.597</td><td>1.104e-01</td><td>NO</td></tr>
+<tr><td>Bite2022_obreros</td><td>participacion_permanente</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td> 0.472461</td><td> 1.130</td><td>2.585e-01</td><td>NO</td></tr>
+</table>
+<p style='font-size:12px;color:#444;max-width:900px;'>Fuente: validaciones/validar_placebo_2022_empleo.R. "Atipico" = SI si p&lt;0.05.</p>
+</body></html>

@@ -1,0 +1,5 @@
+Medida,Especificacion,Contraste,t,p_valor,Atipico
+Exposure2022_obreros,Sin controles,0.007283,9.076,1.485e-19,SI
+Exposure2022_obreros,Con sector*anio + tamano*anio + departamento*anio,-0.001058,-0.291,0.7709,NO
+Bite2022_obreros,Sin controles,0.023198,9.968,3.434e-23,SI
+Bite2022_obreros,Con sector*anio + tamano*anio + departamento*anio,0.050845,5.831,5.846e-9,SI

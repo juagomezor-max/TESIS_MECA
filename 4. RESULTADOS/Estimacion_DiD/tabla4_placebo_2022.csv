@@ -1,0 +1,17 @@
+Medida,variable,especificacion,contraste,t_stat,p_value,Atipico
+Exposure2022_obreros,empleo_total,Sin controles,0.704478,5.113,3.259000000000001e-7,SI
+Exposure2022_obreros,empleo_total,Con sector*anio + tamano*anio + departamento*anio,-0.074724,-0.216,0.8288,NO
+Exposure2022_obreros,empleo_permanente,Sin controles,0.307832,3.848,1.202e-4,SI
+Exposure2022_obreros,empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,0.074621,0.327,0.7439,NO
+Exposure2022_obreros,empleo_temporal,Sin controles,0.407558,3.933,8.486e-5,SI
+Exposure2022_obreros,empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,-0.137647,-0.485,0.6279,NO
+Exposure2022_obreros,participacion_permanente,Sin controles,-0.031902,-0.728,0.4664,NO
+Exposure2022_obreros,participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,-0.147798,-1.079,0.2809,NO
+Bite2022_obreros,empleo_total,Sin controles,1.349564,4.594,4.456e-6,SI
+Bite2022_obreros,empleo_total,Con sector*anio + tamano*anio + departamento*anio,0.104621,0.097,0.9227,NO
+Bite2022_obreros,empleo_permanente,Sin controles,0.622692,3.253,0.00115,SI
+Bite2022_obreros,empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,0.210402,0.309,0.757,NO
+Bite2022_obreros,empleo_temporal,Sin controles,0.754477,3.913,9.222e-5,SI
+Bite2022_obreros,empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,-0.102758,-0.151,0.8802,NO
+Bite2022_obreros,participacion_permanente,Sin controles,0.163658,1.597,0.1104,NO
+Bite2022_obreros,participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,0.472461,1.13,0.2585,NO

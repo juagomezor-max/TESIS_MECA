@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset='utf-8'>
+<title>Tabla 2 -- Manipulation check (primer eslabon): contraste del salto 2022-&gt;2023 en costo laboral vs. incremento tipico 2016-2019</title>
+<style>body{font-family:Arial,sans-serif;padding:24px;} table{border-collapse:collapse;font-size:13px;} th,td{border:1px solid #999;padding:5px 8px;text-align:left;} th{background:#eee;} h1{font-size:18px;}</style>
+</head><body>
+<h1>Tabla 2 -- Manipulation check (primer eslabon): contraste del salto 2022-&gt;2023 en costo laboral vs. incremento tipico 2016-2019</h1>
+<table>
+<tr><th>Medida</th><th>Especificacion</th><th>Contraste</th><th>t</th><th>p_valor</th><th>Atipico</th></tr>
+<tr><td>Exposure2022_obreros</td><td>Sin controles</td><td> 0.007283</td><td> 9.076</td><td>1.485e-19</td><td>SI</td></tr>
+<tr><td>Exposure2022_obreros</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td>-0.001058</td><td>-0.291</td><td>7.709e-01</td><td>NO</td></tr>
+<tr><td>Bite2022_obreros</td><td>Sin controles</td><td> 0.023198</td><td> 9.968</td><td>3.434e-23</td><td>SI</td></tr>
+<tr><td>Bite2022_obreros</td><td>Con sector*anio + tamano*anio + departamento*anio</td><td> 0.050845</td><td> 5.831</td><td>5.846e-09</td><td>SI</td></tr>
+</table>
+<p style='font-size:12px;color:#444;max-width:900px;'>Fuente: validaciones/validar_primer_eslabon_costo_laboral.R (Exposure) y _bite.R (Bite). "Atipico" = SI si p&lt;0.05.</p>
+</body></html>
