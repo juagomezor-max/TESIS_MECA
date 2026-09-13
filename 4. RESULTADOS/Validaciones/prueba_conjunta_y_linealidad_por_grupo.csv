@@ -1,0 +1,17 @@
+medida,particion,variable,n_grupos,n_obs,f_conjunto,df1_conjunto,df2_conjunto,p_conjunto,rechaza_conjunto_al_5pct,f_no_lineal,df1_no_lineal,df2_no_lineal,p_no_lineal,lineal_es_suficiente
+Exposure2022_obreros,Terciles,empleo_total,3,59491,0.933,2,6178,0.3935,FALSE,0.261,1,6178,0.6092,TRUE
+Exposure2022_obreros,Terciles,empleo_permanente,3,59491,1.15,2,6178,0.3166,FALSE,1.51,1,6178,0.2192,TRUE
+Exposure2022_obreros,Terciles,empleo_temporal,3,59491,0.469,2,6178,0.6258,FALSE,0.476,1,6178,0.4903,TRUE
+Exposure2022_obreros,Terciles,participacion_permanente,3,59411,0.914,2,6178,0.4009,FALSE,0.816,1,6178,0.3665,TRUE
+Exposure2022_obreros,Quintiles,empleo_total,5,59491,4.254,4,6178,0.001938,TRUE,4.723,3,6178,0.002703,FALSE
+Exposure2022_obreros,Quintiles,empleo_permanente,5,59491,2.471,4,6178,0.04255,TRUE,2.523,3,6178,0.05591,TRUE
+Exposure2022_obreros,Quintiles,empleo_temporal,5,59491,0.937,4,6178,0.4413,FALSE,0.986,3,6178,0.398,TRUE
+Exposure2022_obreros,Quintiles,participacion_permanente,5,59411,0.717,4,6178,0.5801,FALSE,0.809,3,6178,0.4888,TRUE
+Bite2022_obreros,Terciles,empleo_total,3,49910,1.876,2,5097,0.1533,FALSE,0.054,1,5097,0.8157,TRUE
+Bite2022_obreros,Terciles,empleo_permanente,3,49910,1.482,2,5097,0.2272,FALSE,2.586,1,5097,0.1079,TRUE
+Bite2022_obreros,Terciles,empleo_temporal,3,49910,8.617,2,5097,1.837e-4,TRUE,3.753,1,5097,0.05278,TRUE
+Bite2022_obreros,Terciles,participacion_permanente,3,49851,7.868,2,5097,3.877e-4,TRUE,0.759,1,5097,0.3835,TRUE
+Bite2022_obreros,Quintiles,empleo_total,5,49910,0.658,4,5097,0.6209,FALSE,0.374,3,5097,0.7721,TRUE
+Bite2022_obreros,Quintiles,empleo_permanente,5,49910,0.243,4,5097,0.9138,FALSE,0.205,3,5097,0.8931,TRUE
+Bite2022_obreros,Quintiles,empleo_temporal,5,49910,2.767,4,5097,0.02594,TRUE,1.101,3,5097,0.3474,TRUE
+Bite2022_obreros,Quintiles,participacion_permanente,5,49851,4.479,4,5097,0.001297,TRUE,0.687,3,5097,0.5597,TRUE

@@ -1,0 +1,13 @@
+medida,variable,particion,grupo,post_estimate_original,post_p_original,post_estimate_con_tendencia,post_p_con_tendencia,tendencia_p,post_sig_original,post_sig_con_tendencia
+Exposure2022_obreros,empleo_total,Terciles,T2 - Media,2.215772,0.2857,-1.21008,0.5084,0.1162,FALSE,FALSE
+Exposure2022_obreros,empleo_total,Terciles,T3 - Alta,2.549319,0.2117,0.317007,0.8775,0.2602,FALSE,FALSE
+Exposure2022_obreros,empleo_total,Quintiles,Q2 - Baja,-1.330998,0.5987,0.047461,0.9834,0.5988,FALSE,FALSE
+Exposure2022_obreros,empleo_total,Quintiles,Q3 - Media,5.854639,0.03914,-0.849233,0.7182,0.02254,TRUE,FALSE
+Exposure2022_obreros,empleo_total,Quintiles,Q4 - Alta,-2.164744,0.4209,-1.569451,0.49370000000000003,0.8395,FALSE,FALSE
+Exposure2022_obreros,empleo_total,Quintiles,Q5 - Muy alta,5.865674,0.03868,1.630336,0.5658,0.09013,TRUE,FALSE
+Exposure2022_obreros,empleo_permanente,Terciles,T2 - Media,2.583737,0.1311,0.464459,0.7679,0.2644,FALSE,FALSE
+Exposure2022_obreros,empleo_permanente,Terciles,T3 - Alta,1.407275,0.4177,1.788744,0.2476,0.8094,FALSE,FALSE
+Exposure2022_obreros,empleo_permanente,Quintiles,Q2 - Baja,-0.505683,0.79,3.7091,0.04206,0.03581,FALSE,TRUE
+Exposure2022_obreros,empleo_permanente,Quintiles,Q3 - Media,4.12302,0.06709,1.251729,0.5139,0.259,FALSE,FALSE
+Exposure2022_obreros,empleo_permanente,Quintiles,Q4 - Alta,-0.861794,0.6902,2.900525,0.1202,0.1195,FALSE,FALSE
+Exposure2022_obreros,empleo_permanente,Quintiles,Q5 - Muy alta,4.072423,0.06287,5.250507,0.007877,0.507,FALSE,TRUE
