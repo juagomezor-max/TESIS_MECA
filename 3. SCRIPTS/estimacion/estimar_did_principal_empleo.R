@@ -5,7 +5,21 @@
 # del choque de salario minimo 2023 sobre 4 dimensiones de empleo, en
 # funcion de Exposure2022_obreros (composicion ocupacional pre-choque,
 # a nivel FIRMA), sobre el panel formal ya validado
-# (panel_establecimiento_formal.rds, Paso A).
+# (panel_establecimiento_formal.rds, Paso A). Muestra COMPLETA de
+# establecimientos, SIN restringir a firmas multiplanta.
+#
+# AVISO DE TERMINOLOGIA (2026-09-13, auditoria de etiquetado): este
+# script usa internamente "MODELO ESTATICO" y "EVENT STUDY COMPLETO"
+# para referirse a dos FORMAS FUNCIONALES (post_2023 como dummy unico
+# vs. coeficiente año a año). Estas NO son la "Especificacion A" /
+# "Especificacion B" de la seccion 4.5 de la tesis (donde A = muestra
+# completa a nivel establecimiento, B = dentro de firma en
+# multiplanta). Versiones anteriores de este script (hasta el commit
+# 64b04ea) SI usaban "Especificacion A"/"Especificacion B" para las
+# formas funcionales -- una colision de nombres accidental con la
+# terminologia de la tesis, sin relacion de contenido (este script
+# siempre corrio sobre la muestra completa, nunca sobre una restriccion
+# a multiplanta). Se renombro para evitar confusion futura.
 #
 # Bite2022_obreros queda DELIBERADAMENTE fuera de esta ronda -- no
 # descartada, solo pospuesta para evaluar en el futuro con otras
@@ -44,22 +58,22 @@
 #   el objetivo es la imagen completa pre+post, no solo el chequeo de
 #   pre-tendencias (que ya se hizo con ref='2015').
 #
-# ESPECIFICACION A -- DiD estatico (modelo base del proyecto):
+# MODELO ESTATICO -- DiD estatico (modelo base del proyecto):
 #   Y_ft = a + b*(post_2023 x exposicion_10pp) + FE_NORDEST + FE_ANIO [+ controles]
 #   Sin controles:  outcome ~ post_2023:exposicion_10pp | NORDEST + ANIO_F
 #   Con controles:  outcome ~ post_2023:exposicion_10pp | NORDEST + ANIO_F + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO_fijo^ANIO_F
-#   cluster = ~NORDEMP siempre. 4 outcomes x 2 especificaciones = 8 modelos.
+#   cluster = ~NORDEMP siempre. 4 outcomes x 2 formas funcionales = 8 modelos.
 #
-# ESPECIFICACION B -- event study completo (pre+post en una sola imagen):
+# EVENT STUDY COMPLETO -- (pre+post en una sola imagen):
 #   outcome ~ i(ANIO_F, exposicion_10pp, ref='2022') | NORDEST + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO_fijo^ANIO_F
 #   cluster = ~NORDEMP, SOLO con controles (la especificacion recomendada).
 #   4 outcomes.
 #
 # Salidas (versionadas, 4. RESULTADOS/Estimacion_DiD/):
-# - tabla_did_estatico_empleo.csv / .html (Especificacion A, 8 modelos, formato academico)
-# - did_estatico_empleo_coeficientes.csv (Especificacion A, tidy)
-# - event_study_completo_coeficientes.csv / _metadatos.csv (Especificacion B, tidy)
-# - evento_did_completo_<outcome>.png (4 archivos, Especificacion B)
+# - tabla_did_estatico_empleo.csv / .html (Modelo estatico, 8 modelos, formato academico)
+# - did_estatico_empleo_coeficientes.csv (Modelo estatico, tidy)
+# - event_study_completo_coeficientes.csv / _metadatos.csv (Event study completo, tidy)
+# - evento_did_completo_<outcome>.png (4 archivos, Event study completo)
 # - evento_did_completo_panel_2x2.png (las 4 en un solo panel, para referencia rapida)
 
 source(file.path("3. SCRIPTS", "pipeline", "_utils_proyecto.R"))
@@ -109,7 +123,7 @@ outcomes_info <- tibble::tribble(
 )
 
 # ------------------------------------------------------------------
-# 2) ESPECIFICACION A: DiD estatico, sin y con controles, 4 outcomes.
+# 2) MODELO ESTATICO: DiD estatico, sin y con controles, 4 outcomes.
 # ------------------------------------------------------------------
 
 modelos_did <- list()
@@ -192,18 +206,18 @@ texto_tabla <- utils::capture.output(print(etable_did))
 options(width = ancho_original)
 html_tabla <- c(
   "<!doctype html><html><head><meta charset='utf-8'>",
-  "<title>DiD estatico -- empleo (Especificacion A)</title>",
+  "<title>DiD estatico -- empleo (Modelo estatico)</title>",
   "<style>body{font-family:Consolas,Menlo,monospace;background:#fff;color:#111;padding:24px;}",
   "h1{font-family:sans-serif;font-size:18px;} pre{font-size:13px;line-height:1.4;white-space:pre;overflow-x:auto;}</style>",
   "</head><body>",
-  "<h1>Estimacion DiD principal -- empleo (Especificacion A: DiD estatico, 8 modelos)</h1>",
+  "<h1>Estimacion DiD principal -- empleo (Modelo estatico: DiD estatico, 8 modelos)</h1>",
   "<pre>", paste(texto_tabla, collapse = "\n"), "</pre>",
   "</body></html>"
 )
 writeLines(html_tabla, file.path(out_dir, "tabla_did_estatico_empleo.html"))
 
 # ------------------------------------------------------------------
-# 4) ESPECIFICACION B: event study completo, ref='2022', CON controles,
+# 4) EVENT STUDY COMPLETO: ref='2022', CON controles,
 #    4 outcomes.
 # ------------------------------------------------------------------
 
@@ -282,7 +296,7 @@ p_panel <- ggplot2::ggplot(coef_event_tabla %>% dplyr::left_join(outcomes_info, 
   ggplot2::facet_wrap(~label, scales = "free_y") +
   ggplot2::scale_x_continuous(breaks = ANIOS_PANEL) +
   ggplot2::labs(
-    title = "Estimacion DiD principal -- event study completo, 4 outcomes (Especificacion B)",
+    title = "Estimacion DiD principal -- event study completo, 4 outcomes (Event study completo)",
     subtitle = "Efecto de +10pp de Exposure2022_obreros | Ref. 2022 | IC95% | linea roja: inicio tratamiento (2023)",
     x = "Anio", y = "Coeficiente (ref. 2022)"
   ) +
@@ -299,10 +313,10 @@ message("")
 message("Panel: ", nrow(panel_built), " filas NORDEST-ANIO, ", dplyr::n_distinct(panel_built$NORDEST), " establecimientos, ",
         dplyr::n_distinct(panel_built$NORDEMP), " firmas.")
 message("")
-message("=== Especificacion A: DiD estatico (coeficiente post_2023 x exposicion_10pp) ===")
+message("=== Modelo estatico: DiD estatico (coeficiente post_2023 x exposicion_10pp) ===")
 print(coef_did_tabla %>% dplyr::select(outcome, especificacion, estimate, std.error, p.value, n_obs, n_clusters), n = Inf, width = Inf)
 message("")
-message("=== Especificacion B: event study completo, ref=2022 (resumen: coeficientes 2023 y 2024) ===")
+message("=== Event study completo: ref=2022 (resumen: coeficientes 2023 y 2024) ===")
 print(coef_event_tabla %>% dplyr::filter(anio %in% c(2023, 2024)) %>% dplyr::select(variable, anio, estimate, std.error, p.value, conf.low, conf.high), n = Inf, width = Inf)
 message("")
 message("Tablas y graficos exportados en: ", out_dir)

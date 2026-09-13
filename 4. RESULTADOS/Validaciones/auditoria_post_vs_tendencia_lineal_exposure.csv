@@ -1,0 +1,5 @@
+variable,n_obs,post_estimate_original,post_se_original,post_p_original,post_estimate_con_tendencia,post_se_con_tendencia,post_p_con_tendencia,tendencia_estimate,tendencia_se,tendencia_p,post_sigue_significativo_al_5pct,cambio_de_significancia
+empleo_total,59491,0.547708,0.352006,0.1198,-0.137611,0.332382,0.6789,0.135192,0.062234,0.02987,FALSE,FALSE
+empleo_permanente,59491,0.399127,0.283889,0.1598,0.369233,0.247953,0.1365,0.005897,0.049579,0.9053,FALSE,FALSE
+empleo_temporal,59491,0.148822,0.230614,0.5187,-0.536471,0.232826,0.02125,0.135187,0.048901,0.005718,TRUE,TRUE
+participacion_permanente,59411,-0.156757,0.149541,0.2946,0.334561,0.138963,0.01609,-0.096876,0.033319,0.003656,TRUE,TRUE

@@ -33,7 +33,9 @@ Script: `validaciones/validar_primer_eslabon_costo_laboral.R` (commit `576133a`)
 
 `Exposure2022_obreros` **no predice de forma robusta** el choque real de costo laboral de 2023 bajo la especificación con controles. Diagnóstico de sobre-control relacionado (`validaciones/diagnosticar_sobrecontrol_exposure_fwl.R`, salida `diagnostico_sobrecontrol_r2.csv`): sector+tamaño+departamento explican R²=0.218 de la varianza de `Exposure2022_obreros` (1-R²=0.782 sobrevive).
 
-### 3.2 Estimación DiD, empleo (Especificación A: DiD estático, con controles)
+### 3.2 Estimación DiD, empleo (modelo estático, con controles)
+
+> ⚠️ **PENDIENTE DE AUDITORÍA (2026-09-13).** Los 4 coeficientes de abajo ya eran no significativos, pero la misma auditoría que se corrió para Bite (sección 4.2) se corrió también aquí (`auditoria_post_vs_tendencia_lineal_exposure.csv`) y encontró un patrón igual de relevante, en dirección OPUESTA: al agregar la tendencia lineal (`anio_lineal:exposicion_10pp`), empleo_temporal y participación_permanente **pasan de no significativos a significativos al 5%**, con cambio de signo (empleo_temporal: 0.149→-0.536, p de 0.519 a 0.0213; participación_permanente: -0.157→0.335, p de 0.295 a 0.0161). No se interpreta aquí -- se deja anotado para no presentar los 4 coeficientes de abajo como el cuadro completo. Nota de terminología: "modelo estático" aquí es una forma funcional (post_2023 como dummy único), **no** la "Especificación A" de la sección 4.5 de la tesis (muestra completa a nivel establecimiento) — ambos scripts corren sobre la muestra completa, sin restricción a multiplanta; el nombre "Especificación A/B" que usaban originalmente los scripts (hasta los commits `64b04ea`/`3b55e37`) era una colisión de nombres accidental, ya corregida en el código.
 
 Script: `estimacion/estimar_did_principal_empleo.R`. Salida: `did_estatico_empleo_coeficientes.csv` (fila "Con sector*anio + tamano*anio + departamento*anio").
 
@@ -59,7 +61,9 @@ Script: `validaciones/validar_primer_eslabon_costo_laboral_bite.R` (commit `0ce0
 
 `Bite2022_obreros` **sí predice** el choque real de costo laboral de 2023, tanto sin controles como con controles. A diferencia de `Exposure2022_obreros`, un resultado nulo de `Bite2022_obreros` en la sección 4.2 **no** tiene la misma ambigüedad de potencia — su primer eslabón pasa bajo la especificación recomendada.
 
-### 4.2 Estimación DiD, empleo (Especificación A: DiD estático, con controles)
+### 4.2 Estimación DiD, empleo (modelo estático, con controles)
+
+> ⚠️ **PENDIENTE DE AUDITORÍA (2026-09-13) — NO tratar los 2 coeficientes en negrita de abajo como resultado confirmado.** El usuario encontró que estos 2 coeficientes significativos NO tienen un quiebre visible en el event study del mismo outcome (ver nota al final de esta sección) y pidió investigar si el coeficiente "post" del modelo estático solo capturaba la extrapolación de una tendencia lineal pre-existente. Resultado de esa auditoría (`validaciones/validar_post_controlando_tendencia_lineal.R`, `auditoria_post_vs_tendencia_lineal_bite.csv`): al agregar un término de tendencia lineal continua (`anio_lineal:bite_1sd`) a la misma especificación, **ambos coeficientes "post" pierden significancia al 5% y cambian de signo** (empleo temporal: -1.72→+1.11, p pasa de 0.0124 a 0.0863; participación permanente: +1.17→-0.844, p pasa de 0.0051 a 0.0523) mientras el término de tendencia es altamente significativo en los dos (p=0.00102 y p=0.000335). Ver el informe completo en la conversación del commit correspondiente antes de citar estos 2 números en cualquier version posterior de esta sección.
 
 Script: `estimacion/estimar_did_principal_empleo_bite.R`. Salida: `did_estatico_empleo_bite_coeficientes.csv` (fila "Con sector*anio + tamano*anio + departamento*anio"). Escala: `bite_1sd` = Bite2022_obreros / desviación estándar muestral (sd=0.3056) — Bite no tiene una escala natural de "10pp"; la elección de escala no afecta significancia ni p-valor, solo la magnitud del coeficiente.
 
@@ -67,12 +71,12 @@ Script: `estimacion/estimar_did_principal_empleo_bite.R`. Salida: `did_estatico_
 |---|---|---|---|---|
 | Empleo total | -1.1616 | 0.9949 | 0.2430 | 49,910 / 5,099 |
 | Empleo permanente | 0.6112 | 0.7940 | 0.4414 | 49,910 / 5,099 |
-| **Empleo temporal** | **-1.7241** | 0.6893 | **0.0124** | 49,910 / 5,099 |
-| **Participación permanente (%)** | **1.1734** | 0.4189 | **0.0051** | 49,851 / 5,099 |
+| **Empleo temporal ⚠️** | **-1.7241** | 0.6893 | **0.0124** | 49,910 / 5,099 |
+| **Participación permanente (%) ⚠️** | **1.1734** | 0.4189 | **0.0051** | 49,851 / 5,099 |
 
-Empleo temporal y participación permanente son estadísticamente significativos al 5%; empleo total y empleo permanente no lo son. Dado que el primer eslabón de `Bite2022_obreros` sí pasa (sección 4.1), los 2 coeficientes significativos son consistentes con un efecto detectable del choque de costo laboral sobre esas 2 dimensiones — se reporta el signo y la magnitud sin declarar causalidad de "el salario mínimo redujo/aumentó" el empleo, dado que esto es un primer borrador sin las robustez adicionales listadas en la sección 6. Los 2 coeficientes no significativos (empleo total, empleo permanente) no tienen la ambigüedad de potencia que sí aplica a `Exposure2022_obreros`.
+~~Empleo temporal y participación permanente son estadísticamente significativos al 5%; empleo total y empleo permanente no lo son. Dado que el primer eslabón de `Bite2022_obreros` sí pasa (sección 4.1), los 2 coeficientes significativos son consistentes con un efecto detectable del choque de costo laboral sobre esas 2 dimensiones.~~ **Retirado (2026-09-13): esta lectura está pendiente de la auditoría de arriba — no se sostiene sin controlar por tendencia lineal pre-existente.** Los 2 coeficientes no significativos (empleo total, empleo permanente) no tienen la ambigüedad de potencia que sí aplica a `Exposure2022_obreros`, y no están afectados por esta auditoría.
 
-**Nota sin interpretar sobre la Especificación B (event study completo, ref=2022, con controles):** ningún coeficiente 2023 o 2024 de `Bite2022_obreros` es significativo al 5% en esa forma funcional (p entre 0.11 y 0.93; `event_study_completo_bite_coeficientes.csv`) — un patrón distinto al de la Especificación A reportada arriba. Las dos especificaciones difieren en forma funcional (dummy único post-2023 vs. coeficiente año a año); la discrepancia se deja registrada, no se explica en este borrador.
+**Nota sin interpretar sobre el event study completo (ref=2022, con controles) — el hallazgo que motivó la auditoría de arriba:** ningún coeficiente 2023 o 2024 de `Bite2022_obreros` es significativo al 5% en esa forma funcional (p entre 0.11 y 0.93; `event_study_completo_bite_coeficientes.csv`), y las series no muestran un quiebre visible en 2023 — se ven como continuación de la tendencia pre-existente. Esto es lo que llevó a sospechar que el modelo estático de arriba estaba capturando esa misma tendencia, no un quiebre causado por 2023 (confirmado por la auditoría).
 
 ## 5. Placebo 2022 (salario mínimo real cayó, no subió)
 

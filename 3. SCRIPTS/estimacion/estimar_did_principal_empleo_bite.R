@@ -7,7 +7,16 @@
 # Exposure -- ninguna de las dos medidas tiene jerarquia sobre la otra
 # (decision ya tomada en la seccion 4.3 de Estrategia Empirica, no se
 # reabre aqui). Guardado como script SEPARADO -- no sobreescribe
-# estimar_did_principal_empleo.R.
+# estimar_did_principal_empleo.R. Muestra COMPLETA de establecimientos,
+# SIN restringir a firmas multiplanta.
+#
+# AVISO DE TERMINOLOGIA (2026-09-13, auditoria de etiquetado): ver nota
+# identica en la cabecera de estimar_did_principal_empleo.R -- "MODELO
+# ESTATICO" / "EVENT STUDY COMPLETO" aqui son formas funcionales, NO la
+# "Especificacion A"/"Especificacion B" de la seccion 4.5 de la tesis.
+# Confirmado: este script tampoco reutiliza codigo de ninguna
+# restriccion a multiplanta -- corre sobre panel_establecimiento_formal.rds
+# completo, igual que la version de Exposure.
 #
 # LIMITACION CONOCIDA A CITAR EN CUALQUIER INTERPRETACION: el "primer
 # eslabon" (validaciones/validar_primer_eslabon_costo_laboral_bite.R)
@@ -37,12 +46,12 @@
 #   exposicion.R, mismo archivo exposicion_firma_eam.rds que Exposure.
 # - Escala bite_1sd: validaciones/validar_primer_eslabon_costo_laboral_bite.R.
 #
-# ESPECIFICACION A -- DiD estatico:
+# MODELO ESTATICO -- DiD estatico:
 #   Sin controles:  outcome ~ post_2023:bite_1sd | NORDEST + ANIO_F
 #   Con controles:  outcome ~ post_2023:bite_1sd | NORDEST + ANIO_F + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO_fijo^ANIO_F
-#   cluster = ~NORDEMP siempre. 4 outcomes x 2 especificaciones = 8 modelos.
+#   cluster = ~NORDEMP siempre. 4 outcomes x 2 formas funcionales = 8 modelos.
 #
-# ESPECIFICACION B -- event study completo, ref='2022', CON controles, 4 outcomes.
+# EVENT STUDY COMPLETO -- ref='2022', CON controles, 4 outcomes.
 #
 # Salidas (versionadas, 4. RESULTADOS/Estimacion_DiD/):
 # - tabla_did_estatico_empleo_bite.csv / .html
@@ -103,7 +112,7 @@ outcomes_info <- tibble::tribble(
 )
 
 # ------------------------------------------------------------------
-# 2) ESPECIFICACION A: DiD estatico, sin y con controles, 4 outcomes.
+# 2) MODELO ESTATICO: DiD estatico, sin y con controles, 4 outcomes.
 # ------------------------------------------------------------------
 
 modelos_did <- list()
@@ -185,18 +194,18 @@ texto_tabla <- utils::capture.output(print(etable_did))
 options(width = ancho_original)
 html_tabla <- c(
   "<!doctype html><html><head><meta charset='utf-8'>",
-  "<title>DiD estatico -- empleo, Bite (Especificacion A)</title>",
+  "<title>DiD estatico -- empleo, Bite (Modelo estatico)</title>",
   "<style>body{font-family:Consolas,Menlo,monospace;background:#fff;color:#111;padding:24px;}",
   "h1{font-family:sans-serif;font-size:18px;} pre{font-size:13px;line-height:1.4;white-space:pre;overflow-x:auto;}</style>",
   "</head><body>",
-  "<h1>Estimacion DiD principal -- empleo, Bite2022_obreros (Especificacion A: DiD estatico, 8 modelos)</h1>",
+  "<h1>Estimacion DiD principal -- empleo, Bite2022_obreros (Modelo estatico: DiD estatico, 8 modelos)</h1>",
   "<pre>", paste(texto_tabla, collapse = "\n"), "</pre>",
   "</body></html>"
 )
 writeLines(html_tabla, file.path(out_dir, "tabla_did_estatico_empleo_bite.html"))
 
 # ------------------------------------------------------------------
-# 4) ESPECIFICACION B: event study completo, ref='2022', CON controles.
+# 4) EVENT STUDY COMPLETO: ref='2022', CON controles.
 # ------------------------------------------------------------------
 
 ANIOS_PANEL <- sort(unique(panel_built$ANIO))
@@ -273,7 +282,7 @@ p_panel <- ggplot2::ggplot(coef_event_tabla %>% dplyr::left_join(outcomes_info, 
   ggplot2::facet_wrap(~label, scales = "free_y") +
   ggplot2::scale_x_continuous(breaks = ANIOS_PANEL) +
   ggplot2::labs(
-    title = "Estimacion DiD principal, Bite2022_obreros -- event study completo, 4 outcomes (Especificacion B)",
+    title = "Estimacion DiD principal, Bite2022_obreros -- event study completo, 4 outcomes (Event study completo)",
     subtitle = "Efecto de +1 SD de Bite2022_obreros | Ref. 2022 | IC95% | linea roja: inicio tratamiento (2023)",
     x = "Anio", y = "Coeficiente (ref. 2022)"
   ) +
@@ -291,10 +300,10 @@ message("Escala: bite_1sd = Bite2022_obreros / sd_muestra (sd=", round(sd_bite_m
 message("Panel: ", nrow(panel_built), " filas NORDEST-ANIO, ", dplyr::n_distinct(panel_built$NORDEST), " establecimientos, ",
         dplyr::n_distinct(panel_built$NORDEMP), " firmas.")
 message("")
-message("=== Especificacion A: DiD estatico (coeficiente post_2023 x bite_1sd) ===")
+message("=== Modelo estatico: DiD estatico (coeficiente post_2023 x bite_1sd) ===")
 print(coef_did_tabla %>% dplyr::select(outcome, especificacion, estimate, std.error, p.value, n_obs, n_clusters), n = Inf, width = Inf)
 message("")
-message("=== Especificacion B: event study completo, ref=2022 (resumen: coeficientes 2023 y 2024) ===")
+message("=== Event study completo: ref=2022 (resumen: coeficientes 2023 y 2024) ===")
 print(coef_event_tabla %>% dplyr::filter(anio %in% c(2023, 2024)) %>% dplyr::select(variable, anio, estimate, std.error, p.value, conf.low, conf.high), n = Inf, width = Inf)
 message("")
 message("Tablas y graficos exportados en: ", out_dir)
