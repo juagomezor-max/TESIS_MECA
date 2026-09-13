@@ -75,3 +75,39 @@ Las 3 tablas de F conjunto ya existentes (`tabla_evento_tendencias_establecimien
 
 - Umbral de cobertura EAM: solo se verificó la pata de empleo (PERTOTAL<10); la pata de valor de producción indexado por IPP industrial (base 2016) no se verificó (fila 22).
 - Los 169 establecimientos con cambio de empresa dueña (fila 3) y los 465 con DPTO inestable (fila 6) tienen tratamientos ya aprobados pero aplicados solo parcialmente en scripts posteriores — confirmar que el panel formal (aún no construido) los incorpore.
+
+## Paquete de tablas y gráficos para el capítulo de Resultados (2026-09-14)
+
+Todo en `4. RESULTADOS/Estimacion_DiD/` salvo donde se indique. Estado: **confirmado** (número verificado, listo para citar), **no robusto** (no usar como hallazgo — ver `BORRADOR_RESULTADOS.md`), **descriptivo** (no es un test, solo caracteriza el dato).
+
+### Tablas (Parte A)
+
+| Ítem | Archivo | Script | Estado |
+|---|---|---|---|
+| Tabla 1 — resultados principales (modelo estático con controles, Exposure y Bite, 4 outcomes) | `tabla1_resultados_principales.csv`/`.html` | `estimacion/generar_tablas_resultados.R` | Confirmado para 6 de 8 celdas; empleo_temporal/participación_permanente de Exposure son **no robusto** (ver Tabla 3) |
+| Tabla 2 — manipulation check (primer eslabón), con/sin controles | `tabla2_manipulation_check.csv`/`.html` | `generar_tablas_resultados.R` (fuente original: `validaciones/validar_primer_eslabon_costo_laboral.R` / `_bite.R`) | Confirmado |
+| Tabla 3 — robustez a tendencia (8 celdas lineal + cuadrática para Exposure) con columna Estado | `tabla3_robustez_tendencia.csv`/`.html` | `generar_tablas_resultados.R` (fuentes: `validar_post_controlando_tendencia_lineal.R`, `validar_robustez_forma_funcional_tendencia_exposure.R`) | Confirmado (la tabla EN SÍ documenta cuáles celdas son no robustas) |
+| Tabla 4 — placebo 2022 (8 celdas) | `tabla4_placebo_2022.csv`/`.html` | `generar_tablas_resultados.R` (fuente original: `validaciones/validar_placebo_2022_empleo.R`) | Confirmado — ninguna celda con controles es atípica |
+
+### Gráficos — event study completo (Parte B)
+
+| Ítem | Archivo | Script | Estado |
+|---|---|---|---|
+| Event study, Exposure2022_obreros, 4 outcomes individuales + panel 2×2 | `evento_did_completo_<outcome>.png`, `evento_did_completo_panel_2x2.png` | `estimacion/estimar_did_principal_empleo.R` | Confirmado (subtítulos corregidos 2026-09-13/14: medida, controles y muestra completa explícitos) |
+| Event study, Bite2022_obreros, 4 outcomes individuales + panel 2×2 | `evento_did_completo_bite_<outcome>.png`, `evento_did_completo_bite_panel_2x2.png` | `estimacion/estimar_did_principal_empleo_bite.R` | Confirmado (mismos subtítulos corregidos) |
+
+### Efectos por nivel de exposición — terciles y quintiles (Parte C, nuevo)
+
+| Ítem | Archivo | Script | Estado |
+|---|---|---|---|
+| Histograma Exposure2022_obreros (masa en 0 y 1) | `histograma_exposure2022_obreros.png` | `estimacion/estimar_did_por_grupos_exposicion.R` | Descriptivo |
+| Histograma Bite2022_obreros (sin masa en 0; quiebre en 1) | `histograma_bite2022_obreros.png` | ídem | Descriptivo |
+| N de firmas por grupo, terciles y quintiles, ambas medidas (ANTES de estimar) | `4. RESULTADOS/Validaciones/grupos_exposicion_n_por_grupo.csv` | ídem | Descriptivo — ningún grupo <30 firmas |
+| Coeficientes DiD por grupo, las 48 celdas (4 outcomes × 2 medidas × 2 particiones × [2 o 4] grupos no-referencia) | `coeficientes_por_grupo_exposicion.csv` | ídem | Confirmado (cifras), interpretación pendiente |
+| Coefplots por grupo: 1 figura por medida×partición, facet por outcome | `efecto_por_grupo_exposure_terciles.png`, `efecto_por_grupo_exposure_quintiles.png`, `efecto_por_grupo_bite_terciles.png`, `efecto_por_grupo_bite_quintiles.png` | ídem | Confirmado |
+| Chequeo de monotonicidad por grupo (las 16 combinaciones medida×partición×outcome) | `4. RESULTADOS/Validaciones/chequeo_monotonicidad_por_grupo.csv` | ídem | Descriptivo — ver hallazgos en el reporte de la conversación del 2026-09-14 |
+
+### Documentación asociada
+
+- `BORRADOR_RESULTADOS.md` (raíz): primer borrador de la sección de Resultados, con el estado "no robusto"/"nulo estable"/"resuelto" de cada coeficiente de la especificación continua.
+- Este índice se actualiza por sección, no reemplaza `BORRADOR_RESULTADOS.md` como fuente de la interpretación — aquí solo se mapea archivo↔script↔estado.
