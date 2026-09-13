@@ -1,0 +1,9 @@
+variable,especificacion,n_obs,n_establecimientos,n_firmas,f_stat,df1,df2,p_value
+empleo_total,Sin controles,38975,5877,5099,7.401,6,5075,6.656e-8
+empleo_total,Con sector*anio + tamano*anio + departamento*anio,38972,5877,5099,1.189,6,5075,0.3091
+empleo_permanente,Sin controles,38975,5877,5099,9.102,6,5075,6.303e-10
+empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,38972,5877,5099,1.213,6,5075,0.2961
+empleo_temporal,Sin controles,38975,5877,5099,3.215,6,5075,0.003748
+empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,38972,5877,5099,2.479,6,5075,0.0214
+participacion_permanente,Sin controles,38931,5872,5099,19.425,6,5075,1.5979999999999998e-22
+participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,38928,5872,5099,2.773,6,5075,0.01081

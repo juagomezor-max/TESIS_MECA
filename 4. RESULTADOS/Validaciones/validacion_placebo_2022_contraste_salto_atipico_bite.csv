@@ -1,0 +1,9 @@
+variable,especificacion,incremento_2021_2022,incremento_tipico_2016_2019,contraste,se_contraste,t_stat,df,p_value,atipico_al_5pct
+empleo_total,Sin controles,1.479528,0.129965,1.349564,0.293774,4.594,5075,4.456e-6,TRUE
+empleo_total,Con sector*anio + tamano*anio + departamento*anio,-0.398763,-0.503385,0.104621,1.077643,0.097,5075,0.9227,FALSE
+empleo_permanente,Sin controles,0.829296,0.206603,0.622692,0.191431,3.253,5075,0.00115,TRUE
+empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,0.412608,0.202206,0.210402,0.679982,0.309,5075,0.757,FALSE
+empleo_temporal,Sin controles,0.655605,-0.098873,0.754477,0.192797,3.913,5075,9.222e-5,TRUE
+empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,-0.774347,-0.671589,-0.102758,0.681901,-0.151,5075,0.8802,FALSE
+participacion_permanente,Sin controles,0.357157,0.193499,0.163658,0.102498,1.597,5075,0.1104,FALSE
+participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,0.798128,0.325667,0.472461,0.418115,1.13,5075,0.2585,FALSE
