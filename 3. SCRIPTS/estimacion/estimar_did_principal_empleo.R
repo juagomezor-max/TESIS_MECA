@@ -273,7 +273,7 @@ graficar_evento <- function(data_outcome, titulo) {
     ggplot2::scale_x_continuous(breaks = ANIOS_PANEL) +
     ggplot2::labs(
       title = titulo,
-      subtitle = "Efecto de +10pp de Exposure2022_obreros | Ref. 2022 | IC95% | linea roja: inicio tratamiento (2023)",
+      subtitle = "Exposure2022_obreros (+10pp) | CON controles (sector*anio+tamano*anio+depto*anio) | Muestra COMPLETA de establecimientos (no restringida a multiplanta) | Ref. 2022 | IC95% | linea roja: inicio tratamiento (2023)",
       x = "Anio", y = "Coeficiente (ref. 2022)"
     ) +
     ggplot2::theme_minimal(base_size = 12)
@@ -296,8 +296,8 @@ p_panel <- ggplot2::ggplot(coef_event_tabla %>% dplyr::left_join(outcomes_info, 
   ggplot2::facet_wrap(~label, scales = "free_y") +
   ggplot2::scale_x_continuous(breaks = ANIOS_PANEL) +
   ggplot2::labs(
-    title = "Estimacion DiD principal -- event study completo, 4 outcomes (Event study completo)",
-    subtitle = "Efecto de +10pp de Exposure2022_obreros | Ref. 2022 | IC95% | linea roja: inicio tratamiento (2023)",
+    title = "Estimacion DiD principal -- event study completo, 4 outcomes, Exposure2022_obreros",
+    subtitle = "Exposure2022_obreros (+10pp) | CON controles (sector*anio+tamano*anio+depto*anio) | Muestra COMPLETA de establecimientos (no restringida a multiplanta) | Ref. 2022 | IC95% | linea roja: inicio tratamiento (2023)",
     x = "Anio", y = "Coeficiente (ref. 2022)"
   ) +
   ggplot2::theme_minimal(base_size = 11)
