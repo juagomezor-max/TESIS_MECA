@@ -1,0 +1,33 @@
+panel,medida,variable,estimate,std_error,p_value,significativo,n_obs,con_tendencia
+Firma (empresa-anio),Exposure2022_obreros,empleo_total,0.553763,0.437354,0.2055,FALSE,54013,FALSE
+Firma (empresa-anio),Exposure2022_obreros,empleo_total,-0.171884,0.384607,0.655,FALSE,54013,TRUE
+Firma (empresa-anio),Exposure2022_obreros,empleo_permanente,0.472791,0.322687,0.1429,FALSE,54013,FALSE
+Firma (empresa-anio),Exposure2022_obreros,empleo_permanente,0.417544,0.271993,0.1248,FALSE,54013,TRUE
+Firma (empresa-anio),Exposure2022_obreros,empleo_temporal,0.08261,0.271708,0.7611,FALSE,54013,FALSE
+Firma (empresa-anio),Exposure2022_obreros,empleo_temporal,-0.624927,0.261904,0.01706,TRUE,54013,TRUE
+Firma (empresa-anio),Exposure2022_obreros,participacion_permanente,-0.207809,0.14213,0.1438,FALSE,53990,FALSE
+Firma (empresa-anio),Exposure2022_obreros,participacion_permanente,0.343045,0.131131,0.008917,TRUE,53990,TRUE
+Firma (empresa-anio),Bite2022_obreros,empleo_total,-2.177736,1.138414,0.05581,FALSE,44627,FALSE
+Firma (empresa-anio),Bite2022_obreros,empleo_total,0.686548,1.044487,0.511,FALSE,44627,TRUE
+Firma (empresa-anio),Bite2022_obreros,empleo_permanente,0.448848,0.884729,0.6119,FALSE,44627,FALSE
+Firma (empresa-anio),Bite2022_obreros,empleo_permanente,-0.406489,0.730211,0.5778,FALSE,44627,TRUE
+Firma (empresa-anio),Bite2022_obreros,empleo_temporal,-2.576554,0.812897,0.001536,TRUE,44627,FALSE
+Firma (empresa-anio),Bite2022_obreros,empleo_temporal,0.990503,0.716747,0.167,FALSE,44627,TRUE
+Firma (empresa-anio),Bite2022_obreros,participacion_permanente,1.182583,0.420142,0.004901,TRUE,44612,FALSE
+Firma (empresa-anio),Bite2022_obreros,participacion_permanente,-0.949949,0.436898,0.02973,TRUE,44612,TRUE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,empleo_total,0.547708,0.352006,0.1198,FALSE,59491,FALSE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,empleo_total,-0.137611,0.332382,0.6789,FALSE,59491,TRUE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,empleo_permanente,0.399127,0.283889,0.1598,FALSE,59491,FALSE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,empleo_permanente,0.369233,0.247953,0.1365,FALSE,59491,TRUE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,empleo_temporal,0.148822,0.230614,0.5187,FALSE,59491,FALSE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,empleo_temporal,-0.536471,0.232826,0.02125,TRUE,59491,TRUE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,participacion_permanente,-0.156757,0.149541,0.2946,FALSE,59411,FALSE
+Establecimiento (Tabla 1 actual),Exposure2022_obreros,participacion_permanente,0.334561,0.138963,0.01609,TRUE,59411,TRUE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,empleo_total,-1.16164,0.994944,0.243,FALSE,49910,FALSE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,empleo_total,0.736299,0.95358,0.4401,FALSE,49910,TRUE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,empleo_permanente,0.611226,0.793952,0.4414,FALSE,49910,FALSE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,empleo_permanente,-0.450782,0.673362,0.5032,FALSE,49910,TRUE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,empleo_temporal,-1.724138,0.689252,0.0124,TRUE,49910,FALSE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,empleo_temporal,1.108205,0.645984,0.08631,FALSE,49910,TRUE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,participacion_permanente,1.173361,0.418859,0.005109,TRUE,49851,FALSE
+Establecimiento (Tabla 1 actual),Bite2022_obreros,participacion_permanente,-0.844311,0.435002,0.05232,FALSE,49851,TRUE

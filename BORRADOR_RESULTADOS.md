@@ -6,6 +6,18 @@
 
 El diseño metodológico se tomó como dado, tal como lo describió el autor (DiD con tratamiento continuo, choque = aumento real del salario mínimo de 2023 definido ex post, dos medidas de exposición en paralelo sin jerarquía, panel formal con controles sector×año + tamaño×año + departamento×año y `cluster=~NORDEMP`). **No se encontraron en el repositorio los archivos `CONTEXTO_DE_LA_TESIS` ni una "sección 4.3 de Estrategia Empírica"** citados por el autor — se buscó en todo el árbol de archivos (`.md`, `.docx`, `.pdf`) y no aparecen. Las decisiones de diseño que el autor describió se respetan tal como las planteó, pero no pudieron verificarse contra un documento fuente dentro de este repositorio. Tampoco se encontró ni se recalculó en este repositorio la cifra de que el salario mínimo real cayó -3,05pp en 2022 — se usa como premisa dada por el autor para motivar el placebo de la sección 3.
 
+## 0. CORRECCIÓN CRÍTICA DE GRANULARIDAD (2026-09-15)
+
+**Hasta esta corrección, todo lo que este documento llamaba "especificación principal de la sección 4.4" corría en realidad sobre `panel_establecimiento_formal.rds` — granularidad NORDEST-ANIO (establecimiento), con `Exposure2022_obreros`/`Bite2022_obreros` HEREDADOS de la firma dueña, no un panel de empresa-año genuino.** La tesis documenta el modelo base como "a nivel empresa-año". Existe en el repositorio `panel_analitico_firma_eam.rds` (`pipeline/03_construir_panel.R`), genuinamente NORDEMP-ANIO (62,816 filas, 9,087 firmas, deduplicado/sumado por establecimiento con la regla ya auditada en `auditar_deduplicacion_nordemp_anio.R`) — este es el panel correcto de empresa-año.
+
+**Se adopta `panel_analitico_firma_eam.rds` como el panel OFICIAL de la especificación principal (secciones 3.2 y 4.2 de abajo), por ser el que coincide con lo documentado en la sección 4.4.** Los resultados sobre `panel_establecimiento_formal.rds` (los que hasta ahora ocupaban el lugar de "la" especificación principal) se conservan como comparación/robustez adicional — no se borran, porque siguen siendo evidencia válida sobre una muestra distinta (establecimiento, con tratamiento heredado), pero ya NO son "el" resultado citable de 4.4.
+
+Script de la comparación lado a lado: `estimacion/comparar_especificacion_principal_firma_vs_establecimiento.R`. Salida: `comparacion_principal_firma_vs_establecimiento.csv` (32 filas: 4 outcomes × 2 medidas × 2 paneles × 2 versiones sin/con tendencia).
+
+**Limitación conocida de esta comparación, no resuelta:** el control de departamento×año usa `DPTO` (crudo, puede variar año a año dentro de una firma) en el panel de firma, vs. `DPTO_fijo` (versión estabilizada/recodificada, ver `construccion/construir_panel_establecimiento_formal.R` líneas 185-201) en el panel de establecimiento. Reconstruir un `DPTO_fijo` a nivel firma queda fuera del alcance de esta corrección urgente — es una diferencia de insumo entre los 2 paneles, documentada, no resuelta.
+
+**Conclusión de la comparación:** para `Exposure2022_obreros`, el patrón es prácticamente idéntico entre los 2 paneles (mismas 2 celdas con el mismo cruce nulo→significativo al agregar tendencia, magnitudes muy cercanas) — no cambia ninguna conclusión. Para `Bite2022_obreros`, **1 celda SÍ cambia de veredicto: `participación_permanente` es significativa en AMBAS versiones (sin y con tendencia) en el panel de firma (p=0.0049 y p=0.0297) mientras que en el panel de establecimiento la versión con tendencia queda apenas por encima del umbral (p=0.0523, "no robusto")** — esto activó la batería de escrutinio completo sobre el panel de firma (ver sección 4.2). El resultado final de esa batería es el mismo veredicto que ya se tenía (no robusto), pero por el camino correcto, no por una coincidencia de haber estado en el panel equivocado.
+
 ## 1. Inventario verificado (antes de correr nada nuevo)
 
 | # | Pregunta | Respuesta verificada |
@@ -33,9 +45,24 @@ Script: `validaciones/validar_primer_eslabon_costo_laboral.R` (commit `576133a`)
 
 `Exposure2022_obreros` **no predice de forma robusta** el choque real de costo laboral de 2023 bajo la especificación con controles. Diagnóstico de sobre-control relacionado (`validaciones/diagnosticar_sobrecontrol_exposure_fwl.R`, salida `diagnostico_sobrecontrol_r2.csv`): sector+tamaño+departamento explican R²=0.218 de la varianza de `Exposure2022_obreros` (1-R²=0.782 sobrevive).
 
-### 3.2 Estimación DiD, empleo (modelo estático, con controles)
+### 3.2 Estimación DiD, empleo (modelo estático, con controles) — PANEL DE FIRMA (empresa-año, OFICIAL)
 
-> Nota de terminología: "modelo estático" aquí es una forma funcional (post_2023 como dummy único), **no** la "Especificación A" de la sección 4.5 de la tesis (muestra completa a nivel establecimiento) — el script corre sobre la muestra completa, sin restricción a multiplanta; el nombre "Especificación A/B" que usaba originalmente el script (hasta el commit `64b04ea`) era una colisión de nombres accidental, ya corregida en el código.
+> Nota de terminología: "modelo estático" aquí es una forma funcional (post_2023 como dummy único), **no** la "Especificación A" de la sección 4.5 de la tesis (muestra completa a nivel establecimiento).
+>
+> ⚠️ **Ver sección 0 de este documento**: hasta el 2026-09-15 esta sección reportaba `panel_establecimiento_formal.rds` (establecimiento-año) como si fuera la especificación principal de empresa-año. Ahora reporta el panel de firma genuino (`panel_analitico_firma_eam.rds`). Los números de establecimiento se conservan más abajo (3.2-bis) como comparación/robustez, no como resultado principal.
+
+Script: `estimacion/comparar_especificacion_principal_firma_vs_establecimiento.R` (filas `panel="Firma (empresa-anio)"`). Salida: `comparacion_principal_firma_vs_establecimiento.csv`. Controles: sector(CIIU4)×año + tamaño×año + departamento(DPTO, crudo)×año. Cluster `~NORDEMP` siempre. Reportado sin y con tendencia lineal pre-existente desde la primera corrida (misma regla del resto del proyecto).
+
+| Outcome | Sin tendencia | Con tendencia |
+|---|---|---|
+| Empleo total | 0.554 (0.437) p=0.206 | -0.172 (0.385) p=0.655 |
+| Empleo permanente | 0.473 (0.323) p=0.143 | 0.418 (0.272) p=0.125 |
+| Empleo temporal | 0.083 (0.272) p=0.761 | **-0.625 (0.262) p=0.0171** |
+| Participación permanente (%) | -0.208 (0.142) p=0.144 | **0.343 (0.131) p=0.00892** |
+
+N=54,013 (54,013 participación=53,990). Empleo total y empleo permanente: **nulos estables** (no significativos en ninguna versión). Empleo temporal y participación permanente: no significativos SIN tendencia → por la regla de parada del proyecto, se reportan como **nulo** y no se prueban más — el cruce a significativo CON tendencia no activa escrutinio adicional (la regla solo escala cuando un coeficiente es significativo en AMBAS versiones). Este patrón es **prácticamente idéntico** al ya documentado para el panel de establecimiento (3.2-bis, abajo): mismas 2 celdas cruzan, magnitudes muy cercanas (empleo temporal con tendencia: -0.625 firma vs. -0.536 establecimiento; participación con tendencia: 0.343 firma vs. 0.335 establecimiento) — la granularidad no cambia ninguna conclusión para `Exposure2022_obreros`.
+
+### 3.2-bis Comparación/robustez — panel de establecimiento (el que ocupaba antes el lugar de "la" especificación principal)
 
 Script: `estimacion/estimar_did_principal_empleo.R`. Salida: `did_estatico_empleo_coeficientes.csv` (fila "Con sector*anio + tamano*anio + departamento*anio").
 
@@ -75,7 +102,27 @@ Script: `validaciones/validar_primer_eslabon_costo_laboral_bite.R` (commit `0ce0
 
 `Bite2022_obreros` **sí predice** el choque real de costo laboral de 2023, tanto sin controles como con controles. A diferencia de `Exposure2022_obreros`, un resultado nulo de `Bite2022_obreros` en la sección 4.2 **no** tiene la misma ambigüedad de potencia — su primer eslabón pasa bajo la especificación recomendada.
 
-### 4.2 Estimación DiD, empleo (modelo estático, con controles)
+### 4.2 Estimación DiD, empleo (modelo estático, con controles) — PANEL DE FIRMA (empresa-año, OFICIAL)
+
+> ⚠️ **Ver sección 0**: panel de firma genuino, reemplaza a `panel_establecimiento_formal.rds` como resultado principal. Los números de establecimiento quedan en 4.2-bis.
+
+Script: `estimacion/comparar_especificacion_principal_firma_vs_establecimiento.R` (filas `panel="Firma (empresa-anio)"`, `medida="Bite2022_obreros"`). Escala: `bite_1sd` = Bite2022_obreros / SD muestral (misma SD que el resto del proyecto). Cluster `~NORDEMP`.
+
+| Outcome | Sin tendencia | Con tendencia |
+|---|---|---|
+| Empleo total | -2.18 (1.14) p=0.0558 | 0.687 (1.04) p=0.511 |
+| Empleo permanente | 0.449 (0.885) p=0.612 | -0.406 (0.730) p=0.578 |
+| **Empleo temporal** | **-2.58 (0.813) p=0.00154** | 0.991 (0.717) p=0.167 → **NO ROBUSTO** (pierde significancia y cambia de signo con tendencia) |
+| **Participación permanente (%)** | **+1.18 (0.420) p=0.00490** | **-0.950 (0.437) p=0.0297** → significativo en AMBAS versiones, activa escrutinio completo |
+
+N=44,627 (participación=44,612). Empleo total: p=0.0558 sin tendencia — **por debajo del umbral, se reporta como nulo** por la regla de parada (no significativo al 5% sin tendencia), aunque queda anotado como el más cercano al límite de toda la tabla y con magnitud notablemente mayor que en el panel de establecimiento (-2.18 vs. -1.16 — ver 4.2-bis). Empleo permanente: nulo estable.
+
+**Escrutinio completo — Bite × participación_permanente, panel de firma** (`estimacion/escrutinio_bite_participacion_firma.R`):
+- Tendencia cuadrática: β=-0.927 (0.650), **p=0.154** → pierde significancia por completo.
+- Leave-one-year-out (con tendencia lineal): significativo (p<0.05) al excluir 2015, 2016, 2017, 2018, 2019, 2021 o 2023; pierde significancia al excluir 2022 (p=0.184) o 2024 (p=0.136).
+- **Veredicto: NO ROBUSTO.** No sobrevive la tendencia cuadrática — mismo veredicto final que ya se tenía sobre el panel de establecimiento, pero ahora obtenido por el camino correcto (esta celda SÍ activaba la regla de escalación en el panel oficial, cosa que no pasaba en el panel de establecimiento por 0.003 de p-valor — ver sección 0). Salidas: `escrutinio_bite_participacion_firma_cuadratica.csv`, `escrutinio_bite_participacion_firma_leaveoneyearout.csv`.
+
+### 4.2-bis Comparación/robustez — panel de establecimiento (el que ocupaba antes el lugar de "la" especificación principal)
 
 > ✅ **AUDITORÍA CONCLUIDA (2026-09-13) — los 2 coeficientes en negrita de abajo NO se sostienen como resultado confirmado.** El usuario encontró que estos 2 coeficientes significativos no tienen un quiebre visible en el event study del mismo outcome (ver nota al final de esta sección) y pidió investigar si el coeficiente "post" del modelo estático solo capturaba la extrapolación de una tendencia lineal pre-existente. Resultado de esa auditoría (`validaciones/validar_post_controlando_tendencia_lineal.R`, `auditoria_post_vs_tendencia_lineal_bite.csv`): al agregar un término de tendencia lineal continua (`anio_lineal:bite_1sd`) a la misma especificación, **ambos coeficientes "post" pierden significancia al 5% y cambian de signo** (empleo temporal: -1.72→+1.11, p pasa de 0.0124 a 0.0863; participación permanente: +1.17→-0.844, p pasa de 0.0051 a 0.0523) mientras el término de tendencia es altamente significativo en los dos (p=0.00102 y p=0.000335). A diferencia de Exposure2022_obreros (sección 3.2), aquí no se corrieron pruebas adicionales de forma funcional porque el resultado con tendencia es consistente (el efecto desaparece de forma limpia, sin necesidad de más chequeos) — no está pendiente, es la lectura final.
 

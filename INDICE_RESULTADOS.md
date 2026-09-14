@@ -80,7 +80,16 @@ Las 3 tablas de F conjunto ya existentes (`tabla_evento_tendencias_establecimien
 
 Todo en `4. RESULTADOS/Estimacion_DiD/` salvo donde se indique. Estado: **confirmado** (número verificado, listo para citar), **no robusto** (no usar como hallazgo — ver `BORRADOR_RESULTADOS.md`), **descriptivo** (no es un test, solo caracteriza el dato).
 
-### Tablas (Parte A)
+### ⚠️ CORRECCIÓN DE GRANULARIDAD (2026-09-15): la Tabla 1 de abajo NO es empresa-año
+
+`Tabla 1` (y todo lo que en esta sección se cita como "especificación principal") corre sobre `panel_establecimiento_formal.rds` — granularidad NORDEST-ANIO (establecimiento), con `Exposure2022_obreros`/`Bite2022_obreros` heredados de la firma. La tesis documenta el modelo base como "a nivel empresa-año"; el panel correcto para eso es `panel_analitico_firma_eam.rds` (genuino NORDEMP-ANIO, `pipeline/03_construir_panel.R`, 62,816 filas / 9,087 firmas). Se adopta este último como el panel OFICIAL de la especificación principal — ver `BORRADOR_RESULTADOS.md` sección 0 para el detalle completo y la comparación lado a lado. La Tabla 1 de abajo (establecimiento) se conserva como comparación/robustez, no como resultado principal.
+
+| Ítem | Archivo | Script | Estado |
+|---|---|---|---|
+| **Comparación lado a lado: panel de firma (oficial) vs. panel de establecimiento**, 4 outcomes × 2 medidas × 2 paneles × sin/con tendencia | `comparacion_principal_firma_vs_establecimiento.csv` | `estimacion/comparar_especificacion_principal_firma_vs_establecimiento.R` | Confirmado. Exposure: patrón idéntico entre paneles. Bite: **1 celda cambia de veredicto** (participación_permanente, significativa en ambas versiones SOLO en el panel de firma) — ver fila de escrutinio de abajo |
+| Escrutinio completo: Bite × participación_permanente, **panel de firma (oficial)** — cuadrática + leave-one-year-out | `escrutinio_bite_participacion_firma_cuadratica.csv`, `escrutinio_bite_participacion_firma_leaveoneyearout.csv` | `estimacion/escrutinio_bite_participacion_firma.R` | **No robusto** — tendencia cuadrática anula la significancia (p=0.154 vs. p=0.0297 con tendencia lineal). Leave-one-year-out más estable que la versión de establecimiento (7/9 años excluidos mantienen p<0.05) pero no cambia el veredicto: no sobrevive la cuadrática |
+
+### Tablas (Parte A) — panel de establecimiento (comparación/robustez, ver corrección de arriba)
 
 | Ítem | Archivo | Script | Estado |
 |---|---|---|---|
