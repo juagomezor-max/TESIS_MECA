@@ -160,7 +160,69 @@ Sin controles, 3 de 4 outcomes sí muestran un salto atípico en 2022 para ambas
 
 La ausencia de señal en 2022 bajo la especificación con controles, en un año en que el salario mínimo real cayó (premisa del autor, no verificada en este repositorio), es un hecho reportado sin interpretar más allá de los números: el lector puede leerlo como evidencia a favor de que el patrón detectado para 2023 responde específicamente a ese choque, o sacar su propia lectura.
 
-## 6. Qué NO está incluido en este borrador
+## 6. Mecanismos de ajuste (empresa-año) — línea distinta a los niveles de empleo (secciones 3-5, ya cerradas)
+
+> Esta sección es una línea de análisis **separada** de los niveles de empleo de las secciones 3-5. No reabre ni reinterpreta esos resultados — busca mecanismos ALTERNATIVOS por los que una firma podría ajustarse al choque de 2023 sin que se vea en los 4 outcomes de empleo ya cerrados (mantenimiento/reparaciones, subcontratación, inversión, ventas). Panel: `panel_analitico_firma_eam.rds` (empresa-año, el panel oficial — sección 0). Controles: sector×año + tamaño×año **solamente**, sin departamento×año (decisión explícita para esta línea).
+
+### 6.1 Inventario de cobertura (Paso 1)
+
+Verificado contra el diccionario oficial de la EAM (`Diccionario de datos EAM2024.xlsx`, 386 variables) y la base construida:
+
+- **Horas trabajadas**: confirmado ausente — 0 coincidencias de "hora" en las 386 variables del diccionario. No se puede construir con los datos disponibles.
+- **Contratación/separación bruta**: no existe como variable directa (todo lo relacionado con "contrat/retir" en el diccionario describe composición de stock de empleo por tipo de contrato, o retiros de activos fijos — no personal). Solo aproximable como primera diferencia de los stocks de empleo ya usados (Δempleo_permanente, Δempleo_temporal). **Por decisión explícita, no se trata como variable de mecanismo en esta ronda** — queda documentada aquí como limitación, no se estima.
+- **Mantenimiento (C3R23C3), subcontratación (C3R41C3), inversión (C7R10C2), ventas (VALORVEN)**: 100% de cobertura en la muestra de estimación (54,013 filas), celdas DPTO×año comparables al estándar ya aceptado (mínimo 9 obs., 0.5% de celdas <10). Subcontratación tiene 72.2% de la muestra en exactamente cero — se incluye con esa advertencia (menor poder estadístico, variable con mucha masa en el margen extensivo).
+
+### 6.2 Tendencias paralelas 2015-2019 (Paso 2)
+
+Script: `validaciones/validar_pretendencias_mecanismos_firma.R`. **Esta validación NUNCA se había corrido sobre el panel de firma** — la validación de "8 dimensiones" ya existente (`validar_pretendencias_panel_formal.R`) corre sobre `panel_establecimiento_formal.rds` (confirmado releyendo el código), no sobre este panel; se repitió desde cero.
+
+Las 8 combinaciones (4 variables × 2 medidas) **rechazan tendencias paralelas SIN controles** (p entre 1e-4 y 1e-28) y **pasan limpiamente CON controles** (p entre 0.145 y 0.783) — mismo patrón que ya se documentó para los 4 outcomes de empleo. Las 4 variables pasan a Paso 3 con la especificación CON controles.
+
+### 6.3 Estimación (Paso 3)
+
+Script: `estimacion/estimar_mecanismos_ajuste_firma.R`. `asinh()` en las 4 variables (admite ceros, no se deflacta — el FE de año absorbe tendencias de precios agregadas comunes). Reportado sin y con tendencia lineal pre-existente desde la primera corrida.
+
+**Exposure2022_obreros** — nulo estable en las 4 variables (ninguna significativa sin tendencia):
+
+| Variable | Sin tendencia | Con tendencia |
+|---|---|---|
+| Mantenimiento | 0.0103 (0.0117) p=0.376 | 0.0038 (0.0129) p=0.769 |
+| Subcontratación | 0.0138 (0.0244) p=0.573 | 0.0325 (0.0274) p=0.236 |
+| Inversión | -0.0052 (0.0262) p=0.843 | 0.0528 (0.0321) p=0.0999 |
+| Ventas | 0.0070 (0.0037) p=0.0618 | 0.0020 (0.0040) p=0.616 |
+
+**Bite2022_obreros** — 2 de 4 activan escrutinio completo (significativas en ambas versiones, cambiando de signo):
+
+| Variable | Sin tendencia | Con tendencia |
+|---|---|---|
+| **Mantenimiento** | **-0.0552 (0.0246) p=0.0250** | **+0.0701 (0.0318) p=0.0276** → activa escrutinio |
+| Subcontratación | -0.0606 (0.0694) p=0.383 | +0.181 (0.0683) p=0.00819 → nulo (no sig. sin tendencia) |
+| Inversión | -0.105 (0.0741) p=0.158 | +0.149 (0.0871) p=0.0880 → nulo |
+| **Ventas** | **-0.0368 (0.0104) p=0.000432** | **+0.0462 (0.0127) p=0.000280** → activa escrutinio |
+
+### 6.4 Escrutinio completo — Bite × mantenimiento, Bite × ventas
+
+Script: `estimacion/escrutinio_mecanismos_bite_firma.R`.
+
+- **Tendencia cuadrática**: ambas SOBREVIVEN (mantenimiento p=0.000343, ventas p=3.2e-7), mismo signo que la versión con tendencia lineal — a diferencia de todos los casos de escrutinio previos en este proyecto, esta prueba NO las tumba.
+- **Leave-one-year-out** (con tendencia lineal): ventas se mantiene significativa en 8 de 9 exclusiones, perdiendo significancia SOLO al excluir 2022 (p=0.280). Mantenimiento se mantiene en 6 de 9, perdiendo significancia al excluir 2021, 2022 o 2024 — la caída es más pronunciada excluyendo 2022 (p=0.715).
+
+### 6.5 Placebo 2021→2022
+
+| Variable | Exposure sin ctrl | Exposure con ctrl | Bite sin ctrl | Bite con ctrl |
+|---|---|---|---|---|
+| Mantenimiento | p=0.590 | p=0.147 | **p=2.5e-9** | **p=4.1e-5** |
+| Subcontratación | p=0.916 | p=0.463 | **p=1.6e-7** | **p=7.7e-6** |
+| Inversión | p=0.101 | p=0.0788 | **p=1.8e-7** | **p=0.0155** |
+| Ventas | p=0.414 | **p=0.0119** | **p=3.0e-30** | **p=3.4e-13** |
+
+⚠️ **Bite2022_obreros falla catastróficamente en las 4 variables, con y sin controles** — la señal espuria 2021→2022 es más fuerte que cualquier coeficiente "post" estimado para 2023 (comparar los p-valores de placebo de arriba contra los de 7.3: son iguales o más extremos). Exposure2022_obreros pasa 3 de 4 limpio; ventas también falla con controles (p=0.0119), aunque de forma mucho más moderada que Bite.
+
+### 6.6 Veredicto
+
+**Ninguno de los 2 hallazgos de Bite (mantenimiento, ventas) se interpreta como efecto causal de 2023**, pese a sobrevivir la batería técnica de escrutinio (cuadrática + leave-one-year-out) mejor que cualquier caso previo en este proyecto. El motivo no es la batería en sí — es el placebo: `Bite2022_obreros` predice una señal en 2021→2022 igual o más fuerte que la que predice en 2023, para las 4 variables de mecanismo sin excepción. Esto es consistente con que `Bite2022_obreros` esté capturando una característica estructural de las firmas (algo correlacionado con mantenimiento/ventas per se, no con el choque de 2023) más que un efecto del salario mínimo. La dependencia crítica de ambos coeficientes en la inclusión de 2022 específicamente (leave-one-year-out) refuerza esa lectura. No se recomienda citar estos 2 coeficientes como evidencia de un mecanismo de ajuste real.
+
+## 7. Qué NO está incluido en este borrador
 
 - **Especificaciones a nivel establecimiento (A y B), con `Multi_f` y δ_f(e),t**: no llegaron a estimarse (sección 1, punto 4). Solo existe la construcción del panel, los descriptivos de estructura multiplanta y la validación de tendencias paralelas a nivel establecimiento.
 - **Honest DiD** (Rambachan y Roth, o equivalente) para acotar sesgo por violaciones de tendencias paralelas: no se ha corrido en este repositorio.
