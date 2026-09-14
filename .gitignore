@@ -44,3 +44,19 @@ descartado/2012_reforma_tributaria/base_reducida_exposicion_2012_eam.csv
 \#*
 .DS_Store
 Thumbs.db
+
+# ---------------------------------------------------------------
+# REORGANIZACION 2026-09-15: reinicio del repo, todo el trabajo
+# previo archivado en "0. ANALISIS INICIAL IA/". Los patrones con
+# barra intermedia (arriba) quedan ANCLADOS a la raiz del repo y NO
+# cubren automaticamente esta nueva ubicacion anidada (confirmado con
+# `git check-ignore -v` antes de mover nada) -- se replican aqui.
+# Los patrones sin barra intermedia (1. DATOS/, DATOS/, arriba) SI
+# siguen cubriendo la nueva ubicacion sin cambios, no se duplican.
+# ---------------------------------------------------------------
+0. ANALISIS INICIAL IA/2. PROCESAMIENTO/_tmp_unzip/
+0. ANALISIS INICIAL IA/2. PROCESAMIENTO/_tmp_macro_base_eam/
+0. ANALISIS INICIAL IA/2. PROCESAMIENTO/_tmp_*/
+0. ANALISIS INICIAL IA/4. RESULTADOS/macro_base_eam.rds
+0. ANALISIS INICIAL IA/descartado/2012_reforma_tributaria/base_reducida_exposicion_2012_eam.rds
+0. ANALISIS INICIAL IA/descartado/2012_reforma_tributaria/base_reducida_exposicion_2012_eam.csv
