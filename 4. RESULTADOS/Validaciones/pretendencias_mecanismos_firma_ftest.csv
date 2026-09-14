@@ -1,0 +1,17 @@
+variable,medida,especificacion,n_obs,n_firmas,f_stat,df1,df2,p_value
+asinh_C3R23C3,Exposure2022_obreros,Sin controles,29909,6104,8.171,4,6084,1.44e-6
+asinh_C3R23C3,Exposure2022_obreros,Con sector*anio + tamano*anio,29908,6104,0.435,4,6084,0.7834
+asinh_C3R41C3,Exposure2022_obreros,Sin controles,29909,6104,10.491,4,6084,1.812e-8
+asinh_C3R41C3,Exposure2022_obreros,Con sector*anio + tamano*anio,29908,6104,1.448,4,6084,0.2154
+asinh_C7R10C2,Exposure2022_obreros,Sin controles,29909,6104,16.178,4,6084,3.474e-13
+asinh_C7R10C2,Exposure2022_obreros,Con sector*anio + tamano*anio,29908,6104,1.39,4,6084,0.2345
+asinh_VALORVEN,Exposure2022_obreros,Sin controles,29909,6104,34.659,4,6084,1.177e-28
+asinh_VALORVEN,Exposure2022_obreros,Con sector*anio + tamano*anio,29908,6104,1.199,4,6084,0.3091
+asinh_C3R23C3,Bite2022_obreros,Sin controles,24696,5033,5.822,4,5017,1.135e-4
+asinh_C3R23C3,Bite2022_obreros,Con sector*anio + tamano*anio,24693,5033,1.444,4,5017,0.2166
+asinh_C3R41C3,Bite2022_obreros,Sin controles,24696,5033,10.332,4,5017,2.484e-8
+asinh_C3R41C3,Bite2022_obreros,Con sector*anio + tamano*anio,24693,5033,1.399,4,5017,0.2316
+asinh_C7R10C2,Bite2022_obreros,Sin controles,24696,5033,13.785,4,5017,3.492e-11
+asinh_C7R10C2,Bite2022_obreros,Con sector*anio + tamano*anio,24693,5033,1.707,4,5017,0.1454
+asinh_VALORVEN,Bite2022_obreros,Sin controles,24696,5033,30.059,4,5017,9.441e-25
+asinh_VALORVEN,Bite2022_obreros,Con sector*anio + tamano*anio,24693,5033,1.678,4,5017,0.152
