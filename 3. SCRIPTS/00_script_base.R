@@ -322,15 +322,126 @@ guardar_tabla_word(tabla_tendencias_paralelas, "tabla_tendencias_paralelas.docx"
 # ------------------------------------------------------------------
 # 5) Estimación -- especificación principal
 # ------------------------------------------------------------------
+dir_estim <- file.path("4. RESULTADOS", "Estimacion")
+dir.create(dir_estim, recursive = TRUE, showWarnings = FALSE)
 
+# NOTA: para esta sección se usa "exposicion_10pp" (Exposure2022_obreros
+# reescalada a puntos porcentuales de a 10), no "Exposure2022_obreros"
+# directamente -- así el coeficiente se interpreta como "efecto de +10pp
+# de exposición", igual que en la especificación ya validada de la tesis.
+# Bite2022_obreros_wins queda en su escala original (0-1 aprox.) -- los
+# coeficientes de Exposure y Bite en la tabla de abajo NO son comparables
+# en magnitud directamente por esta diferencia de escala.
+medidas_estimacion <- c("exposicion_10pp", "Bite2022_obreros_wins")
 
+resultados_estimacion <- list()
+
+for (outcome in outcomes) {
+  for (medida in medidas_estimacion) {
+    
+    f_sin_tendencia <- as.formula(paste0(
+      outcome, " ~ post_2023:", medida, " | ",
+      "NORDEMP + ANIO_F + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO^ANIO_F"
+    ))
+    m_sin_tendencia <- fixest::feols(f_sin_tendencia, data = panel_firma, cluster = ~NORDEMP)
+    
+    f_con_tendencia <- as.formula(paste0(
+      outcome, " ~ post_2023:", medida, " + anio_lineal:", medida, " | ",
+      "NORDEMP + ANIO_F + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO^ANIO_F"
+    ))
+    m_con_tendencia <- fixest::feols(f_con_tendencia, data = panel_firma, cluster = ~NORDEMP)
+    
+    coef_sin <- coeftable(m_sin_tendencia)[paste0("post_2023:", medida), ]
+    coef_con <- coeftable(m_con_tendencia)[paste0("post_2023:", medida), ]
+    
+    resultados_estimacion[[paste(outcome, medida)]] <- tibble::tibble(
+      outcome = outcome,
+      medida = medida,
+      beta_sin_tendencia = coef_sin["Estimate"],
+      p_sin_tendencia = coef_sin["Pr(>|t|)"],
+      beta_con_tendencia = coef_con["Estimate"],
+      p_con_tendencia = coef_con["Pr(>|t|)"],
+      n_sin_tendencia = nobs(m_sin_tendencia),
+      n_con_tendencia = nobs(m_con_tendencia)
+    )
+  }
+}
+
+tabla_estimacion_principal <- dplyr::bind_rows(resultados_estimacion)
+print(tabla_estimacion_principal)
+
+guardar_tabla_word(tabla_estimacion_principal, "tabla_estimacion_principal.docx",
+                   "Especificación principal: efecto de Post x Exposición, sin y con tendencia pre-existente",
+                   carpeta = dir_estim)
 
 # ------------------------------------------------------------------
 # 6) Robustez
 # ------------------------------------------------------------------
 
+dir_robustez <- file.path("4. RESULTADOS", "Robustez")
+dir.create(dir_robustez, recursive = TRUE, showWarnings = FALSE)
 
+## 6.0 -- Verificación de escala de Bite2022_obreros_wins ---------
+print(
+  panel_firma %>%
+    filter(ANIO_F == 2022) %>%
+    summarise(across(Bite2022_obreros_wins, list(min = min, media = mean, max = max), na.rm = TRUE))
+)
+
+## 6.1 -- Escrutinio completo para las celdas que activaron el
+##        protocolo (significativas en ambas versiones de la sección 5):
+##        empleo_temporal x Bite, participacion_permanente x Bite
+
+celdas_escrutinio <- list(
+  list(outcome = "empleo_temporal", medida = "Bite2022_obreros_wins"),
+  list(outcome = "participacion_permanente", medida = "Bite2022_obreros_wins")
+)
+
+resultados_robustez <- list()
+
+for (celda in celdas_escrutinio) {
+  outcome <- celda$outcome
+  medida <- celda$medida
+  
+  f_cuadratica <- as.formula(paste0(
+    outcome, " ~ post_2023:", medida,
+    " + anio_lineal:", medida, " + I(anio_lineal^2):", medida, " | ",
+    "NORDEMP + ANIO_F + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO^ANIO_F"
+  ))
+  m_cuadratica <- fixest::feols(f_cuadratica, data = panel_firma, cluster = ~NORDEMP)
+  coef_cuad <- coeftable(m_cuadratica)[paste0("post_2023:", medida), ]
+  
+  resultados_robustez[[paste(outcome, medida, "cuadratica")]] <- tibble::tibble(
+    outcome = outcome, medida = medida, prueba = "cuadratica",
+    beta = coef_cuad["Estimate"], p = coef_cuad["Pr(>|t|)"]
+  )
+  
+  anios_pre <- 2015:2019
+  for (anio_excluido in anios_pre) {
+    panel_loo <- panel_firma %>% filter(ANIO_F != anio_excluido)
+    
+    f_loo <- as.formula(paste0(
+      outcome, " ~ post_2023:", medida, " + anio_lineal:", medida, " | ",
+      "NORDEMP + ANIO_F + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO^ANIO_F"
+    ))
+    m_loo <- fixest::feols(f_loo, data = panel_loo, cluster = ~NORDEMP)
+    coef_loo <- coeftable(m_loo)[paste0("post_2023:", medida), ]
+    
+    resultados_robustez[[paste(outcome, medida, "loo", anio_excluido)]] <- tibble::tibble(
+      outcome = outcome, medida = medida, prueba = paste0("excluye_", anio_excluido),
+      beta = coef_loo["Estimate"], p = coef_loo["Pr(>|t|)"]
+    )
+  }
+}
+
+tabla_robustez <- dplyr::bind_rows(resultados_robustez)
+print(tabla_robustez)
+
+guardar_tabla_word(tabla_robustez, "tabla_robustez_escrutinio.docx",
+                   "Escrutinio completo (tendencia cuadrática y leave-one-year-out) para las celdas significativas en ambas versiones",
+                   carpeta = dir_robustez)
 
 # ------------------------------------------------------------------
 # 7) Extensiones
 # ------------------------------------------------------------------
+
