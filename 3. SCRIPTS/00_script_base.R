@@ -18,7 +18,6 @@
 # validación) está archivado en "0. ANALISIS INICIAL IA/".
 # ==============================================================================
 
-
 rm(list = ls())
 gc()
 
@@ -30,8 +29,7 @@ library(dplyr)
 library(readr)
 library(tidyr)
 library(fixest)
-library(ggplot2) 
-library(knitr)
+library(ggplot2)
 # install.packages("flextable")
 library(flextable)
 
@@ -52,14 +50,14 @@ dir.create(dir_desc, recursive = TRUE, showWarnings = FALSE)
 dir.create(dir_fig, recursive = TRUE, showWarnings = FALSE)
 
 # Helper para guardar tablas en Word
-guardar_tabla_word <- function(tabla, nombre_archivo, caption = NULL, digits = 3) {
+guardar_tabla_word <- function(tabla, nombre_archivo, caption = NULL, digits = 3, carpeta = dir_desc) {
   ft <- flextable::flextable(tabla)
   ft <- flextable::colformat_double(ft, digits = digits)
   ft <- flextable::autofit(ft)
   if (!is.null(caption)) {
     ft <- flextable::set_caption(ft, caption = caption)
   }
-  ruta <- file.path(dir_desc, nombre_archivo)
+  ruta <- file.path(carpeta, nombre_archivo)
   flextable::save_as_docx(ft, path = ruta)
   message("Guardado: ", ruta)
   tabla
@@ -74,6 +72,7 @@ tema_hist <- theme_minimal(base_size = 12) +
     axis.title = element_text(size = 11)
   )
 
+## 3.1 -- Estructura del panel ------------------------------------
 
 tabla_obs_por_anio <- panel_firma %>%
   count(ANIO_F, name = "n_firmas")
@@ -148,6 +147,60 @@ g2 <- panel_firma %>%
   tema_hist
 ggsave(file.path(dir_fig, "hist_bite.png"), g2, width = 7, height = 4.5, dpi = 200, bg = "white")
 
+## 3.2b -- Investigación y tratamiento de valores extremos en Bite -------
+#
+# Se detectaron 23 firmas (0.45% de la muestra 2022, n=5,099) con
+# Bite2022_obreros > 2 (p99 = 1.61). Investigación contra el panel crudo
+# (panel_firma_eam.rds, archivado en 0. ANALISIS INICIAL IA/): las 5 firmas
+# con los valores más extremos tienen 1 solo obrero reportado -- el
+# "salario promedio" es, en esos casos, el salario de una sola persona,
+# sin ningún efecto de promediar. El script de construcción original
+# (02_construir_exposicion.R) winsoriza Exposure2022_obreros al 1%-99%
+# pero NO aplica el mismo tratamiento a Bite2022_obreros (confirmado por
+# inspección directa del código). Se decide winsorizar Bite2022_obreros
+# al 1%-99%, por consistencia con el tratamiento ya aplicado a Exposure.
+
+panel_firma_crudo <- readr::read_rds(file.path(
+  "0. ANALISIS INICIAL IA", "1. DATOS", "6. BASES_DERIVADAS",
+  "descriptivos_exposicion", "panel_firma_eam.rds"
+))
+
+# Diagnóstico: salario promedio del obrero y personal detrás de cada
+# firma con Bite extremo (confirma la causa: N de obreros muy bajo)
+panel_firma_crudo %>%
+  filter(ANIO == 2022, NORDEMP %in% c("141501","142815","144128","144200",
+                                      "144698","144940","145418","145902",
+                                      "146564","366934")) %>%
+  mutate(
+    personal_permanente_obrero = C4R2C1 + C4R2C2,
+    salario_promedio_obrero = ifelse(
+      is.na(C3R2C1) | is.na(personal_permanente_obrero) | personal_permanente_obrero == 0,
+      NA_real_, C3R2C1 / personal_permanente_obrero
+    )
+  ) %>%
+  select(NORDEMP, C3R2C1, personal_permanente_obrero, salario_promedio_obrero) %>%
+  arrange(personal_permanente_obrero)
+
+# Winsorización -- se guarda como columna nueva, sin sobrescribir la
+# variable original
+winsorize <- function(x, probs = c(0.01, 0.99)) {
+  limites <- quantile(x, probs = probs, na.rm = TRUE)
+  pmin(pmax(x, limites[1]), limites[2])
+}
+
+panel_firma <- panel_firma %>%
+  mutate(Bite2022_obreros_wins = winsorize(Bite2022_obreros))
+
+# Verificación: máximo antes/después y cuántas firmas quedaron afectadas
+panel_firma %>%
+  filter(ANIO_F == 2022) %>%
+  summarise(
+    max_original = max(Bite2022_obreros, na.rm = TRUE),
+    max_winsorizado = max(Bite2022_obreros_wins, na.rm = TRUE),
+    p99_original = quantile(Bite2022_obreros, 0.99, na.rm = TRUE),
+    n_afectadas = sum(Bite2022_obreros != Bite2022_obreros_wins, na.rm = TRUE)
+  )
+
 ## 3.3 -- Variables de resultado (empleo) --------------------------
 
 tabla_resumen_empleo <- panel_firma %>%
@@ -218,25 +271,53 @@ tabla_multi <- panel_establecimiento %>%
 guardar_tabla_word(tabla_multi, "tabla_mono_multiplanta.docx",
                    "Firmas mono vs. multiplanta (corte 2022)")
 
-
-panel_firma_crudo %>%
-  filter(ANIO == 2022, NORDEMP %in% c("141501","142815","144128","144200",
-                                      "144698","144940","145418","145902",
-                                      "146564","366934")) %>%
-  mutate(
-    personal_permanente_obrero = C4R2C1 + C4R2C2,
-    salario_promedio_obrero = ifelse(
-      is.na(C3R2C1) | is.na(personal_permanente_obrero) | personal_permanente_obrero == 0,
-      NA_real_, C3R2C1 / personal_permanente_obrero
-    )
-  ) %>%
-  select(NORDEMP, C3R2C1, personal_permanente_obrero, salario_promedio_obrero) %>%
-  arrange(personal_permanente_obrero)
 # ------------------------------------------------------------------
 # 4) Validación de supuestos (tendencias paralelas, etc.)
 # ------------------------------------------------------------------
 
+dir_valid <- file.path("4. RESULTADOS", "Validaciones")
+dir.create(dir_valid, recursive = TRUE, showWarnings = FALSE)
 
+panel_pre <- panel_firma %>%
+  filter(ANIO_F %in% 2015:2019)
+
+outcomes <- c("empleo_total", "empleo_permanente", "empleo_temporal", "participacion_permanente")
+medidas  <- c("Exposure2022_obreros", "Bite2022_obreros_wins")
+
+resultados_tendencias <- list()
+
+for (outcome in outcomes) {
+  for (medida in medidas) {
+    
+    f_sin_controles <- as.formula(paste0(
+      outcome, " ~ i(ANIO_F, ", medida, ", ref = 2015) | NORDEMP + ANIO_F"
+    ))
+    m_sin_controles <- fixest::feols(f_sin_controles, data = panel_pre, cluster = ~NORDEMP)
+    
+    f_con_controles <- as.formula(paste0(
+      outcome, " ~ i(ANIO_F, ", medida, ", ref = 2015) | ",
+      "NORDEMP + ANIO_F + CIIU4^ANIO_F + tamano_empresa^ANIO_F + DPTO^ANIO_F"
+    ))
+    m_con_controles <- fixest::feols(f_con_controles, data = panel_pre, cluster = ~NORDEMP)
+    
+    wald_sin <- fixest::wald(m_sin_controles, "ANIO_F")
+    wald_con <- fixest::wald(m_con_controles, "ANIO_F")
+    
+    resultados_tendencias[[paste(outcome, medida)]] <- tibble::tibble(
+      outcome = outcome,
+      medida = medida,
+      p_sin_controles = wald_sin$p,
+      p_con_controles = wald_con$p
+    )
+  }
+}
+
+tabla_tendencias_paralelas <- dplyr::bind_rows(resultados_tendencias)
+print(tabla_tendencias_paralelas)
+
+guardar_tabla_word(tabla_tendencias_paralelas, "tabla_tendencias_paralelas.docx",
+                   "Test conjunto de tendencias diferenciales pre-choque (2015-2019), sin y con controles",
+                   carpeta = dir_valid)
 
 # ------------------------------------------------------------------
 # 5) Estimación -- especificación principal
