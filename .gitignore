@@ -45,6 +45,9 @@ descartado/2012_reforma_tributaria/base_reducida_exposicion_2012_eam.csv
 .DS_Store
 Thumbs.db
 
+# Archivos-candado de Word (creados mientras un .docx esta abierto)
+~$*.docx
+
 # ---------------------------------------------------------------
 # REORGANIZACION 2026-09-15: reinicio del repo, todo el trabajo
 # previo archivado en "0. ANALISIS INICIAL IA/". Los patrones con
