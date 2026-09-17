@@ -1,0 +1,25 @@
+outcome,especificacion,term,estimate,std.error,statistic,p.value,conf.low,conf.high,n_obs,n_clusters
+empleo_total,Sin controles,post_2023:exposicion_10pp,2.665459,1.542719,1.7278,0.08409,-0.358932,5.68985,49969,5099
+empleo_total,Sin controles,post_2023:bite_1sd,-1.535835,2.490255,-0.6167,0.5374,-6.417805,3.346135,49969,5099
+empleo_total,Sin controles,post_2023:exposicion_10pp:bite_1sd,-0.884494,0.447001,-1.9787,0.0479,-1.760807,-0.00818,49969,5099
+empleo_total,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp,2.272152,1.385634,1.6398,0.1011,-0.444284,4.988589,49969,5099
+empleo_total,Con sector*anio + tamano*anio + departamento*anio,post_2023:bite_1sd,1.671788,2.371256,0.705,0.4808,-2.976893,6.320468,49969,5099
+empleo_total,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp:bite_1sd,-0.518644,0.390688,-1.3275,0.1844,-1.284561,0.247272,49969,5099
+empleo_permanente,Sin controles,post_2023:exposicion_10pp,1.054911,1.092774,0.9654,0.3344,-1.087396,3.197219,49969,5099
+empleo_permanente,Sin controles,post_2023:bite_1sd,-1.95537,1.779137,-1.0991,0.2718,-5.443244,1.532503,49969,5099
+empleo_permanente,Sin controles,post_2023:exposicion_10pp:bite_1sd,-0.335724,0.317484,-1.0575,0.2904,-0.958128,0.286681,49969,5099
+empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp,0.921123,1.055457,0.8727,0.3829,-1.148026,2.990271,49969,5099
+empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,post_2023:bite_1sd,0.921759,1.826488,0.5047,0.6138,-2.658941,4.50246,49969,5099
+empleo_permanente,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp:bite_1sd,-0.075228,0.298872,-0.2517,0.8013,-0.661147,0.51069,49969,5099
+empleo_temporal,Sin controles,post_2023:exposicion_10pp,1.632481,0.952599,1.7137,0.08664,-0.235021,3.499983,49969,5099
+empleo_temporal,Sin controles,post_2023:bite_1sd,0.504012,1.498064,0.3364,0.7366,-2.432837,3.44086,49969,5099
+empleo_temporal,Sin controles,post_2023:exposicion_10pp:bite_1sd,-0.552896,0.273094,-2.0246,0.04296,-1.088277,-0.017516,49969,5099
+empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp,1.325778,0.932018,1.4225,0.1549,-0.501377,3.152933,49969,5099
+empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,post_2023:bite_1sd,0.768608,1.548778,0.4963,0.6197,-2.267663,3.804878,49969,5099
+empleo_temporal,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp:bite_1sd,-0.437868,0.261194,-1.6764,0.09372,-0.94992,0.074184,49969,5099
+participacion_permanente,Sin controles,post_2023:exposicion_10pp,-1.421582,0.406722,-3.4952,4.777e-4,-2.218931,-0.624232,49911,5099
+participacion_permanente,Sin controles,post_2023:bite_1sd,-1.993234,0.871084,-2.2882,0.02217,-3.700933,-0.285535,49911,5099
+participacion_permanente,Sin controles,post_2023:exposicion_10pp:bite_1sd,0.578903,0.151538,3.8202,1.349e-4,0.281824,0.875983,49911,5099
+participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp,-1.223508,0.460278,-2.6582,0.007881,-2.12585,-0.321165,49911,5099
+participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,post_2023:bite_1sd,-1.989905,0.957584,-2.078,0.03775,-3.86718,-0.11263,49911,5099
+participacion_permanente,Con sector*anio + tamano*anio + departamento*anio,post_2023:exposicion_10pp:bite_1sd,0.543142,0.163436,3.3233,8.959e-4,0.222738,0.863546,49911,5099

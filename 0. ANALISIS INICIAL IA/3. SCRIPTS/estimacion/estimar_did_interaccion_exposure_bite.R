@@ -203,3 +203,55 @@ ejecutar_interaccion <- function() {
 }
 
 modelos_interaccion <- ejecutar_interaccion()
+
+
+# Exportar los modelos ya estimados; no vuelve a correr regresiones.
+tabla_interaccion <- dplyr::bind_rows(
+  lapply(names(modelos_interaccion), function(nombre) {
+    
+    modelo <- modelos_interaccion[[nombre]]
+    resumen <- summary(modelo)
+    ct <- resumen$coeftable
+    ci <- stats::confint(modelo)
+    terminos <- rownames(ct)
+    
+    # Numero de clusters usado en la matriz de covarianza.
+    n_clusters <- attr(resumen$cov.scaled, "G")
+    if (is.null(n_clusters)) {
+      stop("No se pudo recuperar el numero de clusters de: ", nombre)
+    }
+    
+    con_controles <- endsWith(nombre, "_con_controles")
+    
+    data.frame(
+      outcome = sub("_(sin|con)_controles$", "", nombre),
+      especificacion = if (con_controles) {
+        "Con sector*anio + tamano*anio + departamento*anio"
+      } else {
+        "Sin controles"
+      },
+      term = terminos,
+      estimate = round(ct[, 1], 6),
+      std.error = round(ct[, 2], 6),
+      statistic = round(ct[, 3], 4),
+      p.value = signif(ct[, 4], 4),
+      conf.low = round(ci[terminos, 1], 6),
+      conf.high = round(ci[terminos, 2], 6),
+      n_obs = stats::nobs(modelo),
+      n_clusters = n_clusters,
+      row.names = NULL
+    )
+  })
+)
+
+carpeta_tablas <- file.path(
+  ubicar_analisis(), "4. RESULTADOS", "Estimacion_DiD"
+)
+dir.create(carpeta_tablas, recursive = TRUE, showWarnings = FALSE)
+
+archivo_tabla <- file.path(
+  carpeta_tablas, "did_estatico_empleo_interaccion_coeficientes.csv"
+)
+
+readr::write_csv(tabla_interaccion, archivo_tabla)
+message("Tabla guardada en: ", archivo_tabla)
