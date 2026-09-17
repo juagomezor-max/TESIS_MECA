@@ -1,99 +1,205 @@
-if (!file.exists("3. SCRIPTS/pipeline/_utils_proyecto.R") &&
-    file.exists("../../3. SCRIPTS/pipeline/_utils_proyecto.R")) {
-  setwd("../..")
-}
+# INTERACCION EXPOSURE × BITE
+# Ejecuta la construccion original sin editar sus scripts.
 
-source(file.path("3. SCRIPTS", "pipeline", "_utils_proyecto.R"))
-load_project_packages(c("dplyr", "readr", "fixest"))
-
-paths <- ensure_project_structure()
-data_dir <- paths$bases_derivadas_exposicion
-
-# 1. Cargar el panel y ambas exposiciones.
-panel <- readr::read_rds(
-  file.path(data_dir, "panel_establecimiento_formal.rds")
-)
-
-exposiciones <- readr::read_rds(
-  file.path(data_dir, "exposicion_firma_eam.rds")
-) |>
-  dplyr::select(NORDEMP, Exposure2022_obreros, Bite2022_obreros)
-
-stopifnot(!anyDuplicated(exposiciones$NORDEMP))
-
-# 2. Usar observaciones con ambas exposiciones y controles disponibles.
-panel <- panel |>
-  dplyr::inner_join(exposiciones, by = "NORDEMP") |>
-  dplyr::filter(
-    is.finite(Exposure2022_obreros),
-    is.finite(Bite2022_obreros),
-    !is.na(CIIU4), !is.na(tamano_empresa), !is.na(DPTO_fijo)
-  )
-
-sd_bite <- panel |>
-  dplyr::distinct(NORDEMP, Bite2022_obreros) |>
-  dplyr::pull(Bite2022_obreros) |>
-  stats::sd()
-
-stopifnot(is.finite(sd_bite), sd_bite > 0)
-
-panel <- panel |>
-  dplyr::mutate(
-    post_2023 = as.integer(ANIO >= 2023),
-    ANIO_F = factor(ANIO),
-    exposicion_10pp = Exposure2022_obreros / 0.1,
-    bite_1sd = Bite2022_obreros / sd_bite
-  )
-
-# 3. Tres términos: Exposure × Post, Bite × Post e interacción × Post.
-terminos <- paste(
-  "post_2023:exposicion_10pp",
-  "post_2023:bite_1sd",
-  "post_2023:exposicion_10pp:bite_1sd",
-  sep = " + "
-)
-
-efectos_fijos <- c(
-  sin_controles = "NORDEST + ANIO_F",
-  con_controles = paste(
-    "NORDEST + ANIO_F + CIIU4^ANIO_F",
-    "+ tamano_empresa^ANIO_F + DPTO_fijo^ANIO_F"
-  )
-)
-
-outcomes <- c(
-  "empleo_total", "empleo_permanente",
-  "empleo_temporal", "participacion_permanente"
-)
-
-modelos <- list()
-
-for (y in outcomes) {
-  for (spec in names(efectos_fijos)) {
-    formula <- stats::as.formula(
-      paste(y, "~", terminos, "|", efectos_fijos[[spec]])
+# 1. Ubicar el analisis archivado desde la carpeta actual.
+ubicar_analisis <- function() {
+  carpeta <- normalizePath(getwd(), winslash = "/")
+  
+  repeat {
+    candidatos <- c(
+      carpeta,
+      file.path(carpeta, "0. ANALISIS INICIAL IA")
     )
     
-    modelos[[paste(y, spec, sep = "_")]] <- fixest::feols(
-      formula, data = panel, cluster = ~NORDEMP
-    )
+    for (ruta in candidatos) {
+      if (file.exists(file.path(
+        ruta, "3. SCRIPTS", "pipeline", "01_construir_base.R"
+      ))) return(ruta)
+    }
+    
+    superior <- dirname(carpeta)
+    if (superior == carpeta) stop("No se encontro el analisis archivado.")
+    carpeta <- superior
   }
 }
 
-# 4. Mostrar dos modelos por resultado.
-for (y in outcomes) {
-  cat("\n\nRESULTADO:", y, "\n")
-  print(fixest::etable(
-    modelos[paste(y, names(efectos_fijos), sep = "_")],
-    fitstat = ~ n + r2
+ejecutar_interaccion <- function() {
+  carpeta_inicial <- getwd()
+  on.exit(setwd(carpeta_inicial), add = TRUE)
+  setwd(ubicar_analisis())
+  
+  source("3. SCRIPTS/pipeline/_utils_proyecto.R")
+  load_project_packages(c("dplyr", "readr", "tibble", "tidyr", "fixest"))
+  
+  macro_path <- normalizePath(
+    "../1. DATOS/5. MACROBASE/macro_base_eam.rds",
+    winslash = "/", mustWork = TRUE
+  )
+  
+  auditoria_path <- paste0(
+    "4. RESULTADOS/Validaciones/",
+    "auditoria_dpto_estabilidad_nordest_casos.csv"
+  )
+  stopifnot(file.exists(auditoria_path))
+  
+  # Carpeta exclusiva de este ejercicio.
+  carpeta_ejercicio <- file.path(
+    getwd(), "1. DATOS", "6. BASES_DERIVADAS", "interaccion_nicolas"
+  )
+  dir.create(carpeta_ejercicio, recursive = TRUE, showWarnings = FALSE)
+  
+  # 2. Ejecutar cada script original cambiando solo las rutas en memoria.
+  ejecutar_original <- function(archivo) {
+    instrucciones <- parse(file = archivo)
+    entorno <- new.env(parent = environment())
+    
+    encontro_paths <- FALSE
+    
+    for (instruccion in instrucciones) {
+      eval(instruccion, envir = entorno)
+      
+      if (identical(
+        instruccion,
+        quote(paths <- ensure_project_structure())
+      )) {
+        entorno$paths$macro_base_eam <- macro_path
+        entorno$paths$bases_derivadas_exposicion <- carpeta_ejercicio
+        encontro_paths <- TRUE
+      }
+    }
+    
+    if (!encontro_paths) stop("No se encontro la asignacion de paths.")
+    invisible(NULL)
+  }
+  
+  ejecutar_original("3. SCRIPTS/pipeline/01_construir_base.R")
+  ejecutar_original("3. SCRIPTS/pipeline/02_construir_exposicion.R")
+  ejecutar_original(
+    "3. SCRIPTS/construccion/construir_panel_establecimiento_formal.R"
+  )
+  
+  # 3. Cargar las bases recien generadas.
+  panel <- readr::read_rds(file.path(
+    carpeta_ejercicio, "panel_establecimiento_formal.rds"
   ))
+  
+  exposiciones <- readr::read_rds(file.path(
+    carpeta_ejercicio, "exposicion_firma_eam.rds"
+  )) |>
+    dplyr::select(NORDEMP, Exposure2022_obreros, Bite2022_obreros)
+  
+  stopifnot(!anyDuplicated(exposiciones$NORDEMP))
+  stopifnot(!anyDuplicated(panel[c("NORDEST", "ANIO")]))
+  
+  panel <- panel |>
+    dplyr::inner_join(exposiciones, by = "NORDEMP") |>
+    dplyr::filter(
+      !is.na(NORDEMP),
+      is.finite(Exposure2022_obreros),
+      is.finite(Bite2022_obreros),
+      !is.na(CIIU4),
+      !is.na(tamano_empresa),
+      !is.na(DPTO_fijo)
+    )
+  
+  firmas <- panel |>
+    dplyr::distinct(NORDEMP, Exposure2022_obreros, Bite2022_obreros)
+  
+  sd_bite <- stats::sd(firmas$Bite2022_obreros)
+  stopifnot(is.finite(sd_bite), sd_bite > 0)
+  
+  panel <- panel |>
+    dplyr::mutate(
+      post_2023 = as.integer(ANIO >= 2023),
+      ANIO_F = factor(ANIO),
+      exposicion_10pp = Exposure2022_obreros / 0.1,
+      bite_1sd = Bite2022_obreros / sd_bite
+    )
+  
+  cat("\nCorrelacion Exposure-Bite entre firmas:\n")
+  print(stats::cor(
+    firmas$Exposure2022_obreros,
+    firmas$Bite2022_obreros
+  ))
+  
+  # 4. Estimar los cuatro outcomes, sin y con controles.
+  terminos <- paste(
+    "post_2023:exposicion_10pp",
+    "post_2023:bite_1sd",
+    "post_2023:exposicion_10pp:bite_1sd",
+    sep = " + "
+  )
+  
+  efectos_fijos <- c(
+    sin_controles = "NORDEST + ANIO_F",
+    con_controles = paste(
+      "NORDEST + ANIO_F + CIIU4^ANIO_F",
+      "+ tamano_empresa^ANIO_F + DPTO_fijo^ANIO_F"
+    )
+  )
+  
+  outcomes <- c(
+    "empleo_total", "empleo_permanente",
+    "empleo_temporal", "participacion_permanente"
+  )
+  
+  modelos <- list()
+  resultados <- list()
+  
+  for (y in outcomes) {
+    # Misma muestra para los modelos sin y con controles de cada Y.
+    datos_y <- panel[is.finite(panel[[y]]), ]
+    
+    for (spec in names(efectos_fijos)) {
+      nombre <- paste(y, spec, sep = "_")
+      
+      formula <- stats::as.formula(
+        paste(y, "~", terminos, "|", efectos_fijos[[spec]])
+      )
+      
+      modelo <- fixest::feols(
+        formula, data = datos_y, cluster = ~NORDEMP
+      )
+      modelos[[nombre]] <- modelo
+      
+      ct <- summary(modelo)$coeftable
+      ci <- stats::confint(modelo)
+      nombres <- rownames(ct)
+      
+      resultados[[nombre]] <- data.frame(
+        outcome = y,
+        especificacion = spec,
+        termino = nombres,
+        coeficiente = ct[, 1],
+        error_estandar = ct[, 2],
+        p_valor = ct[, 4],
+        limite_inferior = ci[nombres, 1],
+        limite_superior = ci[nombres, 2],
+        n = stats::nobs(modelo),
+        row.names = NULL
+      )
+    }
+    
+    cat("\n\nRESULTADO:", y, "\n")
+    print(fixest::etable(
+      modelos[paste(y, names(efectos_fijos), sep = "_")],
+      fitstat = ~ n + r2
+    ))
+  }
+  
+  # 5. Guardar todos los coeficientes y los modelos del ejercicio.
+  readr::write_csv(
+    dplyr::bind_rows(resultados),
+    file.path(carpeta_ejercicio, "resultados_interaccion.csv")
+  )
+  
+  saveRDS(
+    modelos,
+    file.path(carpeta_ejercicio, "modelos_interaccion.rds")
+  )
+  
+  message("\nEjercicio guardado en: ", carpeta_ejercicio)
+  invisible(modelos)
 }
 
-getwd()
-
-list.files(
-  path = "..",
-  pattern = "^(panel_establecimiento_formal|exposicion_firma_eam)\\.rds$",
-  recursive = TRUE,
-  full.names = TRUE
-)
+modelos_interaccion <- ejecutar_interaccion()
