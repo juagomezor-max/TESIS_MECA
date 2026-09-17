@@ -63,3 +63,82 @@ Estas reglas no se revisan según los resultados de empleo.
 - Repetir el diagnóstico de atrición diferencial con Bite en lugar de Exposure.
 - Diferencia menor no explicada entre la fila 1 de la conciliación 4.5 y el análisis archivado (0,349/0,610/0,057/0,116 vs. 0,311/0,574/0,057/0,101).
 - Tablas compactas de la conciliación 4.5 no generadas; usar `tabla_conciliacion_ventana_pre.csv`.
+
+## Sesión 2026-09-17: bases ampliadas, script principal, validaciones y elección de medida
+
+### 1. Bases ampliadas
+- Script: 0. ANALISIS INICIAL IA/3. SCRIPTS/construccion/ampliar_variables_paneles.R. Agrega a los dos paneles de 1. DATOS/ variables de la macrobase (costos laborales por categoría, tipos de contrato, inversión, producción, inventarios, energía) sin cambiar filas ni columnas originales.
+- Verificación con datos reales: panel de firmas 62.816 filas, 183 columnas, 9.087 firmas; panel de plantas 68.447 filas. Identidad del empleo (empleo_total = permanentes + temporal directo + temporal agencias + aprendices): 62.816 de 62.816 firmas-año. El empleo total incluye aprendices.
+- Salario promedio: ahora sale del panel de firmas (costos_totales_personal_total_c3r10c3 / empleo_total). Coincide con el cálculo anterior por suma de plantas: correlación 1, 0 firmas-año con diferencia mayor a 1%.
+- La EAM no tiene horas trabajadas: hay que retirarlas de los objetivos de la propuesta.
+
+### 2. Organización de resultados
+- 01_resultados_principales.R guarda en 4. RESULTADOS/Descriptivos, Principal, Estimacion y Validaciones (T00 y T15), con gráficos en subcarpetas "figuras".
+- 02_validaciones.R guarda todo en 4. RESULTADOS/Validaciones/script_validaciones.
+- Los archivos que empiezan con "tabla_" en esas carpetas son del script anterior (00_script_base.R); no citarlos.
+
+### 3. Primer eslabón: tres lecturas (Kaitz 2022, muestra completa)
+- A. Cambio del salario 2022 -> 2023: +4,04% por DE (EE 0,57).
+- B. Salto 2023 frente al cambio típico 2016-2019: +4,79% por DE.
+- C. Promedio después menos promedio antes (DiD simple): -1,00% (p = 0,012).
+- C sale negativo porque el salario relativo de las firmas con Kaitz 2022 alto cae de forma sostenida entre 2015 y 2022 (prueba de años previos p < 0,001). El primer eslabón se lee con A y B, no con C.
+
+### 4. Resultado principal (sin cambios)
+- Empleo total: -1,73 trabajadores (p = 0,198); en log -0,96% (p = 0,200). Años previos: p = 0,917 (niveles) y 0,454 (log). Nulo acotado.
+
+### 5. Resultados de las validaciones (Kaitz 2022 salvo que se indique)
+- V1 Sensibilidad a diferencias previas: salario, M de quiebre 0,76. Empleo (log) promedio 2023-24 frente a 2022: -1,91% (p = 0,002), M de quiebre 0,49. Honest DiD formal (magnitudes relativas): Mbar 0,5 [-3,99%; +0,16%]; Mbar 1 [-5,43%; +1,57%]; Mbar 2 [-8,52%; +4,67%]. La caída frente a 2022 no es robusta.
+- V2 Período de comparación, empleo (log): frente a 2022 -1,91%***; frente a 2021-22 -1,52%**; frente a 2015-19 -0,74% (p = 0,419); frente a todos los previos -0,96% (p = 0,203). Salario frente a 2015-19: -2,62%***, reflejo del declive previo de las firmas seleccionadas.
+- V3 Kaitz 2019 (4.744 firmas, correlación con Kaitz 2022 = 0,565): salto salarial 2023 frente a 2015-2018 +2,21% (p < 0,001), frente a +4,43% con Kaitz 2022 en las mismas firmas. Con Kaitz 2019 el salario de 2023-24 supera el nivel de 2015-17. Empleo (log) con Kaitz 2019: +1,08% (p = 0,154), años previos p < 0,001.
+- V4 2023 y 2024 por separado, empleo (log): solo 2023 -0,86% (p = 0,282); solo 2024 -1,06% (p = 0,217).
+- V5 Resultados exploratorios: los siete rechazan años previos (empleo permanente p = 0,024; temporal p = 0,003; participación de permanentes, ventas, salario obrero y brechas salariales p < 0,001). Salen como resultados causales.
+- V6 Placebo 2018 (datos 2015-2019): empleo (log) -0,83% (p = 0,219), empleo en trabajadores +0,03 (p = 0,98). Salario (-1,89%***) y ventas (-2,88%***) sí dan "efecto" placebo por su tendencia previa.
+- V7 Sin salarios extremos (476 firmas-año fuera): empleo (log) -1,24% (p = 0,099).
+- V9 Panel balanceado (4.472 firmas): empleo (log) -0,85% (p = 0,262).
+- V10 Errores agrupados por sector: empleo (log) p = 0,190; salario p < 0,001.
+
+### 6. Elección de la medida de exposición (V11)
+
+Regla de decisión: ya registrada arriba, sección "2026-09-17 — Decisión: elección de la medida de exposición" — no se repite aquí.
+
+Resultados (4.744 firmas comunes; correlaciones: K22-K19 0,565; K22-promedio 0,877; K19-promedio 0,829):
+
+| Medida | Salto salarial 2023 | M de quiebre | Empleo (log) después-antes | Años previos empleo (log) |
+|---|---|---|---|---|
+| Kaitz 2022 | +4,43%*** | 0,72 | -0,89% (p = 0,251) | p = 0,232 |
+| Kaitz 2019 | +2,21%*** | 0,05 | +1,08% (p = 0,154) | p < 0,001 |
+| Kaitz promedio | +4,02%*** | 0,76 | -0,29% (p = 0,717) | p = 0,001 |
+
+- La regla elige Kaitz promedio, por un margen mínimo frente a Kaitz 2022 (0,76 frente a 0,72). Ninguna medida supera M = 1.
+- Kaitz promedio rechaza años previos en el empleo; Kaitz 2022 no.
+- DECISIÓN PENDIENTE: no se cambia todavía la medida del script principal. Se discute con el director (Andrés Ham) con estos resultados.
+
+Transparencia: la regla de decisión ya estaba registrada en NOTA_DECISIONES.md desde el commit `e8a13c1` (2026-09-17 01:11:05 -0500), anterior a esta corrida de 02_validaciones.R. Además, antes de escribirla ya se conocían el primer eslabón y el empleo con Kaitz 2022 y Kaitz 2019 (V3).
+
+### 7. Controles (V12): el tamaño es el que importa
+| Controles | Empleo (log) | Años previos |
+|---|---|---|
+| Firma y año | -4,77%*** | p < 0,001 |
+| + sector x año | -4,57%*** | p < 0,001 |
+| + tamaño x año | -0,85% (p = 0,240) | p = 0,536 |
+| + departamento x año | -4,48%*** | p < 0,001 |
+| + sector y tamaño x año | -0,98% (p = 0,196) | p = 0,437 |
+| + sector y departamento x año | -4,33%*** | p < 0,001 |
+| Completo | -0,96% (p = 0,200) | p = 0,454 |
+- Sin el control de tamaño los grupos no vienen parecidos antes de 2023; con él, sí. Justificación: 65% de las pequeñas están en alta exposición frente a 19% de las grandes.
+- Riesgo: el tamaño se fija con el empleo de 2022, que es un año de pico para las firmas expuestas.
+
+### 8. Hallazgos que cambian la lectura
+- Kaitz 2022 alto selecciona firmas con declive relativo sostenido de salarios y ventas entre 2015 y 2022, no solo un 2022 atípico.
+- Compresión salarial: descartada. La brecha administrativo-obrero está plana en torno a -0,11 y salta a 0 exactamente en 2022 (efecto del año base).
+- Empleo relativo de las firmas expuestas: bajo en 2015-19, alto en 2021-22 y bajo otra vez en 2023-24, con las tres medidas. Hipótesis (no demostrada, la EAM no identifica beneficiarios): el pico de 2021-22 coincide con el PAEF y el incentivo a nuevos empleos (Ley 2155), que pesaban más en firmas de salarios bajos. Las comparaciones frente a 2021-2022 mezclan el mínimo con el fin de esos subsidios.
+- Lectura actual: el aumento de 2023 subió más el costo laboral de las firmas expuestas (entre 2% y 4% por DE según la medida; la evidencia más limpia, Kaitz 2019, apunta al extremo bajo). No hay evidencia de caída del empleo; el diseño no descarta caídas moderadas.
+
+### 9. Pendientes (sesión 2026-09-17)
+1. Decidir con el director la medida principal (sección 6).
+2. Validación: tamaño medido en 2019 en lugar de 2022.
+3. Validación: comparación frente a 2015-2019 con las tres medidas (se agrega después de ver el pico de 2021-22; declararlo).
+4. Validación: tendencia lineal por firma, por el declive sostenido de las firmas con Kaitz 2022 alto.
+5. Cifras oficiales DANE / Banco de la República: aumento real del mínimo e inflación 2015-2024.
+6. Retirar "horas trabajadas" de los objetivos de la propuesta.
+7. Ajustes de gráficos: "p = 0" como "p < 0,001", nombre del año de Kaitz en los subtítulos, separar salario y empleo en GR01 y usar las siete versiones de V12.
