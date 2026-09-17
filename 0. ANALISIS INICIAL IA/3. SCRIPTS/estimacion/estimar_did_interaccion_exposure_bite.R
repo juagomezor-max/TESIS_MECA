@@ -255,3 +255,22 @@ archivo_tabla <- file.path(
 
 readr::write_csv(tabla_interaccion, archivo_tabla)
 message("Tabla guardada en: ", archivo_tabla)
+
+
+tabla_solo_interaccion <- tabla_interaccion |>
+  dplyr::filter(
+    term == "post_2023:exposicion_10pp:bite_1sd"
+  ) |>
+  dplyr::select(-term)
+
+stopifnot(nrow(tabla_solo_interaccion) == 8)
+
+readr::write_csv(
+  tabla_solo_interaccion,
+  file.path(
+    carpeta_tablas,
+    "did_estatico_empleo_solo_interaccion.csv"
+  )
+)
+
+print(as.data.frame(tabla_solo_interaccion), row.names = FALSE)
