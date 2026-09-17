@@ -1,0 +1,6 @@
+lb,ub,method,Delta,Mbar
+-0.0311,-0.0072,Original,NA,NA
+-0.0399,0.0016,C-LF,DeltaRM,0.5
+-0.0543,0.0157,C-LF,DeltaRM,1
+-0.0694,0.0311,C-LF,DeltaRM,1.5
+-0.0852,0.0467,C-LF,DeltaRM,2

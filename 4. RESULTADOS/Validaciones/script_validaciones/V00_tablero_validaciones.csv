@@ -1,0 +1,12 @@
+validacion,pregunta_del_jurado,resultado,que_mirar
+V1. Sensibilidad (salario),¿El aumento salarial aguanta si los grupos venían distintos?,Intervalo con M = 1: [-0.91%; 8.99%]. M de quiebre: 0.76,M de quiebre mayor que 1: el salto de 2023 supera el peor movimiento previo.
+V1. Sensibilidad (empleo),¿Qué rango de efectos sobre el empleo es compatible con los datos?,Intervalo con M = 1: [-4.58%; 0.75%],El rango de caídas de empleo que no se pueden descartar.
+V2. Período de comparación,¿El resultado depende de que 2022 fue un año alto?,"Frente a 2022: -1.91% [-3.11; -0.72], p 0.002. Frente a 2015-2019: -0.74% [-2.54; 1.06], p 0.419","Si cambian de signo o de significancia, el resultado depende de la referencia."
+V3. Kaitz 2019,¿El salto salarial es efecto del mínimo o recuperación de 2022?,"Salto 2023 con Kaitz 2019: 2.21% [1.34; 3.08], p < 0,001",Positivo y significativo: el salto no es solo recuperación del año base.
+V4. Solo 2024,¿No es el fin del incentivo al empleo lo que ven?,"Empleo (log), solo 2024: -1.06% [-2.74; 0.62], p 0.217","Si 2024 se parece a 2023, pesa más el mínimo que el fin del subsidio."
+V5. Ventas,¿Las ventas venían parecidas antes?,"p años previos < 0,001","p < 0,05: el resultado de ventas no se lee como efecto de 2023."
+V5. Brecha salarial,¿La compresión salarial venía de antes?,"p años previos < 0,001","p < 0,05: la compresión no se lee como efecto de 2023."
+V6. Placebo 2018,¿El método encuentra 'efectos' en cualquier año?,"Empleo (log): -0.83% [-2.17; 0.5], p 0.219",No significativo: el método no inventa efectos donde no hubo choque.
+V7 a V10. Robustez,"¿Cambia con otra muestra, otros controles u otros errores?",Empleo (log) entre -4.77% y -0.85%; significativo en 2 de 5 versiones,Ver R01: qué versiones cambian el resultado (en especial V8 sin controles).
+V11. Medida de Kaitz,¿Por qué esa medida de exposición y no otra?,"Elegida por la regla: Kaitz promedio (salto salarial 4.02%, M de quiebre 0.76)",La regla está escrita antes de correr; el empleo no se usa para elegir.
+V12. Controles,¿Qué control cambia el resultado del empleo?,"Sin controles: -4.77% (p previos < 0,001). + tamaño: -0.85% (p previos 0.536). + departamento: -4.48% (p previos < 0,001)",El control que acerca el efecto a cero y limpia los años previos es el que justifica la especificación.
