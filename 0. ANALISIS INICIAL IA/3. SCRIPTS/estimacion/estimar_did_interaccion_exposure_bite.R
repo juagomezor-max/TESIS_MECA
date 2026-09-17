@@ -1,3 +1,8 @@
+if (!file.exists("3. SCRIPTS/pipeline/_utils_proyecto.R") &&
+    file.exists("../../3. SCRIPTS/pipeline/_utils_proyecto.R")) {
+  setwd("../..")
+}
+
 source(file.path("3. SCRIPTS", "pipeline", "_utils_proyecto.R"))
 load_project_packages(c("dplyr", "readr", "fixest"))
 
@@ -83,3 +88,12 @@ for (y in outcomes) {
     fitstat = ~ n + r2
   ))
 }
+
+getwd()
+
+list.files(
+  path = "..",
+  pattern = "^(panel_establecimiento_formal|exposicion_firma_eam)\\.rds$",
+  recursive = TRUE,
+  full.names = TRUE
+)
