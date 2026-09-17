@@ -142,3 +142,35 @@ Transparencia: la regla de decisión ya estaba registrada en NOTA_DECISIONES.md 
 5. Cifras oficiales DANE / Banco de la República: aumento real del mínimo e inflación 2015-2024.
 6. Retirar "horas trabajadas" de los objetivos de la propuesta.
 7. Ajustes de gráficos: "p = 0" como "p < 0,001", nombre del año de Kaitz en los subtítulos, separar salario y empleo en GR01 y usar las siete versiones de V12.
+
+## Validación 2026-09-17: resultados incluyendo 2020
+
+**Motivo.** La especificación principal excluye 2020 por la pandemia, que afectó con más fuerza a las firmas pequeñas y de salarios bajos (las más expuestas). Esta validación responde "¿y con 2020 qué pasa?".
+
+**Datos.** 1. DATOS/panel_analitico_firma_eam_con_2020.rds (commit fa33397): 69.539 firmas-año, 9.087 firmas; 6.723 firmas en 2020. Comprobación contra el panel principal en los demás años: 108 de 108 comparaciones al 100% (12 variables x 9 años). Chequeo de 2020: 0% de vacíos en costo laboral y sueldos de obreros; mediana del costo por trabajador 25.347 (entre 24.722 en 2019 y 27.875 en 2021).
+
+**Script.** 3. SCRIPTS/01b_resultados_principales_con_2020.R. Salidas en 4. RESULTADOS/RESULTADOS2020/. Base de análisis: 49.670 firmas-año, 5.099 firmas.
+
+**Resultados (Kaitz 2022, mismos controles)**
+| | Sin 2020 | Con 2020 |
+|---|---|---|
+| Firmas-año | 44.631 | 49.670 |
+| Salario, cambio 2022 -> 2023 | +4,04%*** | +4,03%*** |
+| Salario, salto 2023 frente a 2016-2019 | +4,79%*** | +4,78%*** |
+| Empleo (trabajadores) | -1,73 (p = 0,198) | -1,72 (p = 0,190) |
+| Empleo (log) | -0,96% (p = 0,200) | -0,90% (p = 0,221) |
+| Años previos, empleo (trabajadores) | p = 0,917 | p = 0,954 |
+| Años previos, empleo (log) | p = 0,454 | p = 0,554 |
+| Pequeñas, empleo (log) | -1,97% (p = 0,080) | -1,81% (p = 0,099) |
+| Brecha administrativo-obrero | -1,30%** | -0,73% (p = 0,247) |
+
+**Lectura.**
+- Incluir 2020 no cambia la conclusión: el primer eslabón y el resultado del empleo son prácticamente idénticos, y la prueba de años previos del empleo mejora levemente.
+- En los promedios sin controles, 2020 muestra una caída del empleo mayor en las firmas expuestas; con el control de tamaño x año, 2020 queda alineado con los demás años previos (empleo en trabajadores +1,01; en log -1,38%, entre 2019 y 2021).
+- La compresión salarial deja de ser significativa con 2020, lo que refuerza que era frágil.
+
+**Decisión.** La especificación principal sigue excluyendo 2020. Los resultados con 2020 se reportan como robustez.
+
+**Nota sobre la muestra de Nicolás.** Sus tablas de Kaitz x Exposure tienen 49.969 firmas-año; con 2020 nosotros tenemos 49.670. 2020 explica casi toda la diferencia, pero quedan 299 filas por aclarar antes de reportar sus resultados junto a los nuestros.
+
+**Nota sobre T00b.** Como se usó la base construida en VS Code (camino A del script), la tabla T00b compara todos los años distintos de 2020 contra el panel principal, aunque su título diga "Reconstrucción de 2019 y 2021 desde la macrobase". Corregir el título si se cita.
