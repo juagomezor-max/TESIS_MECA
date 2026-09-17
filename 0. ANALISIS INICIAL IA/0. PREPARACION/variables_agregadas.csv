@@ -1,0 +1,322 @@
+variable_nueva,codigo_eam,descripcion,base,pct_na_2022,pct_cero_2022
+activos_fijos_activfi,ACTIVFI,Activos Fijos,establecimiento,0,0.99
+activos_nuevos_c7c7r2,C7C7R2,Total Valor compra de activos - nuevos,establecimiento,0,37.8
+activos_recibidos_c7r18c7,C7R18C7,Total Valor de los activos recibidos en el año por traslado de otros establecimi,establecimiento,0,94.11
+activos_trasladados_c7r17c7,C7R17C7,Total Valor de los activos trasladados en el año a otros establecimientos de la,establecimiento,0,95.63
+activos_usados_c7c7r3,C7C7R3,Total Valor compra de activos - Usados,establecimiento,0,86.13
+administrativos_permanentes,"suma(C4R2C3,C4R2C4)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,12.4
+administrativos_total,"suma(C4R2C3,C4R2C4,C4R3C3,C4R3C4,C4R4C3,C4R4C4,C4R6DM,C4R6DH)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,5.45
+agencias_personal_temporal_administrativos_c3r8c2,C3R8C2,Valor causado por las empresas que suministran personal temporal al establecimie,establecimiento,0,75.28
+agencias_personal_temporal_obreros_c3r8c1,C3R8C1,Valor causado por las empresas que suministran personal temporal al establecimie,establecimiento,0,66.94
+agencias_personal_temporal_profesionales_c3r8pt,C3R8PT,Valor causado por las empresas que suministran personal temporal al establecimie,establecimiento,0,83.03
+agencias_personal_temporal_total_c3r8c3,C3R8C3,Total  Valor causado por las empresas que suministran personal temporal al estab,establecimiento,0,64.18
+agua_c3r21c3,C3R21C3,Total Servicio de agua,establecimiento,0,1.99
+aportes_nomina_administrativos_c3r6c2,C3R6C2,"Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)  - Administrat",establecimiento,0,7.04
+aportes_nomina_obreros_c3r6c1,C3R6C1,"Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)  - Producción",establecimiento,0,6.05
+aportes_nomina_profesionales_c3r6pt,C3R6PT,"Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)  - Producción",establecimiento,0,35.51
+aportes_nomina_total_c3r6c3,C3R6C3,"Total  Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)",establecimiento,0,2.1
+apoyo_sostenimiento_aprendices_r4csap,R4CSAP,Total  Valor del apoyo de sostenimiento causado por los aprendices y pasantes  (,establecimiento,0,41
+aprendices,"suma(C4R6OM,C4R6OH,C4R6DM,C4R6DH,C4R6MN,C4R6HN,C4R6ME,C4R6HE)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,43.79
+arriendo_inmuebles_c3r16c3,C3R16C3,Total  Arrendamiento de bienes inmuebles,establecimiento,0,23.76
+arriendo_maquinaria_administracion_c3r17c2,C3R17C2,Arrendamiento sin opción  de compra de maquinaria y equipo - Administración y ve,establecimiento,0,70.85
+arriendo_maquinaria_produccion_c3r17c1,C3R17C1,Arrendamiento sin opción  de compra de maquinaria y equipo - producción,establecimiento,0,67.23
+arriendo_maquinaria_total_c3r17c3,C3R17C3,Total Arrendamiento sin opción  de compra de maquinaria y equipo,establecimiento,0,60.01
+comunicaciones_c3r36c3,C3R36C3,Total Servicios de comunicaciones,establecimiento,0,1.14
+consumo_intermedio_consin2,CONSIN2,Consumo Intermedio,establecimiento,0,0.01
+consumo_materias_consmate,CONSMATE,Consumo de Materias,establecimiento,0,1.7
+costo_materias_primas_sin_transformar_c3r40c3,C3R40C3,"Total Costo de venta de materias primas, materiales y empaques vendidos sin tran",establecimiento,0,76.94
+costo_productos_no_fabricados_c3r44c3,C3R44C3,Total Costo de venta de productos no fabricados por el establecimiento,establecimiento,0,58.86
+costos_produccion_c3r35c1,C3R35C1,Total Costos y gastos de producción,establecimiento,0,0.9
+costos_totales_c3r35c3,C3R35C3,Total costos de producción administración y ventas,establecimiento,0,0.03
+costos_totales_personal_administrativos_c3r10c2,C3R10C2,Costos y Gastos Causados pro el Personal Ocupado  - Administrativos,establecimiento,0,5.21
+costos_totales_personal_obreros_c3r10c1,C3R10C1,Costos y Gastos Causados pro el Personal Ocupado  - Producción  - Obreros,establecimiento,0,3.2
+costos_totales_personal_profesionales_c3r10pt,C3R10PT,Costos y Gastos Causados pro el Personal Ocupado  - Producción  - Profesional Te,establecimiento,0,31.97
+costos_totales_personal_total_c3r10c3,C3R10C3,Total  Costos y Gastos Causados pro el Personal Ocupado,establecimiento,0,0.21
+cotizaciones_patronales_administrativos_c3r5c2,C3R5C2,"Cotizaciones patronales obligatorias, salud, ARP y pensión del personal ocupado",establecimiento,0,6.04
+cotizaciones_patronales_obreros_c3r5c1,C3R5C1,"Cotizaciones patronales obligatorias, salud, ARP y pensión del personal ocupado",establecimiento,0,4.96
+cotizaciones_patronales_profesionales_c3r5pt,C3R5PT,"Cotizaciones patronales obligatorias, salud, ARP y pensión del personal ocupado",establecimiento,0,35.01
+cotizaciones_patronales_total_c3r5c3,C3R5C3,"Total  Cotizaciones patronales obligatorias, salud, ARP y pensión del personal o",establecimiento,0,1.09
+depreciacion_causada_c7r10c7,C7R10C7,Total Depreciación causada en el año,establecimiento,0,9.55
+depreciacion_deprecia,DEPRECIA,Depreciación,establecimiento,0,9.55
+depreciacion_maquinaria_c7r6c7,C7R6C7,Depreciación causada en el año - Maquinaria y equipo Industrial,establecimiento,0,11.84
+desvalorizaciones_total_c7r16c7,C7R16C7,Total Desvalorizaciones causadas en el año actual,establecimiento,0,93.28
+energia_comprada_kwh_c5r1c1,C5R1C1,Energía comprada (KWH),establecimiento,0,0.52
+energia_consumida_kwh_c5r1c4,C5R1C4,Total Energía consumida (KWH),establecimiento,0,0.46
+energia_electrica_kw_eelec,EELEC,Energía Eléctrica en kw,establecimiento,0,0.46
+franquicias_marcas_c3r24c3,C3R24C3,"Total Utilización de : derechos de autor, franquicias, marcas, patentes,etc.",establecimiento,0,91.28
+gastos_administracion_ventas_c3r35c2,C3R35C2,Total Gastos de administración y ventas,establecimiento,0,0.25
+gastos_financieros_c3r46c3,C3R46C3,Total Gastos financieros,establecimiento,0,13.59
+honorarios_administracion_c3r15c2,C3R15C2,Honorarios y servicios técnicos - Administración y ventas,establecimiento,0,14.38
+honorarios_produccion_c3r15c1,C3R15C1,Honorarios y servicios técnicos - producción,establecimiento,0,45.8
+honorarios_total_c3r15c3,C3R15C3,Total Honorarios y servicios técnicos,establecimiento,0,9.77
+impuesto_4x1000_c3r25c3,C3R25C3,Total Impuesto del 4 x 1 000,establecimiento,0,9.98
+industria_comercio_c3r37c3,C3R37C3,Total Impuestos de industria y comercio,establecimiento,0,2.8
+ingresos_cert_c2r5cert,C2R5CERT,Ingresos por cert causados en el año.,establecimiento,0.21,88.73
+intereses_c3r31c3,C3R31C3,Total Intereses causados sobre préstamos,establecimiento,0,28.46
+inventario_total_fin_c6r5c3,C6R5C3,Total Inventarios al final del año actual,establecimiento,0.03,14.81
+inventario_total_inicio_c6r5c1,C6R5C1,Total Inventarios al final del año anterior-,establecimiento,0.03,11.37
+inversion_bruta_invebrta,INVEBRTA,Inversión Bruta,establecimiento,0,31
+inversion_edificios_c7r5c2,C7R5C2,Total inversiones en activos fijos - Edificios y estructuras,establecimiento,0,70.8
+inversion_informatica_c7c4r8,C7C4R8,Total inversiones en activos fijos -Equipo de informática y comunicación,establecimiento,0,48.89
+inversion_maquinaria_c7r6c2,C7R6C2,Total inversiones en activos fijos - Maquinaria y equipo Industrial,establecimiento,0,41.39
+inversion_oficina_c7c5r8,C7C5R8,Total inversiones en activos fijos -Equipos de oficina,establecimiento,0,59.19
+inversion_terrenos_c7r1c2,C7R1C2,Total inversiones en activos fijos - Terrenos,establecimiento,0,93.43
+inversion_total_c7r10c2,C7R10C2,Total  inversiones en activos fijos,establecimiento,0,32.03
+inversion_transporte_c7r8c2,C7R8C2,Total inversiones en activos fijos -Equipo de transporte,establecimiento,0,74.83
+leasing_edificios_c7c2r19,C7C2R19,Leasing Financiero - Edificios y estructuras,establecimiento,0,98.15
+leasing_informatica_c7c4r19,C7C4R19,Leasing Financiero -Equipo de informática y comunicación,establecimiento,0,99.37
+leasing_maquinaria_c7c3r19,C7C3R19,Leasing Financiero - Maquinaria y equipo Industrial,establecimiento,0,95.81
+leasing_oficina_c7c5r19,C7C5R19,Leasing Financiero -Equipos de oficina,establecimiento,0,99.72
+leasing_terrenos_c7c1r19,C7C1R19,Leasing Financiero - Terrenos,establecimiento,0,99.04
+leasing_total_c7c7r19,C7C7R19,Total Leasing Financiero,establecimiento,0,93
+leasing_transporte_c7c6r19,C7C6R19,Leasing Financiero -Equipo de transporte,establecimiento,0,97.51
+mantenimiento_administracion_c3r23c2,C3R23C2,"Mantenimiento, reparaciones, accesorios y repuestos consumidos - Administración",establecimiento,0,14.51
+mantenimiento_produccion_c3r23c1,C3R23C1,"Mantenimiento, reparaciones, accesorios y repuestos consumidos - Producción",establecimiento,0,5.71
+mantenimiento_total_c3r23c3,C3R23C3,"Total Mantenimiento, reparaciones, accesorios y repuestos consumidos",establecimiento,0,2.39
+materia_prima_comprada_valorcom,VALORCOM,Valor de la materia prima comprada,establecimiento,0,2.44
+materia_prima_importada_valorcx,VALORCX,Valor compras de materia prima en el exterior,establecimiento,0,76.1
+materias_primas_fin_c6r1c3,C6R1C3,"Existencias Materias primas, materiales y empaques - al final del año actual",establecimiento,0.03,18.94
+materias_primas_inicio_c6r1c1,C6R1C1,"Existencias Materias primas, materiales y empaques - al final del año anterior",establecimiento,0.03,15.92
+mejoras_activos_c7c7r7,C7C7R7,Total  Valor causado por  mejoras y reformas a los activos,establecimiento,0,90.08
+muestras_gratis_c3r13c3,C3R13C3,Total Muestras gratis,establecimiento,0,84.49
+obreros_permanentes,"suma(C4R2C1,C4R2C2)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,17.58
+obreros_total,"suma(C4R2C1,C4R2C2,C4R3C1,C4R3C2,C4R4C1,C4R4C2,C4R6OM,C4R6OH)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,3.23
+otros_costos_c3r27c3,C3R27C3,Total Otros costos y gastos no incluidos antes,establecimiento,0,19.66
+otros_gastos_consin,CONSIN,Otros Gastos,establecimiento,0,0.1
+otros_gastos_personal_administrativos_c3r9c2,C3R9C2,Otros gastos del personal no incluidos antes  - Administrativos,establecimiento,0,21.64
+otros_gastos_personal_obreros_c3r9c1,C3R9C1,Otros gastos del personal no incluidos antes  - Producción  - Obreros,establecimiento,0,18.21
+otros_gastos_personal_profesionales_c3r9pt,C3R9PT,Otros gastos del personal no incluidos antes  - Producción  - Profesional Tecnól,establecimiento,0,47.94
+otros_gastos_personal_total_c3r9c3,C3R9C3,Total  Otros gastos del personal no incluidos antes,establecimiento,0,14.36
+personal_hombres_c4r4c10t,C4R4C10T,Total Personal Ocupado Hombre,establecimiento,0,0.87
+personal_mujeres_c4r4c9t,C4R4C9T,Total Personal Ocupado Mujer,establecimiento,0,2.69
+personal_permanente_persocu,PERSOCU,Personal Permanente,establecimiento,0,7.34
+personal_permanente_propietarios_persoesc,PERSOESC,Personal Permanente + Propietarios,establecimiento,0,6.64
+personal_permanente_temporal_pperytem,PPERYTEM,Personal Permanente + Temporal Directo,establecimiento,0,0.72
+personal_temporal_directo_pertem3,PERTEM3,Personal Temporal Directo,establecimiento,0,55.6
+personal_total_pertotal,PERTOTAL,Personal Permanente + Propietarios + Personal Temporal Directo + Temporal Empres,establecimiento,0,0.15
+porcentaje_exportado_porcvt,PORCVT,Porcentaje vendido al exterior,establecimiento,0,67.07
+porcentaje_insumos_importados_porcon,PORCON,Porcentaje consumo origen extranjero,establecimiento,100,NA
+predial_vehiculos_c3r38c3,C3R38C3,Total Impuesto predial y sobre vehículos,establecimiento,0,30.49
+prestaciones_aprendices_perapren,PERAPREN,Prestaciones del personal aprendiz,establecimiento,0,42.24
+prestaciones_permanente_temporal_prespyte,PRESPYTE,Prestaciones de Permanente y Temporal Directo,establecimiento,0,0.8
+prestaciones_permanentes_administrativos_c3r3c2,C3R3C2,Prestaciones sociales del personal permanente - Administrativos,establecimiento,0,12.15
+prestaciones_permanentes_obreros_c3r3c1,C3R3C1,Prestaciones sociales del personal permanente - Producción  - Obreros,establecimiento,0,17.51
+prestaciones_permanentes_pressper,PRESSPER,Prestaciones de Permanente,establecimiento,0,7.29
+prestaciones_permanentes_profesionales_c3r3pt,C3R3PT,Prestaciones sociales del personal permanente - Producción  - Profesional Tecnól,establecimiento,0,40.52
+prestaciones_permanentes_total_c3r3c3,C3R3C3,Total  Prestaciones sociales del personal permanente,establecimiento,0,7.29
+produccion_bruta_prodbr2,PRODBR2,Producción Bruta,establecimiento,0,0
+produccion_industrial_prodbind,PRODBIND,Producción Industrial,establecimiento,0,0
+productos_proceso_fin_c6r2c3,C6R2C3,Existencias Productos en proceso - al final del año actual,establecimiento,0.03,54.02
+productos_proceso_inicio_c6r2c1,C6R2C1,Existencias Productos en proceso - al final del año anterior,establecimiento,0.03,52.37
+productos_terminados_fin_c6r3c3,C6R3C3,Existencias  Productos terminados  - al final del año actual,establecimiento,0.03,33.22
+productos_terminados_inicio_c6r3c1,C6R3C1,Existencias  Productos terminados  - al final del año anterior,establecimiento,0.03,30.28
+profesionales_permanentes,"suma(C4R1C3N,C4R1C4N,C4R2C3E,C4R2C4E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,41.76
+profesionales_total,suma(16 columnas C4R1/C4R2 profesional-tecnico),Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,33.67
+propietarios,"suma(C4R1C1,C4R1C2,C4R1C3,C4R1C4,C4R1C1N,C4R1C2N,C4R2C1E,C4R2C2E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,95.42
+provisiones_c3r26c3,C3R26C3,"Total Gastos para provisión de cartera, inventarios y otros",establecimiento,0,64.41
+publicidad_c3r22c3,C3R22C3,Total Propaganda y publicidad,establecimiento,0,33.43
+remuneracion_temporales_remutemp,REMUTEMP,Remuneración empelados temporales,establecimiento,0,55.22
+retiros_edificios_c7c2r11,C7C2R11,Retiros  causados - Edificios y estructuras,establecimiento,0,93.46
+retiros_informatica_c7c4r11,C7C4R11,Retiros  causados -Equipo de informática y comunicación,establecimiento,0,84.34
+retiros_maquinaria_c7c3r11,C7C3R11,Retiros  causados - Maquinaria y equipo Industrial,establecimiento,0,79.14
+retiros_oficina_c7c5r11,C7C5R11,Retiros  causados -Equipos de oficina,establecimiento,0,86.95
+retiros_total_c7c7r11,C7C7R11,Total Retiros  causados,establecimiento,0,72.43
+retiros_transporte_c7c6r11,C7C6R11,Retiros  causados -Equipo de transporte,establecimiento,0,88.89
+salario_integral_administrativos_c3r1c2,C3R1C2,Salario Integral para el personal permanente -  Administrativos,establecimiento,100,NA
+salario_integral_obreros_c3r1c1,C3R1C1,Salario Integral para el personal permanente -  Producción - Obreros,establecimiento,100,NA
+salario_integral_profesionales_c3r1pt,C3R1PT,Salario Integral para el personal permanente -  Producción - Profesional Tecnól,establecimiento,100,NA
+salario_integral_total_c3r1c3,C3R1C3,Total Salario Integral para el personal permanente,establecimiento,100,NA
+salario_permanente_temporal_salpeyte,SALPEYTE,Salario Personal Permanente y Temporal,establecimiento,0,0.81
+salario_permanentes_salarper,SALARPER,Salario de Permanentes,establecimiento,0,7.31
+salarios_aprendices_salapren,SALAPREN,Salarios del personal aprendiz,establecimiento,0,41
+seguros_c3r18c3,C3R18C3,Total Seguros,establecimiento,0,22.42
+seguros_vida_voluntarios_administrativos_c3r7c2,C3R7C2,Aportes voluntarios a compañías de seguros de vida que ampara al personal ocupad,establecimiento,0,89.54
+seguros_vida_voluntarios_obreros_c3r7c1,C3R7C1,Aportes voluntarios a compañías de seguros de vida que ampara al personal ocupad,establecimiento,0,91
+seguros_vida_voluntarios_profesionales_c3r7pt,C3R7PT,Aportes voluntarios a compañías de seguros de vida que ampara al personal ocupad,establecimiento,0,92.15
+seguros_vida_voluntarios_total_c3r7c3,C3R7C3,Total  Aportes voluntarios a compañías de seguros de vida que ampara al personal,establecimiento,0,87.78
+sueldos_permanentes_administrativos_c3r2c2,C3R2C2,Sueldos y salarios del personal permanente -  Administrativos,establecimiento,0,12.16
+sueldos_permanentes_obreros_c3r2c1,C3R2C1,Sueldos y salarios del personal permanente -  Producción - Obreros,establecimiento,0,17.51
+sueldos_permanentes_profesionales_c3r2pt,C3R2PT,Sueldos y salarios del personal permanente -  Producción - Profesional Tecnólogo,establecimiento,0,40.53
+sueldos_permanentes_total_c3r2c3,C3R2C3,Total Sueldos y salarios del personal permanente,establecimiento,0,7.31
+sueldos_temporal_directo_administrativos_c3r4c2,C3R4C2,"Sueldos, salarios y prestaciones sociales del personal contratado directamente",establecimiento,0,65.24
+sueldos_temporal_directo_obreros_c3r4c1,C3R4C1,"Sueldos, salarios y prestaciones sociales del personal contratado directamente",establecimiento,0,57.92
+sueldos_temporal_directo_profesionales_c3r4pt,C3R4PT,"Sueldos, salarios y prestaciones sociales del personal contratado directamente",establecimiento,0,75.81
+sueldos_temporal_directo_total_c3r4c3,C3R4C3,"Total  Sueldos, salarios y prestaciones sociales del personal contratado directa",establecimiento,0,55.22
+temporal_agencias,"suma(C4R4C1,C4R4C2,C4R4C3,C4R4C4,C4R1C7N,C4R1C8N,C4R2C7E,C4R2C8E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,65.08
+temporal_directo,"suma(C4R3C1,C4R3C2,C4R3C3,C4R3C4,C4R1C5N,C4R1C6N,C4R2C5E,C4R2C6E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,establecimiento,0,55.6
+terceros_administracion_c3r41c2,C3R41C2,Costos y gastos por servicios contratados con terceros (outsoursing)-  Administr,establecimiento,0,78.83
+terceros_industriales_produccion_c3r14c1,C3R14C1,Costos y gastos de productos y servicios industriales elaborados por terceros -,establecimiento,0,61.14
+terceros_industriales_total_c3r14c3,C3R14C3,Total Costos y gastos de productos y servicios industriales elaborados por terce,establecimiento,0,61.14
+terceros_produccion_c3r41c1,C3R41C1,Costos y gastos por servicios contratados con terceros (outsoursing)- Producción,establecimiento,0,77.36
+terceros_total_c3r41c3,C3R41C3,Total Costos y gastos por servicios contratados con terceros (outsoursing),establecimiento,0,70.77
+transporte_materias_primas_c3r42c3,C3R42C3,Total Costos y gastos de transporte de materias primas,establecimiento,0,48.99
+transporte_productos_c3r45c3,C3R45C3,Total Costos y gastos de transporte de productos,establecimiento,0,32.01
+valor_agregado_valagri,VALAGRI,Valor Agregado,establecimiento,0,0
+valor_energeticos_totalv,TOTALV,Valor total Energéticos,establecimiento,0.13,42.4
+valor_energia_comprada_c3r19c3,C3R19C3,Valor Energía comprada,establecimiento,0,0.52
+valor_libros_fin_c7r10c6,C7R10C6,Total Valor en libros del año actual,establecimiento,0,0.99
+valor_libros_inicio_c7r10c1,C7R10C1,Total Valor en libros del año anterior,establecimiento,0,0.68
+valor_libros_maquinaria_c7r6c6,C7R6C6,Valor en libros del año actual - Maquinaria y equipo Industrial,establecimiento,0,2.58
+valor_ventas_valorven,VALORVEN,Valor de las ventas,establecimiento,0,0.1
+valorizaciones_c7r10c4,C7R10C4,Total Valorización  causadas en el año,establecimiento,0,90.54
+activos_fijos_activfi,ACTIVFI,Activos Fijos,firma,0,0.76
+activos_nuevos_c7c7r2,C7C7R2,Total Valor compra de activos - nuevos,firma,0,39.15
+activos_recibidos_c7r18c7,C7R18C7,Total Valor de los activos recibidos en el año por traslado de otros establecimi,firma,0,96.54
+activos_trasladados_c7r17c7,C7R17C7,Total Valor de los activos trasladados en el año a otros establecimientos de la,firma,0,97.19
+activos_usados_c7c7r3,C7C7R3,Total Valor compra de activos - Usados,firma,0,85.79
+administrativos_permanentes,"suma(C4R2C3,C4R2C4)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,10.94
+administrativos_total,"suma(C4R2C3,C4R2C4,C4R3C3,C4R3C4,C4R4C3,C4R4C4,C4R6DM,C4R6DH)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,3.88
+agencias_personal_temporal_administrativos_c3r8c2,C3R8C2,Valor causado por las empresas que suministran personal temporal al establecimie,firma,0,75.99
+agencias_personal_temporal_obreros_c3r8c1,C3R8C1,Valor causado por las empresas que suministran personal temporal al establecimie,firma,0,69.37
+agencias_personal_temporal_profesionales_c3r8pt,C3R8PT,Valor causado por las empresas que suministran personal temporal al establecimie,firma,0,84.45
+agencias_personal_temporal_total_c3r8c3,C3R8C3,Total  Valor causado por las empresas que suministran personal temporal al estab,firma,0,66.89
+agua_c3r21c3,C3R21C3,Total Servicio de agua,firma,0,1.52
+aportes_nomina_administrativos_c3r6c2,C3R6C2,"Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)  - Administrat",firma,0,5.67
+aportes_nomina_obreros_c3r6c1,C3R6C1,"Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)  - Producción",firma,0,5.67
+aportes_nomina_profesionales_c3r6pt,C3R6PT,"Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)  - Producción",firma,0,36.53
+aportes_nomina_total_c3r6c3,C3R6C3,"Total  Aportes sobre nómina (SENA, cajas de compensación familiar, ICBF)",firma,0,1.86
+apoyo_sostenimiento_aprendices_r4csap,R4CSAP,Total  Valor del apoyo de sostenimiento causado por los aprendices y pasantes  (,firma,0,41.38
+aprendices,"suma(C4R6OM,C4R6OH,C4R6DM,C4R6DH,C4R6MN,C4R6HN,C4R6ME,C4R6HE)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,43.79
+arriendo_inmuebles_c3r16c3,C3R16C3,Total  Arrendamiento de bienes inmuebles,firma,0,23.68
+arriendo_maquinaria_administracion_c3r17c2,C3R17C2,Arrendamiento sin opción  de compra de maquinaria y equipo - Administración y ve,firma,0,72.37
+arriendo_maquinaria_produccion_c3r17c1,C3R17C1,Arrendamiento sin opción  de compra de maquinaria y equipo - producción,firma,0,69.92
+arriendo_maquinaria_total_c3r17c3,C3R17C3,Total Arrendamiento sin opción  de compra de maquinaria y equipo,firma,0,62.67
+comunicaciones_c3r36c3,C3R36C3,Total Servicios de comunicaciones,firma,0,0.84
+consumo_intermedio_consin2,CONSIN2,Consumo Intermedio,firma,0,0.02
+consumo_materias_consmate,CONSMATE,Consumo de Materias,firma,0,1.58
+costo_materias_primas_sin_transformar_c3r40c3,C3R40C3,"Total Costo de venta de materias primas, materiales y empaques vendidos sin tran",firma,0,77.06
+costo_productos_no_fabricados_c3r44c3,C3R44C3,Total Costo de venta de productos no fabricados por el establecimiento,firma,0,58.68
+costos_produccion_c3r35c1,C3R35C1,Total Costos y gastos de producción,firma,0,0.87
+costos_totales_c3r35c3,C3R35C3,Total costos de producción administración y ventas,firma,0,0.03
+costos_totales_personal_administrativos_c3r10c2,C3R10C2,Costos y Gastos Causados pro el Personal Ocupado  - Administrativos,firma,0,3.78
+costos_totales_personal_obreros_c3r10c1,C3R10C1,Costos y Gastos Causados pro el Personal Ocupado  - Producción  - Obreros,firma,0,2.94
+costos_totales_personal_profesionales_c3r10pt,C3R10PT,Costos y Gastos Causados pro el Personal Ocupado  - Producción  - Profesional Te,firma,0,33.16
+costos_totales_personal_total_c3r10c3,C3R10C3,Total  Costos y Gastos Causados pro el Personal Ocupado,firma,0,0.1
+cotizaciones_patronales_administrativos_c3r5c2,C3R5C2,"Cotizaciones patronales obligatorias, salud, ARP y pensión del personal ocupado",firma,0,4.62
+cotizaciones_patronales_obreros_c3r5c1,C3R5C1,"Cotizaciones patronales obligatorias, salud, ARP y pensión del personal ocupado",firma,0,4.54
+cotizaciones_patronales_profesionales_c3r5pt,C3R5PT,"Cotizaciones patronales obligatorias, salud, ARP y pensión del personal ocupado",firma,0,36.02
+cotizaciones_patronales_total_c3r5c3,C3R5C3,"Total  Cotizaciones patronales obligatorias, salud, ARP y pensión del personal o",firma,0,0.81
+depreciacion_causada_c7r10c7,C7R10C7,Total Depreciación causada en el año,firma,0,9.99
+depreciacion_deprecia,DEPRECIA,Depreciación,firma,0,9.99
+depreciacion_maquinaria_c7r6c7,C7R6C7,Depreciación causada en el año - Maquinaria y equipo Industrial,firma,0,12.37
+desvalorizaciones_total_c7r16c7,C7R16C7,Total Desvalorizaciones causadas en el año actual,firma,0,93.39
+energia_comprada_kwh_c5r1c1,C5R1C1,Energía comprada (KWH),firma,0,0.29
+energia_consumida_kwh_c5r1c4,C5R1C4,Total Energía consumida (KWH),firma,0,0.26
+energia_electrica_kw_eelec,EELEC,Energía Eléctrica en kw,firma,0,0.26
+franquicias_marcas_c3r24c3,C3R24C3,"Total Utilización de : derechos de autor, franquicias, marcas, patentes,etc.",firma,0,91.03
+gastos_administracion_ventas_c3r35c2,C3R35C2,Total Gastos de administración y ventas,firma,0,0.13
+gastos_financieros_c3r46c3,C3R46C3,Total Gastos financieros,firma,0,10.72
+honorarios_administracion_c3r15c2,C3R15C2,Honorarios y servicios técnicos - Administración y ventas,firma,0,13.17
+honorarios_produccion_c3r15c1,C3R15C1,Honorarios y servicios técnicos - producción,firma,0,47.95
+honorarios_total_c3r15c3,C3R15C3,Total Honorarios y servicios técnicos,firma,0,9.46
+impuesto_4x1000_c3r25c3,C3R25C3,Total Impuesto del 4 x 1 000,firma,0,6.64
+industria_comercio_c3r37c3,C3R37C3,Total Impuestos de industria y comercio,firma,0,1.81
+ingresos_cert_c2r5cert,C2R5CERT,Ingresos por cert causados en el año.,firma,0.21,87.88
+intereses_c3r31c3,C3R31C3,Total Intereses causados sobre préstamos,firma,0,25.8
+inventario_total_fin_c6r5c3,C6R5C3,Total Inventarios al final del año actual,firma,0,14.89
+inventario_total_inicio_c6r5c1,C6R5C1,Total Inventarios al final del año anterior-,firma,0,11.32
+inversion_bruta_invebrta,INVEBRTA,Inversión Bruta,firma,0,32.04
+inversion_edificios_c7r5c2,C7R5C2,Total inversiones en activos fijos - Edificios y estructuras,firma,0,72.71
+inversion_informatica_c7c4r8,C7C4R8,Total inversiones en activos fijos -Equipo de informática y comunicación,firma,0,49.24
+inversion_maquinaria_c7r6c2,C7R6C2,Total inversiones en activos fijos - Maquinaria y equipo Industrial,firma,0,42.74
+inversion_oficina_c7c5r8,C7C5R8,Total inversiones en activos fijos -Equipos de oficina,firma,0,60.07
+inversion_terrenos_c7r1c2,C7R1C2,Total inversiones en activos fijos - Terrenos,firma,0,93.47
+inversion_total_c7r10c2,C7R10C2,Total  inversiones en activos fijos,firma,0,33.11
+inversion_transporte_c7r8c2,C7R8C2,Total inversiones en activos fijos -Equipo de transporte,firma,0,75.04
+leasing_edificios_c7c2r19,C7C2R19,Leasing Financiero - Edificios y estructuras,firma,0,98
+leasing_informatica_c7c4r19,C7C4R19,Leasing Financiero -Equipo de informática y comunicación,firma,0,99.3
+leasing_maquinaria_c7c3r19,C7C3R19,Leasing Financiero - Maquinaria y equipo Industrial,firma,0,95.51
+leasing_oficina_c7c5r19,C7C5R19,Leasing Financiero -Equipos de oficina,firma,0,99.69
+leasing_terrenos_c7c1r19,C7C1R19,Leasing Financiero - Terrenos,firma,0,98.95
+leasing_total_c7c7r19,C7C7R19,Total Leasing Financiero,firma,0,92.6
+leasing_transporte_c7c6r19,C7C6R19,Leasing Financiero -Equipo de transporte,firma,0,97.46
+mantenimiento_administracion_c3r23c2,C3R23C2,"Mantenimiento, reparaciones, accesorios y repuestos consumidos - Administración",firma,0,14.23
+mantenimiento_produccion_c3r23c1,C3R23C1,"Mantenimiento, reparaciones, accesorios y repuestos consumidos - Producción",firma,0,5.66
+mantenimiento_total_c3r23c3,C3R23C3,"Total Mantenimiento, reparaciones, accesorios y repuestos consumidos",firma,0,2.23
+materia_prima_comprada_valorcom,VALORCOM,Valor de la materia prima comprada,firma,0,2.25
+materia_prima_importada_valorcx,VALORCX,Valor compras de materia prima en el exterior,firma,0,76.19
+materias_primas_fin_c6r1c3,C6R1C3,"Existencias Materias primas, materiales y empaques - al final del año actual",firma,0,19.12
+materias_primas_inicio_c6r1c1,C6R1C1,"Existencias Materias primas, materiales y empaques - al final del año anterior",firma,0,15.94
+mejoras_activos_c7c7r7,C7C7R7,Total  Valor causado por  mejoras y reformas a los activos,firma,0,90.17
+muestras_gratis_c3r13c3,C3R13C3,Total Muestras gratis,firma,0,84.64
+n_establecimientos,NA,Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,0
+obreros_permanentes,"suma(C4R2C1,C4R2C2)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,17.51
+obreros_total,"suma(C4R2C1,C4R2C2,C4R3C1,C4R3C2,C4R4C1,C4R4C2,C4R6OM,C4R6OH)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,2.97
+otros_costos_c3r27c3,C3R27C3,Total Otros costos y gastos no incluidos antes,firma,0,20.42
+otros_gastos_consin,CONSIN,Otros Gastos,firma,0,0.02
+otros_gastos_personal_administrativos_c3r9c2,C3R9C2,Otros gastos del personal no incluidos antes  - Administrativos,firma,0,20.4
+otros_gastos_personal_obreros_c3r9c1,C3R9C1,Otros gastos del personal no incluidos antes  - Producción  - Obreros,firma,0,18.12
+otros_gastos_personal_profesionales_c3r9pt,C3R9PT,Otros gastos del personal no incluidos antes  - Producción  - Profesional Tecnól,firma,0,49.21
+otros_gastos_personal_total_c3r9c3,C3R9C3,Total  Otros gastos del personal no incluidos antes,firma,0,14.27
+personal_hombres_c4r4c10t,C4R4C10T,Total Personal Ocupado Hombre,firma,0,0.73
+personal_mujeres_c4r4c9t,C4R4C9T,Total Personal Ocupado Mujer,firma,0,1.88
+personal_permanente_persocu,PERSOCU,Personal Permanente,firma,0,7.16
+personal_permanente_propietarios_persoesc,PERSOESC,Personal Permanente + Propietarios,firma,0,6.4
+personal_permanente_temporal_pperytem,PPERYTEM,Personal Permanente + Temporal Directo,firma,0,0.42
+personal_temporal_directo_pertem3,PERTEM3,Personal Temporal Directo,firma,0,55.43
+personal_total_pertotal,PERTOTAL,Personal Permanente + Propietarios + Personal Temporal Directo + Temporal Empres,firma,0,0.03
+porcentaje_exportado_porcvt,PORCVT,Porcentaje vendido al exterior,firma,0.02,66.19
+porcentaje_insumos_importados_porcon,PORCON,Porcentaje consumo origen extranjero,firma,100,NA
+predial_vehiculos_c3r38c3,C3R38C3,Total Impuesto predial y sobre vehículos,firma,0,30.76
+prestaciones_aprendices_perapren,PERAPREN,Prestaciones del personal aprendiz,firma,0,42.5
+prestaciones_permanente_temporal_prespyte,PRESPYTE,Prestaciones de Permanente y Temporal Directo,firma,0,0.5
+prestaciones_permanentes_administrativos_c3r3c2,C3R3C2,Prestaciones sociales del personal permanente - Administrativos,firma,0,10.83
+prestaciones_permanentes_obreros_c3r3c1,C3R3C1,Prestaciones sociales del personal permanente - Producción  - Obreros,firma,0,17.43
+prestaciones_permanentes_pressper,PRESSPER,Prestaciones de Permanente,firma,0,7.11
+prestaciones_permanentes_profesionales_c3r3pt,C3R3PT,Prestaciones sociales del personal permanente - Producción  - Profesional Tecnól,firma,0,41.53
+prestaciones_permanentes_total_c3r3c3,C3R3C3,Total  Prestaciones sociales del personal permanente,firma,0,7.11
+produccion_bruta_prodbr2,PRODBR2,Producción Bruta,firma,0,0
+produccion_industrial_prodbind,PRODBIND,Producción Industrial,firma,0,0
+productos_proceso_fin_c6r2c3,C6R2C3,Existencias Productos en proceso - al final del año actual,firma,0,53.83
+productos_proceso_inicio_c6r2c1,C6R2C1,Existencias Productos en proceso - al final del año anterior,firma,0,52.18
+productos_terminados_fin_c6r3c3,C6R3C3,Existencias  Productos terminados  - al final del año actual,firma,0,33.04
+productos_terminados_inicio_c6r3c1,C6R3C1,Existencias  Productos terminados  - al final del año anterior,firma,0,30.1
+profesionales_permanentes,"suma(C4R1C3N,C4R1C4N,C4R2C3E,C4R2C4E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,42.76
+profesionales_total,suma(16 columnas C4R1/C4R2 profesional-tecnico),Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,34.85
+propietarios,"suma(C4R1C1,C4R1C2,C4R1C3,C4R1C4,C4R1C1N,C4R1C2N,C4R2C1E,C4R2C2E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,94.99
+provisiones_c3r26c3,C3R26C3,"Total Gastos para provisión de cartera, inventarios y otros",firma,0,64.57
+publicidad_c3r22c3,C3R22C3,Total Propaganda y publicidad,firma,0,33.22
+remuneracion_temporales_remutemp,REMUTEMP,Remuneración empelados temporales,firma,0,55.22
+retiros_edificios_c7c2r11,C7C2R11,Retiros  causados - Edificios y estructuras,firma,0,93.78
+retiros_informatica_c7c4r11,C7C4R11,Retiros  causados -Equipo de informática y comunicación,firma,0,86.05
+retiros_maquinaria_c7c3r11,C7C3R11,Retiros  causados - Maquinaria y equipo Industrial,firma,0,81.1
+retiros_oficina_c7c5r11,C7C5R11,Retiros  causados -Equipos de oficina,firma,0,87.89
+retiros_total_c7c7r11,C7C7R11,Total Retiros  causados,firma,0,74.96
+retiros_transporte_c7c6r11,C7C6R11,Retiros  causados -Equipo de transporte,firma,0,89.41
+salario_integral_administrativos_c3r1c2,C3R1C2,Salario Integral para el personal permanente -  Administrativos,firma,100,NA
+salario_integral_obreros_c3r1c1,C3R1C1,Salario Integral para el personal permanente -  Producción - Obreros,firma,100,NA
+salario_integral_profesionales_c3r1pt,C3R1PT,Salario Integral para el personal permanente -  Producción - Profesional Tecnól,firma,100,NA
+salario_integral_total_c3r1c3,C3R1C3,Total Salario Integral para el personal permanente,firma,100,NA
+salario_permanente_temporal_salpeyte,SALPEYTE,Salario Personal Permanente y Temporal,firma,0,0.52
+salario_permanentes_salarper,SALARPER,Salario de Permanentes,firma,0,7.13
+salarios_aprendices_salapren,SALAPREN,Salarios del personal aprendiz,firma,0,41.38
+seguros_c3r18c3,C3R18C3,Total Seguros,firma,0,22.99
+seguros_vida_voluntarios_administrativos_c3r7c2,C3R7C2,Aportes voluntarios a compañías de seguros de vida que ampara al personal ocupad,firma,0,89.8
+seguros_vida_voluntarios_obreros_c3r7c1,C3R7C1,Aportes voluntarios a compañías de seguros de vida que ampara al personal ocupad,firma,0,91.46
+seguros_vida_voluntarios_profesionales_c3r7pt,C3R7PT,Aportes voluntarios a compañías de seguros de vida que ampara al personal ocupad,firma,0,92.58
+seguros_vida_voluntarios_total_c3r7c3,C3R7C3,Total  Aportes voluntarios a compañías de seguros de vida que ampara al personal,firma,0,88.49
+sueldos_permanentes_administrativos_c3r2c2,C3R2C2,Sueldos y salarios del personal permanente -  Administrativos,firma,0,10.85
+sueldos_permanentes_obreros_c3r2c1,C3R2C1,Sueldos y salarios del personal permanente -  Producción - Obreros,firma,0,17.43
+sueldos_permanentes_profesionales_c3r2pt,C3R2PT,Sueldos y salarios del personal permanente -  Producción - Profesional Tecnólogo,firma,0,41.55
+sueldos_permanentes_total_c3r2c3,C3R2C3,Total Sueldos y salarios del personal permanente,firma,0,7.13
+sueldos_temporal_directo_administrativos_c3r4c2,C3R4C2,"Sueldos, salarios y prestaciones sociales del personal contratado directamente",firma,0,64.92
+sueldos_temporal_directo_obreros_c3r4c1,C3R4C1,"Sueldos, salarios y prestaciones sociales del personal contratado directamente",firma,0,57.86
+sueldos_temporal_directo_profesionales_c3r4pt,C3R4PT,"Sueldos, salarios y prestaciones sociales del personal contratado directamente",firma,0,76.27
+sueldos_temporal_directo_total_c3r4c3,C3R4C3,"Total  Sueldos, salarios y prestaciones sociales del personal contratado directa",firma,0,55.22
+temporal_agencias,"suma(C4R4C1,C4R4C2,C4R4C3,C4R4C4,C4R1C7N,C4R1C8N,C4R2C7E,C4R2C8E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,67.46
+temporal_directo,"suma(C4R3C1,C4R3C2,C4R3C3,C4R3C4,C4R1C5N,C4R1C6N,C4R2C5E,C4R2C6E)",Variable construida (suma de un grupo de columnas C4R) -- ver comentario en ampliar_variables_paneles.R,firma,0,55.43
+terceros_administracion_c3r41c2,C3R41C2,Costos y gastos por servicios contratados con terceros (outsoursing)-  Administr,firma,0,79.6
+terceros_industriales_produccion_c3r14c1,C3R14C1,Costos y gastos de productos y servicios industriales elaborados por terceros -,firma,0,59.65
+terceros_industriales_total_c3r14c3,C3R14C3,Total Costos y gastos de productos y servicios industriales elaborados por terce,firma,0,59.65
+terceros_produccion_c3r41c1,C3R41C1,Costos y gastos por servicios contratados con terceros (outsoursing)- Producción,firma,0,79.05
+terceros_total_c3r41c3,C3R41C3,Total Costos y gastos por servicios contratados con terceros (outsoursing),firma,0,72.39
+transporte_materias_primas_c3r42c3,C3R42C3,Total Costos y gastos de transporte de materias primas,firma,0,49.4
+transporte_productos_c3r45c3,C3R45C3,Total Costos y gastos de transporte de productos,firma,0,31.51
+valor_agregado_valagri,VALAGRI,Valor Agregado,firma,0,0
+valor_energeticos_totalv,TOTALV,Valor total Energéticos,firma,0.11,43.34
+valor_energia_comprada_c3r19c3,C3R19C3,Valor Energía comprada,firma,0,0.29
+valor_libros_fin_c7r10c6,C7R10C6,Total Valor en libros del año actual,firma,0,0.76
+valor_libros_inicio_c7r10c1,C7R10C1,Total Valor en libros del año anterior,firma,0,0.45
+valor_libros_maquinaria_c7r6c6,C7R6C6,Valor en libros del año actual - Maquinaria y equipo Industrial,firma,0,2.3
+valor_ventas_valorven,VALORVEN,Valor de las ventas,firma,0,0.02
+valorizaciones_c7r10c4,C7R10C4,Total Valorización  causadas en el año,firma,0,90.54
