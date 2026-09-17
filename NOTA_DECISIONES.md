@@ -30,6 +30,16 @@ Contenido del bloque 4.6:
 
 Estas reglas no se revisan según los resultados de empleo.
 
+## 2026-09-16 — Precisión operativa (antes de correr 4.6)
+
+- Medida evaluada: Kaitz 2019 en la muestra amplia (todas las firmas con esa medida). La muestra de 4.650 firmas con Kaitz 2019, 2021 y 2022 es chequeo de consistencia.
+- Primer eslabón: contraste de la sección 4.3, b_2023 − (b_2019 − b_2016)/3, controles 2022. Pasa si p < 0,05 **y** el signo es positivo.
+- Empleo total, especificación principal: promedio de coeficientes 2023–2024 menos promedio de 2015–2019, 2021 y 2022 (2022 = 0 por ser referencia). Robustez: el mismo contraste excluyendo 2022.
+- "Robusto entre niveles y logaritmo": mismo signo y p < 0,05 en ambos.
+- Si el primer eslabón de Kaitz 2019 falla, la clasificación del empleo se hace con Kaitz 2022 en la muestra amplia.
+- Efecto mínimo detectable: 80% de potencia, prueba bilateral al 5%.
+- Nota: la cifra de "−2,0 a −2,7 trabajadores" del commit del bloque 4.4 excluía 2022 del promedio pre; corresponde a la versión de robustez, no a la principal.
+
 ## Pendientes conocidos
 
 - Sección 6 (Robustez) no corrida con el script corregido; `4. RESULTADOS/Robustez/tabla_robustez_escrutinio.docx` corresponde al script anterior y no debe citarse.
