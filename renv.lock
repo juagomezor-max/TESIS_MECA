@@ -9,6 +9,71 @@
     ]
   },
   "Packages": {
+    "CVXR": {
+      "Package": "CVXR",
+      "Version": "1.9.2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Disciplined Convex Optimization",
+      "Date": "2026-08-23",
+      "Authors@R": "c( person(\"Anqi\", \"Fu\", role = c(\"aut\", \"cre\"), email = \"anqif@alumni.stanford.edu\"), person(\"Balasubramanian\", \"Narasimhan\", role = c(\"aut\"), email = \"naras@stat.stanford.edu\"), person(\"Steven\", \"Diamond\", role = c(\"aut\")), person(\"John\", \"Miller\", role = c(\"aut\")), person(\"Stephen\", \"Boyd\", role = c(\"ctb\"), email = \"boyd@stanford.edu\") )",
+      "URL": "https://cvxr.rbind.io, https://www.cvxgrp.org/CVXR/",
+      "BugReports": "https://github.com/cvxgrp/CVXR/issues",
+      "Description": "An object-oriented modeling language for disciplined convex programming (DCP) as described in Fu, Narasimhan, and Boyd (2020, <doi:10.18637/jss.v094.i14>). It allows the user to formulate convex optimization problems in a natural way following mathematical convention and DCP rules. The system analyzes the problem, verifies its convexity, converts it into a canonical form, and hands it off to an appropriate solver to obtain the solution. This version uses the S7 object system for improved performance and maintainability.",
+      "Depends": [
+        "R (>= 4.3.0)"
+      ],
+      "Imports": [
+        "S7 (>= 0.2)",
+        "methods",
+        "Matrix (>= 1.7)",
+        "Rcpp (>= 1.1)",
+        "clarabel (>= 0.11)",
+        "cli (>= 3.6)",
+        "gmp (>= 0.7)",
+        "highs (>= 1.14)",
+        "osqp (>= 1.0)",
+        "scs (>= 3.2)",
+        "slam (>= 0.1)"
+      ],
+      "Suggests": [
+        "jsonlite (>= 1.9)",
+        "knitr",
+        "rmarkdown",
+        "testthat (>= 3.3)",
+        "rlang"
+      ],
+      "Enhances": [
+        "Rmosek",
+        "gurobi (>= 13.0)",
+        "Rglpk (>= 0.6)",
+        "ECOSolveR (>= 0.6)",
+        "Rcplex (>= 0.3)",
+        "cccp (>= 0.3)",
+        "piqp (>= 0.6)",
+        "scip",
+        "xpress",
+        "diffcp (>= 0.1.2)",
+        "ipopt",
+        "sparsediff",
+        "Uno"
+      ],
+      "Additional_repositories": "https://bnaras.r-universe.dev, https://bnaras.github.io/drat",
+      "LinkingTo": [
+        "Rcpp",
+        "RcppEigen"
+      ],
+      "License": "Apache License 2.0 | file LICENSE",
+      "LazyData": "true",
+      "Encoding": "UTF-8",
+      "VignetteBuilder": "knitr",
+      "Config/testthat/edition": "3",
+      "Config/roxygen2/version": "8.1.0",
+      "NeedsCompilation": "yes",
+      "Author": "Anqi Fu [aut, cre], Balasubramanian Narasimhan [aut], Steven Diamond [aut], John Miller [aut], Stephen Boyd [ctb]",
+      "Maintainer": "Anqi Fu <anqif@alumni.stanford.edu>",
+      "Repository": "CRAN"
+    },
     "DBI": {
       "Package": "DBI",
       "Version": "1.3.0",
@@ -61,6 +126,39 @@
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
       "Repository": "CRAN"
     },
+    "ECOSolveR": {
+      "Package": "ECOSolveR",
+      "Version": "0.6.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Embedded Conic Solver in R",
+      "Date": "2026-02-18",
+      "VignetteBuilder": "knitr",
+      "Authors@R": "c(person(\"Anqi\", \"Fu\", role = c(\"aut\"), email = \"anqi.fu.1987@gmail.com\"), person(\"Balasubramanian\", \"Narasimhan\", role = c(\"aut\", \"cre\"), email = \"naras@stat.Stanford.EDU\"), person(\"Florian\", \"Schwendinger\", role = c(\"ctb\"), email = \"FlorianSchwendinger@gmx.at\"), person(\"Martin\", \"Maechler\", role = \"ctb\", email = \"maechler@stat.math.ethz.ch\") )",
+      "SystemRequirements": "GNU make",
+      "URL": "https://bnaras.github.io/ECOSolveR/",
+      "BugReports": "https://github.com/bnaras/ECOSolveR/issues",
+      "Imports": [
+        "cli",
+        "methods"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "testthat",
+        "Matrix",
+        "covr",
+        "slam"
+      ],
+      "Description": "R interface to the Embedded COnic Solver (ECOS), an efficient and robust C library for convex problems. Conic and equality constraints can be specified in addition to integer and boolean variable constraints for mixed-integer problems. This R interface is inspired by the python interface and has similar calling conventions.",
+      "License": "GPL (>= 3)",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "yes",
+      "Author": "Anqi Fu [aut], Balasubramanian Narasimhan [aut, cre], Florian Schwendinger [ctb], Martin Maechler [ctb]",
+      "Maintainer": "Balasubramanian Narasimhan <naras@stat.Stanford.EDU>",
+      "Repository": "CRAN"
+    },
     "Formula": {
       "Package": "Formula",
       "Version": "1.2-6",
@@ -84,6 +182,96 @@
       "NeedsCompilation": "no",
       "Author": "Achim Zeileis [aut, cre] (ORCID: <https://orcid.org/0000-0003-0918-3766>), Yves Croissant [aut] (ORCID: <https://orcid.org/0000-0002-4857-7736>)",
       "Maintainer": "Achim Zeileis <Achim.Zeileis@R-project.org>",
+      "Repository": "CRAN"
+    },
+    "HonestDiD": {
+      "Package": "HonestDiD",
+      "Version": "0.2.8",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Robust Inference in Difference-in-Differences and Event Study Designs",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "Imports": [
+        "stats",
+        "rlang",
+        "foreach (>= 1.4.7)",
+        "matrixStats (>= 0.63.0)",
+        "CVXR (>= 1.8)",
+        "ECOSolveR",
+        "latex2exp (>= 0.4.0)",
+        "lpSolveAPI (>= 5.5.2.0-17)",
+        "Matrix (>= 1.2-17)",
+        "pracma (>= 2.2.5)",
+        "purrr (>= 0.3.4)",
+        "tibble (>= 1.3.4)",
+        "dplyr (>= 0.7.4)",
+        "ggplot2 (>= 2.2.1)",
+        "Rglpk (>= 0.6-4)",
+        "mvtnorm (>= 1.1-3)",
+        "TruncatedNormal (>= 1.0)"
+      ],
+      "Suggests": [
+        "knitr",
+        "testthat",
+        "haven",
+        "lfe",
+        "rmarkdown"
+      ],
+      "Authors@R": "c(person(given = \"Ashesh\", family = \"Rambachan\", role = c(\"aut\", \"cph\", \"cre\"), email = \"ashesh.a.rambachan@gmail.com\"), person(given = \"Jonathan\", family = \"Roth\", role = c(\"aut\", \"cph\"), email = \"jonathan_roth@brown.edu\"))",
+      "Description": "Provides functions to conduct robust inference in difference-in-differences and event study designs by implementing the methods developed in Rambachan & Roth (2023) <doi:10.1093/restud/rdad018>, \"A More Credible Approach to Parallel Trends\" [Previously titled \"An Honest Approach...\"]. Inference is conducted under a weaker version of the parallel trends assumption. Uniformly valid confidence sets are constructed based upon conditional confidence sets, fixed-length confidence sets and hybridized confidence sets.",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "License": "MIT + file LICENSE",
+      "NeedsCompilation": "no",
+      "Author": "Ashesh Rambachan [aut, cph, cre], Jonathan Roth [aut, cph]",
+      "Maintainer": "Ashesh Rambachan <ashesh.a.rambachan@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "Matrix": {
+      "Package": "Matrix",
+      "Version": "1.7-4",
+      "Source": "Repository",
+      "VersionNote": "do also bump src/version.h, inst/include/Matrix/version.h",
+      "Date": "2025-08-27",
+      "Priority": "recommended",
+      "Title": "Sparse and Dense Matrix Classes and Methods",
+      "Description": "A rich hierarchy of sparse and dense matrix classes, including general, symmetric, triangular, and diagonal matrices with numeric, logical, or pattern entries.  Efficient methods for operating on such matrices, often wrapping the 'BLAS', 'LAPACK', and 'SuiteSparse' libraries.",
+      "License": "GPL (>= 2) | file LICENCE",
+      "URL": "https://Matrix.R-forge.R-project.org",
+      "BugReports": "https://R-forge.R-project.org/tracker/?atid=294&group_id=61",
+      "Contact": "Matrix-authors@R-project.org",
+      "Authors@R": "c(person(\"Douglas\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Martin\", \"Maechler\", role = c(\"aut\", \"cre\"), email = \"mmaechler+Matrix@gmail.com\", comment = c(ORCID = \"0000-0002-8685-9910\")), person(\"Mikael\", \"Jagan\", role = \"aut\", comment = c(ORCID = \"0000-0002-3542-2938\")), person(\"Timothy A.\", \"Davis\", role = \"ctb\", comment = c(ORCID = \"0000-0001-7614-6899\", \"SuiteSparse libraries\", \"collaborators listed in dir(system.file(\\\"doc\\\", \\\"SuiteSparse\\\", package=\\\"Matrix\\\"), pattern=\\\"License\\\", full.names=TRUE, recursive=TRUE)\")), person(\"George\", \"Karypis\", role = \"ctb\", comment = c(ORCID = \"0000-0003-2753-1437\", \"METIS library\", \"Copyright: Regents of the University of Minnesota\")), person(\"Jason\", \"Riedy\", role = \"ctb\", comment = c(ORCID = \"0000-0002-4345-4200\", \"GNU Octave's condest() and onenormest()\", \"Copyright: Regents of the University of California\")), person(\"Jens\", \"Oehlschlägel\", role = \"ctb\", comment = \"initial nearPD()\"), person(\"R Core Team\", role = \"ctb\", comment = c(ROR = \"02zz1nj61\", \"base R's matrix implementation\")))",
+      "Depends": [
+        "R (>= 4.4)",
+        "methods"
+      ],
+      "Imports": [
+        "grDevices",
+        "graphics",
+        "grid",
+        "lattice",
+        "stats",
+        "utils"
+      ],
+      "Suggests": [
+        "MASS",
+        "datasets",
+        "sfsmisc",
+        "tools"
+      ],
+      "Enhances": [
+        "SparseM",
+        "graph"
+      ],
+      "LazyData": "no",
+      "LazyDataNote": "not possible, since we use data/*.R and our S4 classes",
+      "BuildResaveData": "no",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "yes",
+      "Author": "Douglas Bates [aut] (ORCID: <https://orcid.org/0000-0001-8316-9503>), Martin Maechler [aut, cre] (ORCID: <https://orcid.org/0000-0002-8685-9910>), Mikael Jagan [aut] (ORCID: <https://orcid.org/0000-0002-3542-2938>), Timothy A. Davis [ctb] (ORCID: <https://orcid.org/0000-0001-7614-6899>, SuiteSparse libraries, collaborators listed in dir(system.file(\"doc\", \"SuiteSparse\", package=\"Matrix\"), pattern=\"License\", full.names=TRUE, recursive=TRUE)), George Karypis [ctb] (ORCID: <https://orcid.org/0000-0003-2753-1437>, METIS library, Copyright: Regents of the University of Minnesota), Jason Riedy [ctb] (ORCID: <https://orcid.org/0000-0002-4345-4200>, GNU Octave's condest() and onenormest(), Copyright: Regents of the University of California), Jens Oehlschlägel [ctb] (initial nearPD()), R Core Team [ctb] (ROR: <https://ror.org/02zz1nj61>, base R's matrix implementation)",
+      "Maintainer": "Martin Maechler <mmaechler+Matrix@gmail.com>",
       "Repository": "CRAN"
     },
     "R6": {
@@ -161,6 +349,101 @@
       "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
       "Repository": "CRAN"
     },
+    "RcppArmadillo": {
+      "Package": "RcppArmadillo",
+      "Version": "15.6.0-1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'Rcpp' Integration for the 'Armadillo' Templated Linear Algebra Library",
+      "Date": "2026-09-07",
+      "Authors@R": "c(person(\"Dirk\", \"Eddelbuettel\", role = c(\"aut\", \"cre\"), email = \"edd@debian.org\", comment = c(ORCID = \"0000-0001-6419-907X\")), person(\"Romain\", \"Francois\", role = \"aut\", comment = c(ORCID = \"0000-0002-2444-4226\")), person(\"Doug\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Binxiang\", \"Ni\", role = \"aut\"), person(\"Conrad\", \"Sanderson\", role = \"aut\", comment = c(ORCID = \"0000-0002-0049-4501\")))",
+      "Description": "'Armadillo' is a templated C++ linear algebra library aiming towards a good balance between speed and ease of use. It provides high-level syntax and functionality deliberately similar to Matlab. It is useful for algorithm development directly in C++, or quick conversion of research code into production environments. It provides efficient classes for vectors, matrices and cubes where dense and sparse matrices are supported. Integer, floating point and complex numbers are supported. A sophisticated expression evaluator (based on template meta-programming) automatically combines several operations to increase speed and efficiency. Dynamic evaluation automatically chooses optimal code paths based on detected matrix structures. Matrix decompositions are provided through integration with LAPACK, or one of its high performance drop-in replacements (such as 'MKL' or 'OpenBLAS'). It can automatically use 'OpenMP' multi-threading (parallelisation) to speed up computationally expensive operations. . The 'RcppArmadillo' package includes the header files from the 'Armadillo' library; users do not need to install 'Armadillo' itself in order to use 'RcppArmadillo'. Starting from release 15.0.0, the minimum compilation standard is C++14. . Since release 7.800.0, 'Armadillo' is licensed under Apache License 2; previous releases were under licensed as MPL 2.0 from version 3.800.0 onwards and LGPL-3 prior to that; 'RcppArmadillo' (the 'Rcpp' bindings/bridge to Armadillo) is licensed under the GNU GPL version 2 or later, as is the rest of 'Rcpp'.",
+      "License": "GPL (>= 2)",
+      "LazyLoad": "yes",
+      "Depends": [
+        "R (>= 3.3.0)"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Imports": [
+        "Rcpp (>= 1.1.1)",
+        "stats",
+        "utils",
+        "methods"
+      ],
+      "Suggests": [
+        "tinytest",
+        "Matrix (>= 1.3.0)",
+        "pkgKitten",
+        "reticulate",
+        "slam"
+      ],
+      "URL": "https://github.com/RcppCore/RcppArmadillo, https://dirk.eddelbuettel.com/code/rcpp.armadillo.html",
+      "BugReports": "https://github.com/RcppCore/RcppArmadillo/issues",
+      "RoxygenNote": "6.0.1",
+      "Encoding": "UTF-8",
+      "VignetteBuilder": "Rcpp",
+      "NeedsCompilation": "yes",
+      "Author": "Dirk Eddelbuettel [aut, cre] (ORCID: <https://orcid.org/0000-0001-6419-907X>), Romain Francois [aut] (ORCID: <https://orcid.org/0000-0002-2444-4226>), Doug Bates [aut] (ORCID: <https://orcid.org/0000-0001-8316-9503>), Binxiang Ni [aut], Conrad Sanderson [aut] (ORCID: <https://orcid.org/0000-0002-0049-4501>)",
+      "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
+    "RcppEigen": {
+      "Package": "RcppEigen",
+      "Version": "0.3.4.0.2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'Rcpp' Integration for the 'Eigen' Templated Linear Algebra Library",
+      "Date": "2024-08-23",
+      "Authors@R": "c(person(\"Doug\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Dirk\", \"Eddelbuettel\", role = c(\"aut\", \"cre\"), email = \"edd@debian.org\", comment = c(ORCID = \"0000-0001-6419-907X\")), person(\"Romain\", \"Francois\", role = \"aut\", comment = c(ORCID = \"0000-0002-2444-4226\")), person(\"Yixuan\", \"Qiu\", role = \"aut\", comment = c(ORCID = \"0000-0003-0109-6692\")), person(\"Authors of\", \"Eigen\", role = \"cph\", comment = \"Authorship and copyright in included Eigen library as detailed in inst/COPYRIGHTS\"))",
+      "Copyright": "See the file COPYRIGHTS for various Eigen copyright details",
+      "Description": "R and 'Eigen' integration using 'Rcpp'. 'Eigen' is a C++ template library for linear algebra: matrices, vectors, numerical solvers and related algorithms.  It supports dense and sparse matrices on integer, floating point and complex numbers, decompositions of such matrices, and solutions of linear systems. Its performance on many algorithms is comparable with some of the best implementations based on 'Lapack' and level-3 'BLAS'. The 'RcppEigen' package includes the header files from the 'Eigen' C++ template library. Thus users do not need to install 'Eigen' itself in order to use 'RcppEigen'. Since version 3.1.1, 'Eigen' is licensed under the Mozilla Public License (version 2); earlier version were licensed under the GNU LGPL version 3 or later. 'RcppEigen' (the 'Rcpp' bindings/bridge to 'Eigen') is licensed under the GNU GPL version 2 or later, as is the rest of 'Rcpp'.",
+      "License": "GPL (>= 2) | file LICENSE",
+      "LazyLoad": "yes",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Imports": [
+        "Rcpp (>= 0.11.0)",
+        "stats",
+        "utils"
+      ],
+      "Suggests": [
+        "Matrix",
+        "inline",
+        "tinytest",
+        "pkgKitten",
+        "microbenchmark"
+      ],
+      "URL": "https://github.com/RcppCore/RcppEigen, https://dirk.eddelbuettel.com/code/rcpp.eigen.html",
+      "BugReports": "https://github.com/RcppCore/RcppEigen/issues",
+      "NeedsCompilation": "yes",
+      "Author": "Doug Bates [aut] (<https://orcid.org/0000-0001-8316-9503>), Dirk Eddelbuettel [aut, cre] (<https://orcid.org/0000-0001-6419-907X>), Romain Francois [aut] (<https://orcid.org/0000-0002-2444-4226>), Yixuan Qiu [aut] (<https://orcid.org/0000-0003-0109-6692>), Authors of Eigen [cph] (Authorship and copyright in included Eigen library as detailed in inst/COPYRIGHTS)",
+      "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
+    "Rglpk": {
+      "Package": "Rglpk",
+      "Version": "0.6-5.1",
+      "Source": "Repository",
+      "Title": "R/GNU Linear Programming Kit Interface",
+      "Description": "R interface to the GNU Linear Programming Kit. 'GLPK' is open source software for solving large-scale linear programming (LP), mixed integer linear programming ('MILP') and other related problems.",
+      "Authors@R": "c(person(\"Stefan\", \"Theussl\", role = c(\"aut\", \"cre\"), email = \"Stefan.Theussl@R-project.org\", comment = c(ORCID = \"0000-0002-6523-4620\")), person(\"Kurt\", \"Hornik\", role = \"aut\", comment = c(ORCID = \"0000-0003-4198-9911\")), person(\"Christian\", \"Buchta\", role = \"ctb\"), person(\"Florian\", \"Schwendinger\", role = \"ctb\", comment = c(ORCID = \"0000-0002-3983-9773\")), person(\"Heinrich\", \"Schuchardt\", role = \"ctb\"))",
+      "Depends": [
+        "slam (>= 0.1-9)"
+      ],
+      "SystemRequirements": "GLPK library package (e.g., libglpk-dev on Debian/Ubuntu)",
+      "License": "GPL-2 | GPL-3",
+      "URL": "https://R-Forge.R-project.org/projects/rglp/, https://www.gnu.org/software/glpk/",
+      "NeedsCompilation": "yes",
+      "Author": "Stefan Theussl [aut, cre] (<https://orcid.org/0000-0002-6523-4620>), Kurt Hornik [aut] (<https://orcid.org/0000-0003-4198-9911>), Christian Buchta [ctb], Florian Schwendinger [ctb] (<https://orcid.org/0000-0002-3983-9773>), Heinrich Schuchardt [ctb]",
+      "Maintainer": "Stefan Theussl <Stefan.Theussl@R-project.org>",
+      "Repository": "CRAN"
+    },
     "S7": {
       "Package": "S7",
       "Version": "0.2.1",
@@ -199,6 +482,65 @@
       "Author": "Object-Oriented Programming Working Group [cph], Davis Vaughan [aut], Jim Hester [aut] (ORCID: <https://orcid.org/0000-0002-2739-7082>), Tomasz Kalinowski [aut], Will Landau [aut], Michael Lawrence [aut], Martin Maechler [aut] (ORCID: <https://orcid.org/0000-0002-8685-9910>), Luke Tierney [aut], Hadley Wickham [aut, cre] (ORCID: <https://orcid.org/0000-0003-4757-117X>)",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "CRAN"
+    },
+    "TruncatedNormal": {
+      "Package": "TruncatedNormal",
+      "Version": "2.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Truncated Multivariate Normal and Student Distributions",
+      "Authors@R": "c(person(given=\"Zdravko\", family=\"Botev\", role = \"aut\", email = \"botev@unsw.edu.au\", comment = c(ORCID = \"0000-0001-9054-3452\")), person(given=\"Leo\", family=\"Belzile\", role = c(\"aut\", \"cre\"), email = \"belzilel@gmail.com\", comment = c(ORCID = \"0000-0002-9135-014X\")))",
+      "Description": "A collection of functions to deal with the truncated univariate and multivariate normal and Student distributions, described in Botev (2017) <doi:10.1111/rssb.12162> and Botev and L'Ecuyer (2015) <doi:10.1109/WSC.2015.7408180>.",
+      "License": "GPL-3",
+      "BugReports": "https://github.com/lbelzile/TruncatedNormal/issues",
+      "Depends": [
+        "R (>= 2.10)"
+      ],
+      "Imports": [
+        "nleqslv",
+        "qrng",
+        "spacefillr",
+        "alabama",
+        "Rcpp (>= 0.12.16)"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo"
+      ],
+      "RoxygenNote": "7.3.2",
+      "VignetteBuilder": "knitr",
+      "Encoding": "UTF-8",
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "mvtnorm",
+        "carData",
+        "tinytest"
+      ],
+      "NeedsCompilation": "yes",
+      "Author": "Zdravko Botev [aut] (<https://orcid.org/0000-0001-9054-3452>), Leo Belzile [aut, cre] (<https://orcid.org/0000-0002-9135-014X>)",
+      "Maintainer": "Leo Belzile <belzilel@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "alabama": {
+      "Package": "alabama",
+      "Version": "2025.1.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Constrained Nonlinear Optimization",
+      "Description": "Augmented Lagrangian Adaptive Barrier Minimization Algorithm for optimizing smooth nonlinear objective functions with constraints. Linear or nonlinear equality and inequality constraints are allowed.",
+      "Depends": [
+        "R (>= 4.0)",
+        "numDeriv"
+      ],
+      "Date": "2025-12-29",
+      "Authors@R": "person(given = \"Ravi\", family = \"Varadhan\", role = c(\"aut\", \"cre\"), email = \"ravi.varadhan@jhu.edu\", comment = \"with contributions from Gabor Grothendieck\")",
+      "Maintainer": "Ravi Varadhan <ravi.varadhan@jhu.edu>",
+      "License": "GPL (>= 2)",
+      "LazyLoad": "yes",
+      "Repository": "CRAN",
+      "NeedsCompilation": "no",
+      "Author": "Ravi Varadhan [aut, cre] (with contributions from Gabor Grothendieck)"
     },
     "askpass": {
       "Package": "askpass",
@@ -646,6 +988,79 @@
       "Maintainer": "Jennifer Bryan <jenny@stat.ubc.ca>",
       "Repository": "CRAN"
     },
+    "checkmate": {
+      "Package": "checkmate",
+      "Version": "2.3.4",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Fast and Versatile Argument Checks",
+      "Description": "Tests and assertions to perform frequent argument checks. A substantial part of the package was written in C to minimize any worries about execution time overhead.",
+      "Authors@R": "c( person(\"Michel\", \"Lang\", NULL, \"michellang@gmail.com\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0001-9754-0393\")), person(\"Bernd\", \"Bischl\", NULL, \"bernd_bischl@gmx.net\", role = \"ctb\"), person(\"Dénes\", \"Tóth\", NULL, \"toth.denes@kogentum.hu\", role = \"ctb\", comment = c(ORCID = \"0000-0003-4262-3217\")) )",
+      "URL": "https://mllg.github.io/checkmate/, https://github.com/mllg/checkmate",
+      "URLNote": "https://github.com/mllg/checkmate",
+      "BugReports": "https://github.com/mllg/checkmate/issues",
+      "NeedsCompilation": "yes",
+      "ByteCompile": "yes",
+      "Encoding": "UTF-8",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Imports": [
+        "backports (>= 1.1.0)",
+        "utils"
+      ],
+      "Suggests": [
+        "R6",
+        "fastmatch",
+        "data.table (>= 1.9.8)",
+        "devtools",
+        "ggplot2",
+        "knitr",
+        "magrittr",
+        "microbenchmark",
+        "rmarkdown",
+        "testthat (>= 3.0.4)",
+        "tinytest (>= 1.1.0)",
+        "tibble"
+      ],
+      "License": "BSD_3_clause + file LICENSE",
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.3.3",
+      "Collate": "'AssertCollection.R' 'allMissing.R' 'anyInfinite.R' 'anyMissing.R' 'anyNaN.R' 'asInteger.R' 'assert.R' 'helper.R' 'makeExpectation.R' 'makeTest.R' 'makeAssertion.R' 'checkAccess.R' 'checkArray.R' 'checkAtomic.R' 'checkAtomicVector.R' 'checkCharacter.R' 'checkChoice.R' 'checkClass.R' 'checkComplex.R' 'checkCount.R' 'checkDataFrame.R' 'checkDataTable.R' 'checkDate.R' 'checkDirectoryExists.R' 'checkDisjunct.R' 'checkDouble.R' 'checkEnvironment.R' 'checkFALSE.R' 'checkFactor.R' 'checkFileExists.R' 'checkFlag.R' 'checkFormula.R' 'checkFunction.R' 'checkInt.R' 'checkInteger.R' 'checkIntegerish.R' 'checkList.R' 'checkLogical.R' 'checkMatrix.R' 'checkMultiClass.R' 'checkNamed.R' 'checkNames.R' 'checkNull.R' 'checkNumber.R' 'checkNumeric.R' 'checkOS.R' 'checkPOSIXct.R' 'checkPathForOutput.R' 'checkPermutation.R' 'checkR6.R' 'checkRaw.R' 'checkScalar.R' 'checkScalarNA.R' 'checkSetEqual.R' 'checkString.R' 'checkSubset.R' 'checkTRUE.R' 'checkTibble.R' 'checkVector.R' 'coalesce.R' 'isIntegerish.R' 'matchArg.R' 'qassert.R' 'qassertr.R' 'vname.R' 'wfwl.R' 'zzz.R'",
+      "Author": "Michel Lang [cre, aut] (ORCID: <https://orcid.org/0000-0001-9754-0393>), Bernd Bischl [ctb], Dénes Tóth [ctb] (ORCID: <https://orcid.org/0000-0003-4262-3217>)",
+      "Maintainer": "Michel Lang <michellang@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "clarabel": {
+      "Package": "clarabel",
+      "Version": "0.11.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Interior Point Conic Optimization Solver",
+      "Authors@R": "c(person(\"Balasubramanian\", \"Narasimhan\", role = c(\"aut\", \"cre\"), email = \"naras@stanford.edu\"), person(\"Paul\", \"Goulart\", role = c(\"aut\", \"cph\")), person(\"Yuwen\", \"Chen\", role = c(\"aut\")), person(\"Hiroaki\", \"Yutani\", role = c(\"ctb\"), comment = \"For vendoring/Makefile hints/R scripts for generating crate authors/licenses\"), person(\"David\", \"Zimmermann-Kollenda\", role = c(\"ctb\"), comment = \"For configure scripts and tools/msvr.R lifted from rtiktoken package\"),  person(given = \"The authors of the dependency Rust crates\", role = c(\"ctb\"),\t comment = \"see inst/AUTHORS file for details\"))",
+      "Description": "A versatile interior point solver that solves linear programs (LPs), quadratic programs (QPs), second-order cone programs (SOCPs), semidefinite programs (SDPs), and problems with exponential and power cone constraints (<https://clarabel.org/stable/>). For quadratic objectives, unlike interior point solvers based on the standard homogeneous self-dual embedding (HSDE) model, Clarabel handles quadratic objective without requiring any epigraphical reformulation of its objective function. It can therefore be significantly faster than other HSDE-based solvers for problems with quadratic objective functions. Infeasible problems are detected using using a homogeneous embedding technique.",
+      "License": "Apache License (== 2.0)",
+      "Encoding": "UTF-8",
+      "URL": "https://oxfordcontrol.github.io/clarabel-r/",
+      "BugReports": "https://github.com/oxfordcontrol/clarabel-r/issues",
+      "Suggests": [
+        "knitr",
+        "Matrix",
+        "rmarkdown",
+        "tinytest"
+      ],
+      "VignetteBuilder": "knitr",
+      "SystemRequirements": "Cargo (Rust's package manager), rustc (>= 1.70.0), and GNU Make",
+      "Imports": [
+        "cli",
+        "methods"
+      ],
+      "Config/roxygen2/version": "8.0.0",
+      "NeedsCompilation": "yes",
+      "Author": "Balasubramanian Narasimhan [aut, cre], Paul Goulart [aut, cph], Yuwen Chen [aut], Hiroaki Yutani [ctb] (For vendoring/Makefile hints/R scripts for generating crate authors/licenses), David Zimmermann-Kollenda [ctb] (For configure scripts and tools/msvr.R lifted from rtiktoken package), The authors of the dependency Rust crates [ctb] (see inst/AUTHORS file for details)",
+      "Maintainer": "Balasubramanian Narasimhan <naras@stanford.edu>",
+      "Repository": "CRAN"
+    },
     "cli": {
       "Package": "cli",
       "Version": "3.6.6",
@@ -723,6 +1138,23 @@
       "NeedsCompilation": "no",
       "Author": "Matthew Lincoln [aut, cre] (<https://orcid.org/0000-0002-4387-3384>), Louis Maddox [ctb], Steve Simpson [ctb], Jennifer Bryan [ctb]",
       "Maintainer": "Matthew Lincoln <matthew.d.lincoln@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "codetools": {
+      "Package": "codetools",
+      "Version": "0.2-20",
+      "Source": "Repository",
+      "Priority": "recommended",
+      "Author": "Luke Tierney <luke-tierney@uiowa.edu>",
+      "Description": "Code analysis tools for R.",
+      "Title": "Code Analysis Tools for R",
+      "Depends": [
+        "R (>= 2.1)"
+      ],
+      "Maintainer": "Luke Tierney <luke-tierney@uiowa.edu>",
+      "URL": "https://gitlab.com/luke-tierney/codetools",
+      "License": "GPL",
+      "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
     "conflicted": {
@@ -1263,6 +1695,113 @@
       "Maintainer": "Laurent Berge <laurent.berge@u-bordeaux.fr>",
       "Repository": "CRAN"
     },
+    "flextable": {
+      "Package": "flextable",
+      "Version": "0.10.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Functions for Tabular Reporting",
+      "Authors@R": "c( person(\"David\", \"Gohel\", , \"david.gohel@ardata.fr\", role = c(\"aut\", \"cre\")), person(\"ArData\", role = \"cph\"), person(\"Clementine\", \"Jager\", role = \"ctb\"), person(\"Eli\", \"Daniels\", role = \"ctb\"), person(\"Panagiotis\", \"Skintzos\", , \"panagiotis.skintzos@ardata.fr\", role = \"aut\"), person(\"Quentin\", \"Fazilleau\", role = \"ctb\"), person(\"Maxim\", \"Nazarov\", role = \"ctb\"), person(\"Titouan\", \"Robert\", role = \"ctb\"), person(\"Michael\", \"Barrowman\", role = \"ctb\"), person(\"Atsushi\", \"Yasumoto\", role = \"ctb\"), person(\"Paul\", \"Julian\", role = \"ctb\"), person(\"Sean\", \"Browning\", role = \"ctb\"), person(\"Rémi\", \"Thériault\", role = \"ctb\", comment = c(ORCID = \"0000-0003-4315-6788\")), person(\"Samuel\", \"Jobert\", role = \"ctb\"), person(\"Keith\", \"Newman\", role = \"ctb\") )",
+      "Description": "Use a grammar for creating and customizing pretty tables. The following formats are supported: 'HTML', 'PDF', 'Typst', 'RTF', 'Microsoft Word', 'Microsoft PowerPoint', R 'Grid Graphics' and 'patchwork'.  'R Markdown', 'Quarto' and the package 'officer' can be used to produce the result files. The syntax is the same for the user regardless of the type of output to be produced. A set of functions allows the creation, definition of cell arrangement, addition of headers or footers, formatting and definition of cell content with text and or images. The package also offers a set of high-level functions that allow tabular reporting of statistical models and the creation of complex cross tabulations.",
+      "License": "GPL-3",
+      "URL": "https://ardata-fr.github.io/flextable-book/, https://davidgohel.github.io/flextable/",
+      "BugReports": "https://github.com/davidgohel/flextable/issues",
+      "Imports": [
+        "data.table (>= 1.13.0)",
+        "gdtools (>= 0.5.0)",
+        "graphics",
+        "grDevices",
+        "grid",
+        "htmltools",
+        "knitr",
+        "officer (>= 0.7.5)",
+        "ragg",
+        "rlang",
+        "rmarkdown (>= 2.0)",
+        "stats",
+        "utils",
+        "uuid (>= 0.1-4)",
+        "xml2"
+      ],
+      "Suggests": [
+        "bookdown (>= 0.40)",
+        "broom",
+        "broom.mixed",
+        "chromote",
+        "cluster",
+        "commonmark",
+        "doconv (>= 0.3.0)",
+        "equatags",
+        "formatters",
+        "ggplot2",
+        "gtable",
+        "jsonlite",
+        "lme4",
+        "magick",
+        "mgcv",
+        "nlme",
+        "officedown",
+        "patchwork",
+        "pdftools",
+        "pkgdown (>= 2.0.0)",
+        "rtables",
+        "scales",
+        "svglite",
+        "tables (>= 0.9.17)",
+        "testthat (>= 3.0.0)",
+        "webshot2",
+        "withr",
+        "xtable"
+      ],
+      "VignetteBuilder": "knitr",
+      "Config/roxygen2/version": "8.1.0",
+      "Config/testthat/edition": "3",
+      "Encoding": "UTF-8",
+      "NeedsCompilation": "no",
+      "Author": "David Gohel [aut, cre], ArData [cph], Clementine Jager [ctb], Eli Daniels [ctb], Panagiotis Skintzos [aut], Quentin Fazilleau [ctb], Maxim Nazarov [ctb], Titouan Robert [ctb], Michael Barrowman [ctb], Atsushi Yasumoto [ctb], Paul Julian [ctb], Sean Browning [ctb], Rémi Thériault [ctb] (ORCID: <https://orcid.org/0000-0003-4315-6788>), Samuel Jobert [ctb], Keith Newman [ctb]",
+      "Maintainer": "David Gohel <david.gohel@ardata.fr>",
+      "Repository": "CRAN"
+    },
+    "fontBitstreamVera": {
+      "Package": "fontBitstreamVera",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Title": "Fonts with 'Bitstream Vera Fonts' License",
+      "Authors@R": "c( person(\"Lionel\", \"Henry\", , \"lionel.hry@gmail.com\", c(\"cre\", \"aut\")), person(\"Bitstream\", role = \"cph\"))",
+      "Description": "Provides fonts licensed under the 'Bitstream Vera Fonts' license for the 'fontquiver' package.",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "License": "file LICENCE",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "RoxygenNote": "5.0.1",
+      "NeedsCompilation": "no",
+      "Author": "Lionel Henry [cre, aut], Bitstream [cph]",
+      "Maintainer": "Lionel Henry <lionel.hry@gmail.com>",
+      "License_is_FOSS": "yes",
+      "Repository": "CRAN"
+    },
+    "fontLiberation": {
+      "Package": "fontLiberation",
+      "Version": "0.1.0",
+      "Source": "Repository",
+      "Title": "Liberation Fonts",
+      "Authors@R": "c( person(\"Lionel\", \"Henry\", , \"lionel@rstudio.com\", \"cre\"), person(\"Pravin Satpute\", role = \"aut\"), person(\"Steve Matteson\", role = \"aut\"), person(\"Red Hat, Inc\", role = \"cph\"), person(\"Google Corporation\", role = \"cph\"))",
+      "Description": "A placeholder for the Liberation fontset intended for the `fontquiver` package. This fontset covers the 12 combinations of families (sans, serif, mono) and faces (plain, bold, italic, bold italic) supported in R graphics devices.",
+      "Depends": [
+        "R (>= 3.0)"
+      ],
+      "License": "file LICENSE",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "RoxygenNote": "5.0.1",
+      "NeedsCompilation": "no",
+      "Author": "Lionel Henry [cre], Pravin Satpute [aut], Steve Matteson [aut], Red Hat, Inc [cph], Google Corporation [cph]",
+      "Maintainer": "Lionel Henry <lionel@rstudio.com>",
+      "Repository": "CRAN",
+      "License_is_FOSS": "yes"
+    },
     "fontawesome": {
       "Package": "fontawesome",
       "Version": "0.5.3",
@@ -1296,6 +1835,34 @@
       "NeedsCompilation": "no",
       "Author": "Richard Iannone [aut, cre] (<https://orcid.org/0000-0003-3925-190X>), Christophe Dervieux [ctb] (<https://orcid.org/0000-0003-4474-2498>), Winston Chang [ctb], Dave Gandy [ctb, cph] (Font-Awesome font), Posit Software, PBC [cph, fnd]",
       "Maintainer": "Richard Iannone <rich@posit.co>",
+      "Repository": "CRAN"
+    },
+    "fontquiver": {
+      "Package": "fontquiver",
+      "Version": "0.2.1",
+      "Source": "Repository",
+      "Title": "Set of Installed Fonts",
+      "Authors@R": "c( person(\"Lionel\", \"Henry\", , \"lionel@rstudio.com\", c(\"cre\", \"aut\")), person(\"RStudio\", role = \"cph\"), person(\"George Douros\", role = \"cph\", comment = \"Symbola font\"))",
+      "Description": "Provides a set of fonts with permissive licences. This is useful when you want to avoid system fonts to make sure your outputs are reproducible.",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Imports": [
+        "fontBitstreamVera (>= 0.1.0)",
+        "fontLiberation (>= 0.1.0)"
+      ],
+      "Suggests": [
+        "testthat",
+        "htmltools"
+      ],
+      "License": "GPL-3 | file LICENSE",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "RoxygenNote": "5.0.1",
+      "Collate": "'font-getters.R' 'fontset.R' 'fontset-bitstream-vera.R' 'fontset-dejavu.R' 'fontset-liberation.R' 'fontset-symbola.R' 'html-dependency.R' 'utils.R'",
+      "NeedsCompilation": "no",
+      "Author": "Lionel Henry [cre, aut], RStudio [cph], George Douros [cph] (Symbola font)",
+      "Maintainer": "Lionel Henry <lionel@rstudio.com>",
       "Repository": "CRAN"
     },
     "forcats": {
@@ -1338,6 +1905,41 @@
       "NeedsCompilation": "no",
       "Author": "Hadley Wickham [aut, cre], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
+    },
+    "foreach": {
+      "Package": "foreach",
+      "Version": "1.5.2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Provides Foreach Looping Construct",
+      "Authors@R": "c(person(\"Folashade\", \"Daniel\", role=\"cre\", email=\"fdaniel@microsoft.com\"), person(\"Hong\", \"Ooi\", role=\"ctb\"), person(\"Rich\", \"Calaway\", role=\"ctb\"), person(\"Microsoft\", role=c(\"aut\", \"cph\")), person(\"Steve\", \"Weston\", role=\"aut\"))",
+      "Description": "Support for the foreach looping construct.  Foreach is an idiom that allows for iterating over elements in a collection, without the use of an explicit loop counter.  This package in particular is intended to be used for its return value, rather than for its side effects.  In that sense, it is similar to the standard lapply function, but doesn't require the evaluation of a function.  Using foreach without side effects also facilitates executing the loop in parallel.",
+      "License": "Apache License (== 2.0)",
+      "URL": "https://github.com/RevolutionAnalytics/foreach",
+      "BugReports": "https://github.com/RevolutionAnalytics/foreach/issues",
+      "Depends": [
+        "R (>= 2.5.0)"
+      ],
+      "Imports": [
+        "codetools",
+        "utils",
+        "iterators"
+      ],
+      "Suggests": [
+        "randomForest",
+        "doMC",
+        "doParallel",
+        "testthat",
+        "knitr",
+        "rmarkdown"
+      ],
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.1.1",
+      "Collate": "'callCombine.R' 'foreach.R' 'do.R' 'foreach-ext.R' 'foreach-pkg.R' 'getDoPar.R' 'getDoSeq.R' 'getsyms.R' 'iter.R' 'nextElem.R' 'onLoad.R' 'setDoPar.R' 'setDoSeq.R' 'times.R' 'utils.R'",
+      "NeedsCompilation": "no",
+      "Author": "Folashade Daniel [cre], Hong Ooi [ctb], Rich Calaway [ctb], Microsoft [aut, cph], Steve Weston [aut]",
+      "Maintainer": "Folashade Daniel <fdaniel@microsoft.com>",
       "Repository": "CRAN"
     },
     "fs": {
@@ -1429,6 +2031,43 @@
       "NeedsCompilation": "no",
       "Author": "Jennifer Bryan [aut, cre] (ORCID: <https://orcid.org/0000-0002-6983-2759>), Craig Citro [aut], Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Google Inc [cph], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Jennifer Bryan <jenny@posit.co>",
+      "Repository": "CRAN"
+    },
+    "gdtools": {
+      "Package": "gdtools",
+      "Version": "0.5.1",
+      "Source": "Repository",
+      "Title": "Font Metrics and Font Management Utilities for R Graphics",
+      "Authors@R": "c( person(\"David\", \"Gohel\", , \"david.gohel@ardata.fr\", role = c(\"aut\", \"cre\")), person(\"Hadley\", \"Wickham\", , \"hadley@rstudio.com\", role = \"aut\"), person(\"Lionel\", \"Henry\", , \"lionel@rstudio.com\", role = \"aut\"), person(\"Jeroen\", \"Ooms\", , \"jeroen@berkeley.edu\", role = \"aut\", comment = c(ORCID = \"0000-0002-4035-0289\")), person(\"Yixuan\", \"Qiu\", role = \"ctb\"), person(\"R Core Team\", role = \"cph\", comment = \"Cairo code from X11 device\"), person(\"ArData\", role = \"cph\"), person(\"RStudio\", role = \"cph\") )",
+      "Description": "Compute text metrics (width, ascent, descent) using 'Cairo' and 'FreeType', independently of the active graphic device. Font lookup is delegated to 'systemfonts'. Additional utilities let users register 'Google Fonts' or bundled 'Liberation' fonts, check font availability, and assemble 'htmlDependency' objects so that fonts are correctly embedded in 'Shiny' applications, 'R Markdown' documents, and 'htmlwidgets' outputs such as 'ggiraph'.",
+      "License": "GPL-3 | file LICENSE",
+      "URL": "https://davidgohel.github.io/gdtools/",
+      "BugReports": "https://github.com/davidgohel/gdtools/issues",
+      "Depends": [
+        "R (>= 4.0.0)"
+      ],
+      "Imports": [
+        "fontquiver (>= 0.2.0)",
+        "htmltools",
+        "Rcpp (>= 0.12.12)",
+        "systemfonts (>= 1.3.1)",
+        "tools"
+      ],
+      "Suggests": [
+        "curl",
+        "gfonts",
+        "methods",
+        "testthat"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Encoding": "UTF-8",
+      "SystemRequirements": "cairo, freetype2, fontconfig",
+      "Config/roxygen2/version": "8.0.0",
+      "NeedsCompilation": "yes",
+      "Author": "David Gohel [aut, cre], Hadley Wickham [aut], Lionel Henry [aut], Jeroen Ooms [aut] (ORCID: <https://orcid.org/0000-0002-4035-0289>), Yixuan Qiu [ctb], R Core Team [cph] (Cairo code from X11 device), ArData [cph], RStudio [cph]",
+      "Maintainer": "David Gohel <david.gohel@ardata.fr>",
       "Repository": "CRAN"
     },
     "generics": {
@@ -1575,6 +2214,35 @@
       "NeedsCompilation": "yes",
       "Author": "Jim Hester [aut] (ORCID: <https://orcid.org/0000-0002-2739-7082>), Jennifer Bryan [aut, cre] (ORCID: <https://orcid.org/0000-0002-6983-2759>), Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Jennifer Bryan <jenny@posit.co>",
+      "Repository": "CRAN"
+    },
+    "gmp": {
+      "Package": "gmp",
+      "Version": "0.7-5.1",
+      "Source": "Repository",
+      "Date": "2024-08-23",
+      "Title": "Multiple Precision Arithmetic",
+      "Authors@R": "c(person(\"Antoine\",\"Lucas\",role = c(\"aut\",\"cre\"), email = \"antoinelucas@gmail.com\", comment = c(ORCID=\"0000-0002-8059-9767\")), person(\"Immanuel\",\"Scholz\", role= \"aut\"), person(\"Rainer\",\"Boehme\", role = \"ctb\", email= \"rb-gmp@reflex-studio.de\"), person(\"Sylvain\",\"Jasson\", role = \"ctb\", email= \"Sylvain.Jasson@inrae.fr\"), person(\"Martin\", \"Maechler\", role = \"ctb\", email=\"maechler@stat.math.ethz.ch\"))",
+      "Maintainer": "Antoine Lucas <antoinelucas@gmail.com>",
+      "Description": "Multiple Precision Arithmetic (big integers and rationals, prime number tests, matrix computation), \"arithmetic without limitations\" using the C library GMP (GNU Multiple Precision Arithmetic).",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Imports": [
+        "methods"
+      ],
+      "Suggests": [
+        "Rmpfr",
+        "MASS",
+        "round"
+      ],
+      "SystemRequirements": "gmp (>= 4.2.3)",
+      "License": "GPL (>= 2)",
+      "BuildResaveData": "no",
+      "LazyDataNote": "not available, as we use data/*.R *and* our classes",
+      "NeedsCompilation": "yes",
+      "URL": "https://forgemia.inra.fr/sylvain.jasson/gmp",
+      "Author": "Antoine Lucas [aut, cre] (ORCID: <https://orcid.org/0000-0002-8059-9767>), Immanuel Scholz [aut], Rainer Boehme [ctb], Sylvain Jasson [ctb], Martin Maechler [ctb]",
       "Repository": "CRAN"
     },
     "googledrive": {
@@ -1833,6 +2501,43 @@
       "Maintainer": "Yihui Xie <xie@yihui.name>",
       "Repository": "CRAN"
     },
+    "highs": {
+      "Package": "highs",
+      "Version": "1.14.0-2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'HiGHS' Optimization Solver",
+      "Authors@R": "c(person(\"Florian\", \"Schwendinger\", email = \"FlorianSchwendinger@gmx.at\", role = c(\"aut\", \"cre\")), person(\"Balasubramanian\", \"Narasimhan\", role = c(\"aut\"), email = \"naras@stat.stanford.edu\"), person(\"Dirk\", \"Schumacher\", role = \"aut\"), person(\"Julian\", \"Hall\", role = \"cph\"), person(\"Ivet\", \"Galabova\", role = \"cph\"), person(\"Leona\", \"Gottwald\", role = \"cph\"), person(\"Michael\", \"Feldmeier\", role = \"cph\"))",
+      "Description": "R interface to 'HiGHS', an optimization solver for solving mixed integer optimization problems with quadratic or linear objective and linear constraints.",
+      "License": "GPL (>= 2)",
+      "Imports": [
+        "Rcpp (>= 1.0.7)",
+        "checkmate"
+      ],
+      "Depends": [
+        "R (>= 4.0.0)"
+      ],
+      "SystemRequirements": "Bash, PkgConfig, CMAKE (>=3.16), C++17",
+      "URL": "https://gitlab.com/roigrp/solver/highs",
+      "BugReports": "https://gitlab.com/roigrp/solver/highs/-/work_items/issues",
+      "Suggests": [
+        "tinytest",
+        "knitr",
+        "rmarkdown",
+        "Matrix"
+      ],
+      "VignetteBuilder": "knitr",
+      "Biarch": "FALSE",
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "yes",
+      "Author": "Florian Schwendinger [aut, cre], Balasubramanian Narasimhan [aut], Dirk Schumacher [aut], Julian Hall [cph], Ivet Galabova [cph], Leona Gottwald [cph], Michael Feldmeier [cph]",
+      "Maintainer": "Florian Schwendinger <FlorianSchwendinger@gmx.at>",
+      "Repository": "CRAN"
+    },
     "hms": {
       "Package": "hms",
       "Version": "1.1.4",
@@ -2019,6 +2724,29 @@
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
+    "iterators": {
+      "Package": "iterators",
+      "Version": "1.0.14",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Provides Iterator Construct",
+      "Authors@R": "c(person(\"Folashade\", \"Daniel\", role=\"cre\", email=\"fdaniel@microsoft.com\"), person(\"Revolution\", \"Analytics\", role=c(\"aut\", \"cph\")), person(\"Steve\", \"Weston\", role=\"aut\"))",
+      "Description": "Support for iterators, which allow a programmer to traverse through all the elements of a vector, list, or other collection of data.",
+      "URL": "https://github.com/RevolutionAnalytics/iterators",
+      "Depends": [
+        "R (>= 2.5.0)",
+        "utils"
+      ],
+      "Suggests": [
+        "RUnit",
+        "foreach"
+      ],
+      "License": "Apache License (== 2.0)",
+      "NeedsCompilation": "no",
+      "Author": "Folashade Daniel [cre], Revolution Analytics [aut, cph], Steve Weston [aut]",
+      "Maintainer": "Folashade Daniel <fdaniel@microsoft.com>",
+      "Repository": "CRAN"
+    },
     "janitor": {
       "Package": "janitor",
       "Version": "2.2.1",
@@ -2201,6 +2929,42 @@
       ],
       "Repository": "CRAN"
     },
+    "latex2exp": {
+      "Package": "latex2exp",
+      "Version": "0.9.8",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Use LaTeX Expressions in Plots",
+      "Date": "2024-07-05",
+      "Authors@R": "person(\"Stefano\", \"Meschiari\", email=\"stefano.meschiari@gmail.com\", role=c(\"aut\", \"cre\"))",
+      "Description": "Parses and converts LaTeX math formulas to R's plotmath expressions, used to enter mathematical formulas and symbols to be rendered as text, axis labels, etc. throughout R's plotting system.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://www.stefanom.io/latex2exp/, https://github.com/stefano-meschiari/latex2exp",
+      "BugReports": "https://github.com/stefano-meschiari/latex2exp/issues",
+      "Encoding": "UTF-8",
+      "Suggests": [
+        "tools",
+        "testthat",
+        "waldo",
+        "knitr",
+        "ggplot2",
+        "rmarkdown",
+        "purrr",
+        "tibble",
+        "reactable",
+        "htmltools",
+        "RCurl",
+        "rlang",
+        "dplyr"
+      ],
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.2.3",
+      "Language": "en-US",
+      "NeedsCompilation": "no",
+      "Author": "Stefano Meschiari [aut, cre]",
+      "Maintainer": "Stefano Meschiari <stefano.meschiari@gmail.com>",
+      "Repository": "CRAN"
+    },
     "lattice": {
       "Package": "lattice",
       "Version": "0.22-7",
@@ -2280,6 +3044,22 @@
       "Maintainer": "Lionel Henry <lionel@posit.co>",
       "Repository": "CRAN"
     },
+    "lpSolveAPI": {
+      "Package": "lpSolveAPI",
+      "Version": "5.5.2.0-17.15",
+      "Source": "Repository",
+      "Title": "R Interface to 'lp_solve' Version 5.5.2.0",
+      "Authors@R": "c(person(family = \"lp_solve\", role = \"aut\", email = \"https://lpsolve.sourceforge.net/\"), person(given = \"Kjell\", family = \"Konis\", role = \"aut\"), person(given = \"Florian\", family = \"Schwendinger\", role = c(\"aut\", \"cre\"), email = \"FlorianSchwendinger@gmx.at\"), person(given = \"Kurt\", family = \"Hornik\", role = \"ctb\"))",
+      "Description": "The lpSolveAPI package provides an R interface to 'lp_solve', a Mixed Integer Linear Programming (MILP) solver with support for pure linear, (mixed) integer/binary, semi-continuous and special ordered sets (SOS) models.",
+      "URL": "https://github.com/FlorianSchwendinger/lpSolveAPI",
+      "BugReports": "https://github.com/FlorianSchwendinger/lpSolveAPI/issues",
+      "License": "LGPL-2",
+      "RoxygenNote": "7.2.0",
+      "NeedsCompilation": "yes",
+      "Author": "lp_solve [aut], Kjell Konis [aut], Florian Schwendinger [aut, cre], Kurt Hornik [ctb]",
+      "Maintainer": "Florian Schwendinger <FlorianSchwendinger@gmx.at>",
+      "Repository": "CRAN"
+    },
     "lubridate": {
       "Package": "lubridate",
       "Version": "1.9.5",
@@ -2355,6 +3135,38 @@
       "NeedsCompilation": "yes",
       "Author": "Stefan Milton Bache [aut, cph] (Original author and creator of magrittr), Hadley Wickham [aut], Lionel Henry [cre], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Lionel Henry <lionel@posit.co>",
+      "Repository": "CRAN"
+    },
+    "matrixStats": {
+      "Package": "matrixStats",
+      "Version": "1.5.0",
+      "Source": "Repository",
+      "Depends": [
+        "R (>= 3.4.0)"
+      ],
+      "Suggests": [
+        "utils",
+        "base64enc",
+        "ggplot2",
+        "knitr",
+        "markdown",
+        "microbenchmark",
+        "R.devices",
+        "R.rsp"
+      ],
+      "VignetteBuilder": "R.rsp",
+      "Title": "Functions that Apply to Rows and Columns of Matrices (and to Vectors)",
+      "Authors@R": "c( person(\"Henrik\", \"Bengtsson\", role=c(\"aut\", \"cre\", \"cph\"), email=\"henrikb@braju.com\"), person(\"Constantin\", \"Ahlmann-Eltze\", role = \"ctb\"), person(\"Hector\", \"Corrada Bravo\", role=\"ctb\"), person(\"Robert\", \"Gentleman\", role=\"ctb\"), person(\"Jan\", \"Gleixner\", role=\"ctb\"), person(\"Peter\", \"Hickey\", role=\"ctb\"), person(\"Ola\", \"Hossjer\", role=\"ctb\"), person(\"Harris\", \"Jaffee\", role=\"ctb\"), person(\"Dongcan\", \"Jiang\", role=\"ctb\"), person(\"Peter\", \"Langfelder\", role=\"ctb\"), person(\"Brian\", \"Montgomery\", role=\"ctb\"), person(\"Angelina\", \"Panagopoulou\", role=\"ctb\"), person(\"Hugh\", \"Parsonage\", role=\"ctb\"), person(\"Jakob Peder\", \"Pettersen\", role=\"ctb\"))",
+      "Author": "Henrik Bengtsson [aut, cre, cph], Constantin Ahlmann-Eltze [ctb], Hector Corrada Bravo [ctb], Robert Gentleman [ctb], Jan Gleixner [ctb], Peter Hickey [ctb], Ola Hossjer [ctb], Harris Jaffee [ctb], Dongcan Jiang [ctb], Peter Langfelder [ctb], Brian Montgomery [ctb], Angelina Panagopoulou [ctb], Hugh Parsonage [ctb], Jakob Peder Pettersen [ctb]",
+      "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
+      "Description": "High-performing functions operating on rows and columns of matrices, e.g. col / rowMedians(), col / rowRanks(), and col / rowSds().  Functions optimized per data type and for subsetted calculations such that both memory usage and processing time is minimized.  There are also optimized vector-based methods, e.g. binMeans(), madDiff() and weightedMedian().",
+      "License": "Artistic-2.0",
+      "LazyLoad": "TRUE",
+      "NeedsCompilation": "yes",
+      "ByteCompile": "TRUE",
+      "URL": "https://github.com/HenrikBengtsson/matrixStats",
+      "BugReports": "https://github.com/HenrikBengtsson/matrixStats/issues",
+      "RoxygenNote": "7.3.2",
       "Repository": "CRAN"
     },
     "memoise": {
@@ -2447,6 +3259,53 @@
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
       "Repository": "CRAN"
     },
+    "mvtnorm": {
+      "Package": "mvtnorm",
+      "Version": "1.4-2",
+      "Source": "Repository",
+      "Title": "Multivariate Normal and t Distributions",
+      "Authors@R": "c(person(\"Alan\", \"Genz\", role = \"aut\"), person(\"Frank\", \"Bretz\", role = \"aut\"), person(\"Tetsuhisa\", \"Miwa\", role = \"aut\"), person(\"Xuefei\", \"Mi\", role = \"aut\"), person(\"Friedrich\", \"Leisch\", role = \"ctb\"), person(\"Fabian\", \"Scheipl\", role = \"ctb\"), person(\"Bjoern\", \"Bornkamp\", role = \"ctb\", comment = c(ORCID = \"0000-0002-6294-8185\")), person(\"Martin\", \"Maechler\", role = \"ctb\", comment = c(ORCID = \"0000-0002-8685-9910\")), person(\"Torsten\", \"Hothorn\", role = c(\"aut\", \"cre\"), email = \"Torsten.Hothorn@R-project.org\", comment = c(ORCID = \"0000-0001-8301-0471\")))",
+      "Description": "Computes multivariate normal and t probabilities, quantiles, random deviates,  and densities. Log-likelihoods for multivariate Gaussian models and Gaussian copulae  parameterised by Cholesky factors of covariance or precision matrices are implemented  for interval-censored and exact data, or a mix thereof. Score functions for these  log-likelihoods are available. A class representing multiple lower triangular matrices  and corresponding methods are part of this package.",
+      "Imports": [
+        "stats",
+        "utils"
+      ],
+      "Depends": [
+        "R(>= 3.5.0)"
+      ],
+      "Suggests": [
+        "qrng",
+        "numDeriv",
+        "bibtex"
+      ],
+      "License": "GPL-2",
+      "URL": "https://codeberg.org/thothorn/mvtnorm",
+      "NeedsCompilation": "yes",
+      "Author": "Alan Genz [aut], Frank Bretz [aut], Tetsuhisa Miwa [aut], Xuefei Mi [aut], Friedrich Leisch [ctb], Fabian Scheipl [ctb], Bjoern Bornkamp [ctb] (ORCID: <https://orcid.org/0000-0002-6294-8185>), Martin Maechler [ctb] (ORCID: <https://orcid.org/0000-0002-8685-9910>), Torsten Hothorn [aut, cre] (ORCID: <https://orcid.org/0000-0001-8301-0471>)",
+      "Maintainer": "Torsten Hothorn <Torsten.Hothorn@R-project.org>",
+      "Repository": "CRAN"
+    },
+    "nleqslv": {
+      "Package": "nleqslv",
+      "Version": "3.3.7",
+      "Source": "Repository",
+      "Title": "Solve Systems of Nonlinear Equations",
+      "Authors@R": "c(person(given = \"Berend\", family = \"Hasselman\", role = c(\"aut\"), email = \"bhh@xs4all.nl\", comment = \"Original Author\"), person(given = \"Rob\", family = \"Carnell\", role = c(\"aut\", \"cre\"), email = \"bertcarnell@gmail.com\", comment = c(ORCID = \"0009-0009-0465-7564\")))",
+      "Description": "Solve a system of nonlinear equations using a Broyden or a Newton method with a choice of global strategies such as line search and trust region. There are options for using a numerical or user supplied Jacobian, for specifying a banded numerical Jacobian and for allowing a singular or ill-conditioned Jacobian.",
+      "License": "GPL (>= 2)",
+      "Encoding": "UTF-8",
+      "URL": "https://bertcarnell.github.io/nleqslv/, https://github.com/bertcarnell/nleqslv/",
+      "BugReports": "https://github.com/bertcarnell/nleqslv/issues/",
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "yes",
+      "Author": "Berend Hasselman [aut] (Original Author), Rob Carnell [aut, cre] (ORCID: <https://orcid.org/0009-0009-0465-7564>)",
+      "Maintainer": "Rob Carnell <bertcarnell@gmail.com>",
+      "Repository": "CRAN",
+      "Suggests": [
+        "testthat (>= 3.0.0)"
+      ],
+      "Config/testthat/edition": "3"
+    },
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-168",
@@ -2500,6 +3359,53 @@
       "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
+    "officer": {
+      "Package": "officer",
+      "Version": "0.7.6",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Manipulation of Microsoft Word and PowerPoint Documents",
+      "Authors@R": "c( person(\"David\", \"Gohel\", , \"david.gohel@ardata.fr\", role = c(\"aut\", \"cre\")), person(\"Stefan\", \"Moog\", , \"moogs@gmx.de\", role = \"aut\"), person(\"Mark\", \"Heckmann\", , \"heckmann.mark@gmail.com\", role = \"aut\", comment = c(ORCID = \"0000-0002-0736-7417\")), person(\"ArData\", role = \"cph\"), person(\"Frank\", \"Hangler\", , \"frank@plotandscatter.com\", role = \"ctb\", comment = \"function body_replace_all_text\"), person(\"Liz\", \"Sander\", , \"lsander@civisanalytics.com\", role = \"ctb\", comment = \"several documentation fixes\"), person(\"Anton\", \"Victorson\", , \"anton@victorson.se\", role = \"ctb\", comment = \"fixes xml structures\"), person(\"Jon\", \"Calder\", , \"jonmcalder@gmail.com\", role = \"ctb\", comment = \"update vignettes\"), person(\"John\", \"Harrold\", , \"john.m.harrold@gmail.com\", role = \"ctb\", comment = \"function annotate_base\"), person(\"John\", \"Muschelli\", , \"muschellij2@gmail.com\", role = \"ctb\", comment = \"google doc compatibility\"), person(\"Bill\", \"Denney\", , \"wdenney@humanpredictions.com\", role = \"ctb\", comment = c(ORCID = \"0000-0002-5759-428X\", \"function as.matrix.rpptx\")), person(\"Nikolai\", \"Beck\", , \"beck.nikolai@gmail.com\", role = \"ctb\", comment = \"set speaker notes for .pptx documents\"), person(\"Greg\", \"Leleu\", , \"gregoire.leleu@gmail.com\", role = \"ctb\", comment = \"fields functionality in ppt\"), person(\"Majid\", \"Eismann\", role = \"ctb\"), person(\"Wahiduzzaman\", \"Khan\", role = \"ctb\", comment = \"vectorization of remove_slide\"), person(\"Hongyuan\", \"Jia\", , \"hongyuanjia@cqust.edu.cn\", role = \"ctb\", comment = c(ORCID = \"0000-0002-0075-8183\")), person(\"Michael\", \"Stackhouse\", , \"mike.stackhouse@atorusresearch.com\", role = \"ctb\") )",
+      "Description": "Access and manipulate 'Microsoft Word', 'RTF' and 'Microsoft PowerPoint' documents from R.  The package focuses on tabular and graphical reporting from R; it also provides two functions that let users get document content into data objects. A set of functions lets add and remove images, tables and paragraphs of text in new or existing documents.  The package does not require any installation of Microsoft products to be able to write Microsoft files.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://ardata-fr.github.io/officeverse/, https://davidgohel.github.io/officer/",
+      "BugReports": "https://github.com/davidgohel/officer/issues",
+      "Imports": [
+        "cli",
+        "dplyr",
+        "graphics",
+        "grDevices",
+        "openssl",
+        "R6",
+        "ragg",
+        "stats",
+        "tidyr",
+        "utils",
+        "uuid",
+        "xml2 (>= 1.1.0)",
+        "zip (>= 2.1.0)"
+      ],
+      "Suggests": [
+        "devEMF",
+        "doconv (>= 0.3.0)",
+        "gdtools",
+        "ggplot2",
+        "knitr",
+        "magick",
+        "rmarkdown",
+        "rsvg",
+        "mschart",
+        "testthat",
+        "withr"
+      ],
+      "Encoding": "UTF-8",
+      "Collate": "'core_properties.R' 'custom_properties.R' 'defunct.R' 'dev-utils.R' 'docx_add.R' 'docx_comments.R' 'docx_cursor.R' 'docx_embed_font.R' 'docx_part.R' 'docx_replace.R' 'docx_section.R' 'docx_settings.R' 'docx_styles.R' 'docx_utils_funs.R' 'empty_content.R' 'formatting_properties.R' 'fortify_docx.R' 'fortify_pptx.R' 'knitr_utils.R' 'officer.R' 'ooxml.R' 'ooxml_block_objects.R' 'ooxml_run_objects.R' 'openxml_content_type.R' 'openxml_document.R' 'pack_folder.R' 'ph_location.R' 'post-proc.R' 'ppt_class_dir_collection.R' 'ppt_classes.R' 'ppt_notes.R' 'ppt_ph_dedupe_layout.R' 'ppt_ph_manipulate.R' 'ppt_ph_rename_layout.R' 'ppt_ph_with_methods.R' 'pptx_informations.R' 'pptx_layout_helper.R' 'pptx_matrix.R' 'utils.R' 'pptx_slide_manip.R' 'read_docx.R' 'docx_write.R' 'read_docx_styles.R' 'read_pptx.R' 'read_xlsx.R' 'relationship.R' 'rtf.R' 'shape_properties.R' 'shorcuts.R' 'docx_append_context.R' 'utils-xml.R' 'deprecated.R' 'zzz.R'",
+      "Config/roxygen2/version": "8.0.0",
+      "NeedsCompilation": "no",
+      "Author": "David Gohel [aut, cre], Stefan Moog [aut], Mark Heckmann [aut] (ORCID: <https://orcid.org/0000-0002-0736-7417>), ArData [cph], Frank Hangler [ctb] (function body_replace_all_text), Liz Sander [ctb] (several documentation fixes), Anton Victorson [ctb] (fixes xml structures), Jon Calder [ctb] (update vignettes), John Harrold [ctb] (function annotate_base), John Muschelli [ctb] (google doc compatibility), Bill Denney [ctb] (ORCID: <https://orcid.org/0000-0002-5759-428X>, function as.matrix.rpptx), Nikolai Beck [ctb] (set speaker notes for .pptx documents), Greg Leleu [ctb] (fields functionality in ppt), Majid Eismann [ctb], Wahiduzzaman Khan [ctb] (vectorization of remove_slide), Hongyuan Jia [ctb] (ORCID: <https://orcid.org/0000-0002-0075-8183>), Michael Stackhouse [ctb]",
+      "Maintainer": "David Gohel <david.gohel@ardata.fr>",
+      "Repository": "CRAN"
+    },
     "openssl": {
       "Package": "openssl",
       "Version": "2.4.0",
@@ -2531,6 +3437,44 @@
       "NeedsCompilation": "yes",
       "Author": "Jeroen Ooms [aut, cre] (ORCID: <https://orcid.org/0000-0002-4035-0289>), Oliver Keyes [ctb]",
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "osqp": {
+      "Package": "osqp",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Title": "Quadratic Programming Solver using the 'OSQP' Library",
+      "Date": "2026-02-27",
+      "Authors@R": "c( person(\"Bartolomeo\", \"Stellato\", role = c(\"aut\", \"ctb\", \"cph\"), email = \"bartolomeo.stellato@gmail.com\"), person(\"Goran\", \"Banjac\", role = c(\"aut\", \"ctb\", \"cph\")), person(\"Paul\", \"Goulart\", role = c(\"aut\", \"ctb\", \"cph\"), email = \"paul.goulart@eng.ox.ac.uk\"), person(\"Stephen\", \"Boyd\", role = c(\"aut\", \"ctb\", \"cph\")), person(\"Eric\", \"Anderson\", role = c(\"ctb\")), person(\"Vineet\", \"Bansal\", role = c(\"aut\", \"ctb\"), email = \"vineetb@princeton.edu\"), person(\"Balasubramanian\", \"Narasimhan\", role = c(\"cre\", \"aut\"), email = \"naras@stanford.edu\"))",
+      "Copyright": "file COPYRIGHT",
+      "Description": "Provides bindings to the 'OSQP' solver. The 'OSQP' solver is a numerical optimization package for solving convex quadratic programs written in 'C' and based on the alternating direction method of multipliers. See <doi:10.48550/arXiv.1711.08013> for details.",
+      "License": "Apache License 2.0 | file LICENSE",
+      "SystemRequirements": "C++17, GNU make",
+      "Imports": [
+        "Rcpp (>= 0.12.14)",
+        "methods",
+        "Matrix (>= 1.6.1)",
+        "S7",
+        "cli"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "RoxygenNote": "7.3.3",
+      "Collate": "'RcppExports.R' 'osqp-package.R' 'sparse.R' 'solve.R' 'osqp.R' 'params.R'",
+      "NeedsCompilation": "yes",
+      "VignetteBuilder": "knitr",
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "slam",
+        "testthat"
+      ],
+      "Encoding": "UTF-8",
+      "BugReports": "https://github.com/osqp/osqp-r/issues",
+      "URL": "https://osqp.org",
+      "Author": "Bartolomeo Stellato [aut, ctb, cph], Goran Banjac [aut, ctb, cph], Paul Goulart [aut, ctb, cph], Stephen Boyd [aut, ctb, cph], Eric Anderson [ctb], Vineet Bansal [aut, ctb], Balasubramanian Narasimhan [cre, aut]",
+      "Maintainer": "Balasubramanian Narasimhan <naras@stanford.edu>",
       "Repository": "CRAN"
     },
     "pillar": {
@@ -2612,6 +3556,36 @@
       "BugReports": "https://github.com/r-lib/pkgconfig/issues",
       "Encoding": "UTF-8",
       "NeedsCompilation": "no",
+      "Repository": "CRAN"
+    },
+    "pracma": {
+      "Package": "pracma",
+      "Version": "2.4.6",
+      "Source": "Repository",
+      "Type": "Package",
+      "Date": "2025-10-20",
+      "Title": "Practical Numerical Math Functions",
+      "Authors@R": "person(\"Hans W.\", \"Borchers\",  email=\"hwborchers@googlemail.com\",  role=c(\"aut\", \"cre\"))",
+      "Depends": [
+        "R (>= 3.1.0)"
+      ],
+      "Imports": [
+        "graphics",
+        "grDevices",
+        "stats",
+        "utils"
+      ],
+      "Suggests": [
+        "NlcOptim",
+        "quadprog"
+      ],
+      "Description": "Provides a large number of functions from numerical analysis and linear algebra, numerical optimization, differential equations, time series, plus some well-known special mathematical functions. Uses 'MATLAB' function names where appropriate to simplify porting.",
+      "License": "GPL (>= 3)",
+      "ByteCompile": "true",
+      "LazyData": "yes",
+      "NeedsCompilation": "no",
+      "Author": "Hans W. Borchers [aut, cre]",
+      "Maintainer": "Hans W. Borchers <hwborchers@googlemail.com>",
       "Repository": "CRAN"
     },
     "prettyunits": {
@@ -2800,6 +3774,33 @@
       "NeedsCompilation": "yes",
       "Author": "Hadley Wickham [aut, cre] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Lionel Henry [aut], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
+    },
+    "qrng": {
+      "Package": "qrng",
+      "Version": "0.0-11",
+      "Source": "Repository",
+      "Encoding": "UTF-8",
+      "Title": "(Randomized) Quasi-Random Number Generators",
+      "Description": "Functionality for generating (randomized) quasi-random numbers in high dimensions.",
+      "Authors@R": "c(person(given = \"Marius\", family = \"Hofert\", role = c(\"aut\", \"cre\"), email = \"mhofert@hku.hk\"), person(given = \"Christiane\", family = \"Lemieux\", role = \"aut\", email = \"clemieux@uwaterloo.ca\"))",
+      "Author": "Marius Hofert [aut, cre], Christiane Lemieux [aut]",
+      "Maintainer": "Marius Hofert <mhofert@hku.hk>",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Imports": [
+        "utils"
+      ],
+      "Suggests": [
+        "spacefillr",
+        "randtoolbox",
+        "copula",
+        "simsalapar"
+      ],
+      "Enhances": [],
+      "License": "GPL-2 | GPL-3",
+      "NeedsCompilation": "yes",
       "Repository": "CRAN"
     },
     "ragg": {
@@ -3462,6 +4463,31 @@
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
+    "scs": {
+      "Package": "scs",
+      "Version": "3.2.7",
+      "Source": "Repository",
+      "Title": "Splitting Conic Solver",
+      "Authors@R": "c( person(\"Florian\", \"Schwendinger\", role = c(\"aut\", \"cre\"), email = \"FlorianSchwendinger@gmx.at\"), person(\"Brendan\", \"O'Donoghue\", role = c(\"aut\", \"cph\")), person(\"Balasubramanian\", \"Narasimhan\", role = c(\"aut\")), person(\"Timothy A.\", \"Davis\", role = \"cph\"), person(\"Patrick R.\", \"Amestory\", role = \"cph\"), person(\"Iain S.\", \"Duff\", role = \"cph\"))",
+      "Description": "Solves convex cone programs via operator splitting. Can solve: linear programs ('LPs'), second-order cone programs ('SOCPs'), semidefinite programs ('SDPs'), exponential cone programs ('ECPs'), and power cone programs ('PCPs'), or problems with any combination of those cones. 'SCS' uses 'AMD' (a set of routines for permuting sparse matrices prior to factorization) and 'LDL' (a sparse 'LDL' factorization and solve package) from 'SuiteSparse' (<https://people.engr.tamu.edu/davis/suitesparse.html>).",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "SystemRequirements": "GNU Make",
+      "Suggests": [
+        "Matrix",
+        "slam",
+        "tinytest"
+      ],
+      "Encoding": "UTF-8",
+      "License": "GPL-3",
+      "URL": "https://github.com/FlorianSchwendinger/scs",
+      "RoxygenNote": "7.2.0",
+      "NeedsCompilation": "yes",
+      "Author": "Florian Schwendinger [aut, cre], Brendan O'Donoghue [aut, cph], Balasubramanian Narasimhan [aut], Timothy A. Davis [cph], Patrick R. Amestory [cph], Iain S. Duff [cph]",
+      "Maintainer": "Florian Schwendinger <FlorianSchwendinger@gmx.at>",
+      "Repository": "CRAN"
+    },
     "selectr": {
       "Package": "selectr",
       "Version": "0.5-1",
@@ -3489,6 +4515,30 @@
       "NeedsCompilation": "no",
       "Author": "Simon Potter [aut, trl, cre], Simon Sapin [aut], Ian Bicking [aut]",
       "Maintainer": "Simon Potter <simon@sjp.co.nz>",
+      "Repository": "CRAN"
+    },
+    "slam": {
+      "Package": "slam",
+      "Version": "0.1-56",
+      "Source": "Repository",
+      "Title": "Sparse Lightweight Arrays and Matrices",
+      "Authors@R": "c(person(\"Kurt\", \"Hornik\", role = c(\"aut\", \"cre\"), email = \"Kurt.Hornik@R-project.org\", comment = c(ORCID = \"0000-0003-4198-9911\")), person(\"David\", \"Meyer\", role = \"aut\", email = \"David.Meyer@R-project.org\", comment = c(ORCID = \"0000-0002-5196-3048\")), person(\"Christian\", \"Buchta\", role = \"aut\"))",
+      "Description": "Data structures and algorithms for sparse arrays and matrices, based on index arrays and simple triplet representations, respectively.",
+      "Depends": [
+        "R (>= 3.4.0)"
+      ],
+      "Imports": [
+        "stats"
+      ],
+      "Enhances": [
+        "Matrix",
+        "SparseM",
+        "spam"
+      ],
+      "License": "GPL-2",
+      "NeedsCompilation": "yes",
+      "Author": "Kurt Hornik [aut, cre] (ORCID: <https://orcid.org/0000-0003-4198-9911>), David Meyer [aut] (ORCID: <https://orcid.org/0000-0002-5196-3048>), Christian Buchta [aut]",
+      "Maintainer": "Kurt Hornik <Kurt.Hornik@R-project.org>",
       "Repository": "CRAN"
     },
     "snakecase": {
@@ -3524,6 +4574,32 @@
       "VignetteBuilder": "knitr",
       "NeedsCompilation": "no",
       "Author": "Malte Grosser [aut, cre]",
+      "Repository": "CRAN"
+    },
+    "spacefillr": {
+      "Package": "spacefillr",
+      "Version": "0.4.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Space-Filling Random and Quasi-Random Sequences",
+      "Authors@R": "c(person(\"Tyler\", \"Morgan-Wall\", email = \"tylermw@gmail.com\",  role = c(\"aut\", \"cph\", \"cre\"), comment = c(ORCID = \"0000-0002-3131-3814\")), person(\"Andrew\", \"Helmer\", role = c(\"ctb\", \"cph\")), person(\"Leonhard\", \"Grünschloß\", role = c(\"ctb\", \"cph\")), person(\"Eric\", \"Heitz\", role = c(\"ctb\", \"cph\")))",
+      "Maintainer": "Tyler Morgan-Wall <tylermw@gmail.com>",
+      "Description": "Generates random and quasi-random space-filling sequences. Supports the following sequences: 'Halton', 'Sobol', 'Owen'-scrambled 'Sobol',  'Owen'-scrambled 'Sobol' with errors distributed as blue noise, progressive jittered, progressive multi-jittered ('PMJ'), 'PMJ' with blue noise, 'PMJ02', and 'PMJ02' with blue noise. Includes a 'C++' 'API'. Methods derived from \"Constructing Sobol sequences with better two-dimensional projections\" (2012) <doi:10.1137/070709359> S. Joe and F. Y. Kuo, \"Progressive Multi-Jittered Sample Sequences\" (2018) <https://graphics.pixar.com/library/ProgressiveMultiJitteredSampling/paper.pdf> Christensen, P., Kensler, A. and Kilpatrick, C., and \"A Low-Discrepancy Sampler that Distributes Monte Carlo Errors as a Blue Noise in Screen Space\" (2019) E. Heitz, B. Laurent, O. Victor, C. David and I. Jean-Claude, <doi:10.1145/3306307.3328191>.",
+      "License": "MIT + file LICENSE",
+      "Imports": [
+        "Rcpp (>= 1.0.0)"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "URL": "https://github.com/tylermorganwall/spacefillr",
+      "BugReports": "https://github.com/tylermorganwall/spacefillr/issues",
+      "SystemRequirements": "C++17",
+      "Config/build/compilation-database": "true",
+      "NeedsCompilation": "yes",
+      "Author": "Tyler Morgan-Wall [aut, cph, cre] (<https://orcid.org/0000-0002-3131-3814>), Andrew Helmer [ctb, cph], Leonhard Grünschloß [ctb, cph], Eric Heitz [ctb, cph]",
       "Repository": "CRAN"
     },
     "stringi": {
@@ -4404,6 +5480,42 @@
       "NeedsCompilation": "yes",
       "Author": "Hadley Wickham [cre] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Shawn Garbett [ctb] (ORCID: <https://orcid.org/0000-0003-4079-5621>), Jeremy Stephens [aut, ctb], Kirill Simonov [aut], Yihui Xie [ctb] (ORCID: <https://orcid.org/0000-0003-0645-5666>), Zhuoer Dong [ctb], Jeffrey Horner [ctb], reikoch [ctb], Will Beasley [ctb] (ORCID: <https://orcid.org/0000-0002-5613-5006>), Brendan O'Connor [ctb], Michael Quinn [ctb], Charlie Gao [ctb], Gregory R. Warnes [ctb], Zhian N. Kamvar [ctb]",
       "Maintainer": "Hadley Wickham <hadley@posit.co>",
+      "Repository": "CRAN"
+    },
+    "zip": {
+      "Package": "zip",
+      "Version": "3.0.2",
+      "Source": "Repository",
+      "Title": "Cross-Platform 'zip' Compression",
+      "Authors@R": "c( person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")), person(\"Kuba\", \"Podgórski\", role = \"ctb\"), person(\"Rich\", \"Geldreich\", role = \"ctb\"), person(\"Arm Limited\", role = c(\"ctb\", \"cph\"), comment = \"bundled Mbed TLS crypto subset in src/mbedtls/ (Apache-2.0)\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"), comment = c(ROR = \"03wc8by49\")) )",
+      "Description": "Cross-Platform 'zip' Compression Library. A replacement for the 'zip' function, that does not require any additional external tools on any platform.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://github.com/r-lib/zip, https://r-lib.github.io/zip/",
+      "BugReports": "https://github.com/r-lib/zip/issues",
+      "LinkingTo": [
+        "cli"
+      ],
+      "Suggests": [
+        "callr",
+        "cli",
+        "curl",
+        "pillar",
+        "processx",
+        "R6",
+        "testthat",
+        "webfakes",
+        "withr"
+      ],
+      "Config/Needs/website": "tidyverse/tidytemplate",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Config/testthat/start-first": "large-files, http",
+      "Config/usethis/last-upkeep": "2025-05-07",
+      "Encoding": "UTF-8",
+      "Config/roxygen2/version": "8.0.0",
+      "NeedsCompilation": "yes",
+      "Author": "Gábor Csárdi [aut, cre], Kuba Podgórski [ctb], Rich Geldreich [ctb], Arm Limited [ctb, cph] (bundled Mbed TLS crypto subset in src/mbedtls/ (Apache-2.0)), Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
+      "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
       "Repository": "CRAN"
     },
     "zoo": {
