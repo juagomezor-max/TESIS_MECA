@@ -40,6 +40,23 @@ Estas reglas no se revisan según los resultados de empleo.
 - Efecto mínimo detectable: 80% de potencia, prueba bilateral al 5%.
 - Nota: la cifra de "−2,0 a −2,7 trabajadores" del commit del bloque 4.4 excluía 2022 del promedio pre; corresponde a la versión de robustez, no a la principal.
 
+## 2026-09-17 — Decisión: elección de la medida de exposición (Kaitz 2022, 2019 o promedio)
+
+**Motivo.** Las validaciones mostraron que Kaitz 2022 alto identifica, además de firmas que pagan cerca del mínimo, firmas con un 2022 atípicamente malo: el salario, las ventas y la brecha salarial tienen una "V" con mínimo en 2022. Con Kaitz 2019, el salto salarial de 2023 es +2,2% frente a +4,4% con Kaitz 2022.
+
+**Medidas candidatas** (mismas firmas, cada una en sus propias desviaciones estándar):
+1. Kaitz 2022: mínimo 2023 / salario del obrero permanente en 2022.
+2. Kaitz 2019: mínimo 2020 / salario del obrero permanente en 2019.
+3. Kaitz promedio: promedio de Kaitz 2019, 2021 y 2022 (mínimo del año siguiente / salario del obrero de ese año), cada año recortado al 1%-99%, firmas con al menos 2 de 3 años.
+
+**Regla de decisión:**
+1. Pasa el primer eslabón si el salto salarial de 2023 frente al cambio típico 2015-2018 es positivo y significativo al 5%.
+2. Entre las que pasan, la principal es la de mayor M de quiebre del cambio salarial 2022 -> 2023 (sensibilidad simple de V1).
+3. El empleo no se usa para elegir; se reporta con las tres medidas.
+4. Si ninguna pasa, se declara un problema de diseño y se evalúa construir la exposición desde la distribución salarial de la firma.
+
+**Transparencia.** Esta regla se escribe después de haber visto el primer eslabón y el empleo con Kaitz 2022 y Kaitz 2019 (validación V3), pero antes de ver cualquier resultado con Kaitz promedio y antes de calcular el M de quiebre con Kaitz 2019.
+
 ## Pendientes conocidos
 
 - Sección 6 (Robustez) no corrida con el script corregido; `4. RESULTADOS/Robustez/tabla_robustez_escrutinio.docx` corresponde al script anterior y no debe citarse.
