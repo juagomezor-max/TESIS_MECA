@@ -26,19 +26,30 @@ Desde una terminal, en lugar de RStudio, la confirmación es interactiva:
 
 Los microdatos de la EAM no están en el repositorio. Se descargan de Zenodo:
 
-**https://zenodo.org/records/19675205**
+**Gómez Orduz, J. A., y Jácome, N. (2026).** *Harmonized Microdata from the
+Annual Manufacturing Survey (EAM) and Supporting Metadata for the Analysis
+of Labor Shocks in Colombia, 2008-2024* (v1.1) [Conjunto de datos]. Zenodo.
+https://doi.org/10.5281/zenodo.19675581
 
-Deben quedar así, dentro de `0. ANALISIS INICIAL IA/`:
+Es un archivo único, `1. DATOS.zip` (759,6 MB), que se descomprime dentro
+de `0. ANALISIS INICIAL IA/`.
+
+El pipeline usa:
 
     1. DATOS/
     ├── 1. EAM/
     │   ├── EAM_2008.zip ... EAM_2024.zip      (17 archivos, un .dta por zip)
     │   └── Diccionario de datos EAM2024.xlsx
-    ├── 2. EAC/
-    │   └── EAC_2009.zip ... EAC_2024.zip      (14 archivos)
     └── Diccionarios_EAM_EAC.docx
 
-Los scripts descomprimen los zips sobre la marcha: no hay que hacerlo a mano.
+Los scripts descomprimen los zips por año sobre la marcha: no hay que
+hacerlo a mano. El depósito incluye además `2. EAC/` y material derivado,
+que el pipeline de producción no lee.
+
+**Versión:** las cifras de verificación de este README corresponden a la
+v1.1. Otra versión puede dar resultados distintos.
+
+Licencia: CC BY 4.0.
 
 ### 3. Construir la base
 
@@ -76,11 +87,6 @@ Desde la raíz del proyecto, abriendo `TESIS_MECA.Rproj`, en este orden:
 | `02_validaciones.R` | Validaciones V1 a V12 |
 | `03_tratamiento_continuo.R` | Tratamiento continuo C1 a C8 |
 | `04_descriptivos_evolucion.R` | Descriptivos D1 a D8 |
-
-### Pendiente de documentar
-
-No está establecido si el depósito de Zenodo entrega un paquete único que
-hay que descomprimir, o los archivos sueltos. Verificar al descargar.
 
 ### Verificación
 
