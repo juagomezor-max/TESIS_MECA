@@ -9,6 +9,58 @@
     ]
   },
   "Packages": {
+    "BH": {
+      "Package": "BH",
+      "Version": "1.90.0-1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Boost C++ Header Files",
+      "Date": "2025-12-13",
+      "Authors@R": "c(person(\"Dirk\", \"Eddelbuettel\", role = c(\"aut\", \"cre\"), email = \"edd@debian.org\", comment = c(ORCID = \"0000-0001-6419-907X\")), person(\"John W.\", \"Emerson\", role = \"aut\"),  person(\"Michael J.\", \"Kane\", role = \"aut\",  comment = c(ORCID = \"0000-0003-1899-6662\")))",
+      "Description": "Boost provides free peer-reviewed portable C++ source  libraries.  A large part of Boost is provided as C++ template code which is resolved entirely at compile-time without linking.  This  package aims to provide the most useful subset of Boost libraries  for template use among CRAN packages. By placing these libraries in  this package, we offer a more efficient distribution system for CRAN  as replication of this code in the sources of other packages is  avoided. As of release 1.84.0-0, the following Boost libraries are included: 'accumulators' 'algorithm' 'align' 'any' 'atomic' 'beast' 'bimap' 'bind' 'circular_buffer' 'compute' 'concept' 'config' 'container' 'date_time' 'detail' 'dynamic_bitset' 'exception' 'flyweight' 'foreach' 'functional' 'fusion' 'geometry' 'graph' 'heap' 'icl' 'integer' 'interprocess' 'intrusive' 'io' 'iostreams' 'iterator' 'lambda2' 'math' 'move' 'mp11' 'mpl' 'multiprecision' 'numeric' 'pending' 'phoenix' 'polygon' 'preprocessor' 'process' 'propery_tree' 'qvm' 'random' 'range' 'scope_exit' 'smart_ptr' 'sort' 'spirit' 'tuple' 'type_traits' 'typeof' 'unordered' 'url' 'utility' 'uuid'.",
+      "License": "BSL-1.0",
+      "URL": "https://github.com/eddelbuettel/bh, https://dirk.eddelbuettel.com/code/bh.html",
+      "BugReports": "https://github.com/eddelbuettel/bh/issues",
+      "NeedsCompilation": "no",
+      "Author": "Dirk Eddelbuettel [aut, cre] (ORCID: <https://orcid.org/0000-0001-6419-907X>), John W. Emerson [aut], Michael J. Kane [aut] (ORCID: <https://orcid.org/0000-0003-1899-6662>)",
+      "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
+    "BMisc": {
+      "Package": "BMisc",
+      "Version": "1.4.10",
+      "Source": "Repository",
+      "Title": "Miscellaneous Functions for Panel Data, Quantiles, and Printing Results",
+      "Authors@R": "c( person(\"Brantly\", \"Callaway\", email = \"brantly.callaway@uga.edu\", role = c(\"aut\", \"cre\")), person(\"Grant\", \"McDermott\", role = \"ctb\", email = \"contact@grantmcdermott.com\") )",
+      "Description": "These are miscellaneous functions for working with panel data, quantiles, and printing results.  For panel data, the package includes functions for making a panel data balanced (that is, dropping missing individuals that have missing observations in any time period), converting id numbers to row numbers, and to treat repeated cross sections as panel data under the assumption of rank invariance.  For quantiles, there are functions to make distribution functions from a set of data points (this is particularly useful when a distribution function is created in several steps), to combine distribution functions based on some external weights, and to invert distribution functions.  Finally, there are several other miscellaneous functions for obtaining weighted means, weighted distribution functions, and weighted quantiles; to generate summary statistics and their differences for two groups; and to add or drop covariates from formulas.  Additional utilities support staggered treatment adoption settings, including functions for identifying treatment groups, recovering pre-treatment outcomes and covariate averages, and computing lagged outcomes and first differences in panel data.",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "Imports": [
+        "data.table",
+        "Rcpp"
+      ],
+      "License": "GPL-3",
+      "Suggests": [
+        "testthat (>= 3.0.0)",
+        "plm",
+        "tibble",
+        "caret"
+      ],
+      "Encoding": "UTF-8",
+      "Config/testthat/edition": "3",
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo"
+      ],
+      "URL": "https://bcallaway11.github.io/BMisc/",
+      "BugReports": "https://github.com/bcallaway11/BMisc/issues",
+      "Config/roxygen2/version": "8.1.0",
+      "NeedsCompilation": "yes",
+      "Author": "Brantly Callaway [aut, cre], Grant McDermott [ctb]",
+      "Maintainer": "Brantly Callaway <brantly.callaway@uga.edu>",
+      "Repository": "CRAN"
+    },
     "CVXR": {
       "Package": "CVXR",
       "Version": "1.9.2",
@@ -126,6 +178,46 @@
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
       "Repository": "CRAN"
     },
+    "DRDID": {
+      "Package": "DRDID",
+      "Version": "1.3.0",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Doubly Robust Difference-in-Differences Estimators",
+      "Authors@R": "c(person(\"Pedro H. C.\", \"Sant'Anna\", email = \"pedrohcgs@gmail.com\", role = c(\"aut\", \"cre\", \"cph\")), person(\"Jun\", \"Zhao\", email = \"beanzhaojun11@gmail.com\",role = c(\"aut\")) )",
+      "Description": "Implements the locally efficient doubly robust difference-in-differences (DiD) estimators for the average treatment effect proposed by Sant'Anna and Zhao (2020) <doi:10.1016/j.jeconom.2020.06.003>. The estimator combines inverse probability weighting and outcome regression estimators (also implemented in the package) to form estimators with more attractive statistical properties. Two different estimation methods can be used to estimate the nuisance functions.",
+      "URL": "https://psantanna.com/DRDID/, https://github.com/pedrohcgs/DRDID",
+      "License": "GPL-3",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "Depends": [
+        "R (>= 3.5)"
+      ],
+      "Imports": [
+        "stats",
+        "trust",
+        "BMisc (>= 1.4.1)",
+        "Rcpp (>= 1.0.12)",
+        "fastglm (>= 0.0.3)"
+      ],
+      "LinkingTo": [
+        "Rcpp (>= 1.0.12)"
+      ],
+      "RoxygenNote": "7.3.2",
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "spelling",
+        "testthat"
+      ],
+      "Date": "2026-06-09",
+      "Language": "en-US",
+      "BugReports": "https://github.com/pedrohcgs/DRDID/issues",
+      "NeedsCompilation": "yes",
+      "Author": "Pedro H. C. Sant'Anna [aut, cre, cph], Jun Zhao [aut]",
+      "Maintainer": "Pedro H. C. Sant'Anna <pedrohcgs@gmail.com>",
+      "Repository": "CRAN"
+    },
     "ECOSolveR": {
       "Package": "ECOSolveR",
       "Version": "0.6.1",
@@ -227,6 +319,42 @@
       "NeedsCompilation": "no",
       "Author": "Ashesh Rambachan [aut, cph, cre], Jonathan Roth [aut, cph]",
       "Maintainer": "Ashesh Rambachan <ashesh.a.rambachan@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "MASS": {
+      "Package": "MASS",
+      "Version": "7.3-65",
+      "Source": "Repository",
+      "Priority": "recommended",
+      "Date": "2025-02-19",
+      "Revision": "$Rev: 3681 $",
+      "Depends": [
+        "R (>= 4.4.0)",
+        "grDevices",
+        "graphics",
+        "stats",
+        "utils"
+      ],
+      "Imports": [
+        "methods"
+      ],
+      "Suggests": [
+        "lattice",
+        "nlme",
+        "nnet",
+        "survival"
+      ],
+      "Authors@R": "c(person(\"Brian\", \"Ripley\", role = c(\"aut\", \"cre\", \"cph\"), email = \"Brian.Ripley@R-project.org\"), person(\"Bill\", \"Venables\", role = c(\"aut\", \"cph\")), person(c(\"Douglas\", \"M.\"), \"Bates\", role = \"ctb\"), person(\"Kurt\", \"Hornik\", role = \"trl\", comment = \"partial port ca 1998\"), person(\"Albrecht\", \"Gebhardt\", role = \"trl\", comment = \"partial port ca 1998\"), person(\"David\", \"Firth\", role = \"ctb\", comment = \"support functions for polr\"))",
+      "Description": "Functions and datasets to support Venables and Ripley, \"Modern Applied Statistics with S\" (4th edition, 2002).",
+      "Title": "Support Functions and Datasets for Venables and Ripley's MASS",
+      "LazyData": "yes",
+      "ByteCompile": "yes",
+      "License": "GPL-2 | GPL-3",
+      "URL": "http://www.stats.ox.ac.uk/pub/MASS4/",
+      "Contact": "<MASS@stats.ox.ac.uk>",
+      "NeedsCompilation": "yes",
+      "Author": "Brian Ripley [aut, cre, cph], Bill Venables [aut, cph], Douglas M. Bates [ctb], Kurt Hornik [trl] (partial port ca 1998), Albrecht Gebhardt [trl] (partial port ca 1998), David Firth [ctb] (support functions for polr)",
+      "Maintainer": "Brian Ripley <Brian.Ripley@R-project.org>",
       "Repository": "CRAN"
     },
     "Matrix": {
@@ -608,6 +736,70 @@
       "URL": "https://www.rforge.net/base64enc",
       "BugReports": "https://github.com/s-u/base64enc/issues",
       "NeedsCompilation": "yes",
+      "Repository": "CRAN"
+    },
+    "bigmemory": {
+      "Package": "bigmemory",
+      "Version": "4.6.6",
+      "Source": "Repository",
+      "Title": "Manage Massive Matrices with Shared Memory and Memory-Mapped Files",
+      "Authors@R": "c( person(given = \"Michael J.\", family = \"Kane\", role = c(\"aut\", \"cre\"), email = \"bigmemoryauthors@gmail.com\", comment = c(ORCID = \"0000-0003-1899-6662\")), person(given = \"John W.\", family = \"Emerson\", role = \"aut\", email = \"jayemerson@gmail.com\"), person(given = \"Peter\", family = \"Haverty\", role = \"aut\", email = \"haverty.peter@gene.com\"), person(given = \"Charles\", family = \"Determan\", role = \"aut\", email = \"cdetermanjr@gmail.com\") )",
+      "Depends": [
+        "R (>= 3.2.0)"
+      ],
+      "Imports": [
+        "bigmemory.sri",
+        "methods",
+        "utils",
+        "Rcpp",
+        "uuid (>= 1.0-2)"
+      ],
+      "Enhances": [
+        "biganalytics",
+        "bigtabulate"
+      ],
+      "LinkingTo": [
+        "BH",
+        "uuid (>= 1.0-2)",
+        "Rcpp"
+      ],
+      "Encoding": "UTF-8",
+      "Description": "Create, store, access, and manipulate massive matrices. Matrices are allocated to shared memory and may use memory-mapped files.  Packages 'biganalytics', 'bigtabulate', 'synchronicity', and 'bigalgebra' provide advanced functionality.",
+      "License": "LGPL-3 | Apache License 2.0",
+      "URL": "https://github.com/kaneplusplus/bigmemory",
+      "BugReports": "https://github.com/kaneplusplus/bigmemory/issues",
+      "LazyLoad": "yes",
+      "Suggests": [
+        "testthat",
+        "remotes"
+      ],
+      "RoxygenNote": "7.3.3",
+      "NeedsCompilation": "yes",
+      "Author": "Michael J. Kane [aut, cre] (ORCID: <https://orcid.org/0000-0003-1899-6662>), John W. Emerson [aut], Peter Haverty [aut], Charles Determan [aut]",
+      "Maintainer": "Michael J. Kane <bigmemoryauthors@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "bigmemory.sri": {
+      "Package": "bigmemory.sri",
+      "Version": "0.1.8",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "A Shared Resource Interface for Bigmemory Project Packages",
+      "Authors@R": "c( person(given = \"Michael J.\", family = \"Kane\", role = c(\"aut\", \"cre\"), email = \"bigmemoryauthors@gmail.com\", comment = c(ORCID = \"0000-0003-1899-6662\")) )",
+      "Description": "A shared resource interface for the bigmemory and synchronicity packages.",
+      "Encoding": "UTF-8",
+      "Language": "en-US",
+      "License": "LGPL-3 | Apache License 2.0",
+      "Enhances": [
+        "bigmemory"
+      ],
+      "Imports": [
+        "methods"
+      ],
+      "RoxygenNote": "7.2.3",
+      "NeedsCompilation": "no",
+      "Author": "Michael J. Kane [aut, cre] (<https://orcid.org/0000-0003-1899-6662>)",
+      "Maintainer": "Michael J. Kane <bigmemoryauthors@gmail.com>",
       "Repository": "CRAN"
     },
     "bit": {
@@ -1194,6 +1386,47 @@
       "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
       "Repository": "CRAN"
     },
+    "contdid": {
+      "Package": "contdid",
+      "Version": "0.1.1",
+      "Source": "GitHub",
+      "Title": "Difference-in-Differences with a Continuous Treatment",
+      "Authors@R": "c(person(\"Brantly\", \"Callaway\", email = \"brantly.callaway@uga.edu\", role = c(\"aut\", \"cre\")), person(\"Andrew\", \"Goodman-Bacon\", email = \"andrew@goodman-bacon.com\", role = c(\"aut\")), person(\"Pedro H. C.\", \"Sant'Anna\", email=\"pedro.h.santanna@emory.edu\", role = c(\"aut\")))",
+      "Description": "Provides methods for difference-in-differences with a continuous treatment and staggered treatment adoption. Includes estimation of treatment effects and causal responses as a function of the dose, event studies indexed by length of exposure to the treatment, and aggregation into overall average effects. Uniform inference procedures are included, along with both parametric and nonparametric models for treatment effects. The methods are based on Callaway, Goodman-Bacon, and Sant'Anna (2025) <doi:10.48550/arXiv.2107.02637>.",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "License": "GPL-3",
+      "Encoding": "UTF-8",
+      "Imports": [
+        "BMisc (>= 1.4.8)",
+        "ptetools (>= 1.0.1)",
+        "checkmate",
+        "splines2",
+        "sandwich",
+        "ggplot2",
+        "MASS",
+        "npiv"
+      ],
+      "Roxygen": "list(markdown = TRUE)",
+      "URL": "https://bcallaway11.github.io/contdid/, https://github.com/bcallaway11/contdid",
+      "BugReports": "https://github.com/bcallaway11/contdid/issues",
+      "Suggests": [
+        "testthat (>= 3.0.0)",
+        "tidyr"
+      ],
+      "Config/testthat/edition": "3",
+      "Config/roxygen2/version": "8.0.0",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "contdid",
+      "RemoteUsername": "bcallaway11",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "5cfec81a82fc8cfeffb6b7b822a0eded5deafc91",
+      "NeedsCompilation": "no",
+      "Author": "Brantly Callaway [aut, cre], Andrew Goodman-Bacon [aut], Pedro H. C. Sant'Anna [aut]",
+      "Maintainer": "Brantly Callaway <brantly.callaway@uga.edu>"
+    },
     "cpp11": {
       "Package": "cpp11",
       "Version": "0.5.4",
@@ -1617,6 +1850,58 @@
       "NeedsCompilation": "yes",
       "Author": "Thomas Lin Pedersen [cre, aut] (<https://orcid.org/0000-0002-5147-4711>), Berendea Nicolae [aut] (Author of the ColorSpace C++ library), Romain François [aut] (<https://orcid.org/0000-0002-2444-4226>), Posit, PBC [cph, fnd]",
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
+      "Repository": "CRAN"
+    },
+    "fastglm": {
+      "Package": "fastglm",
+      "Version": "0.1.2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Fast and Stable Fitting of Generalized Linear Models using 'RcppEigen'",
+      "Authors@R": "c( person(\"Jared\", \"Huling\", , email = \"jaredhuling@gmail.com\", c(\"aut\", \"cre\")), person(\"Douglas\", \"Bates\", , , c(\"cph\")), person(\"Dirk\", \"Eddelbuettel\", , , c(\"cph\")), person(\"Romain\", \"Francois\", , , c(\"cph\")), person(\"Yixuan\", \"Qiu\", , , c(\"cph\")), person(\"Noah\", \"Greifer\", role=c(\"ctb\"),  email = \"noah.greifer@gmail.com\", comment=c(ORCID=\"0000-0003-3067-7154\")) )",
+      "Description": "Fits generalized linear models efficiently using 'RcppEigen'. The iteratively reweighted least squares  implementation utilizes the step-halving approach of Marschner (2011) <doi:10.32614/RJ-2011-012> to help safeguard against convergence issues.",
+      "BugReports": "https://github.com/jaredhuling/fastglm/issues",
+      "URL": "https://github.com/jaredhuling/fastglm, https://jaredhuling.org/fastglm/",
+      "License": "GPL (>= 2)",
+      "Encoding": "UTF-8",
+      "Depends": [
+        "R (>= 4.0.0)"
+      ],
+      "Imports": [
+        "Rcpp (>= 0.12.13)",
+        "bigmemory",
+        "methods",
+        "Matrix",
+        "Formula"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppEigen",
+        "BH",
+        "bigmemory"
+      ],
+      "Suggests": [
+        "glm2",
+        "knitr",
+        "rmarkdown",
+        "testthat (>= 3.0.0)",
+        "sandwich",
+        "microbenchmark",
+        "MASS",
+        "statmod",
+        "logistf",
+        "brglm2",
+        "pscl",
+        "speedglm",
+        "tweedie",
+        "ggplot2"
+      ],
+      "Config/testthat/edition": "3",
+      "RoxygenNote": "7.3.3",
+      "VignetteBuilder": "knitr",
+      "NeedsCompilation": "yes",
+      "Author": "Jared Huling [aut, cre], Douglas Bates [cph], Dirk Eddelbuettel [cph], Romain Francois [cph], Yixuan Qiu [cph], Noah Greifer [ctb] (ORCID: <https://orcid.org/0000-0003-3067-7154>)",
+      "Maintainer": "Jared Huling <jaredhuling@gmail.com>",
       "Repository": "CRAN"
     },
     "fastmap": {
@@ -3340,6 +3625,27 @@
       "Maintainer": "R Core Team <R-core@R-project.org>",
       "Repository": "CRAN"
     },
+    "npiv": {
+      "Package": "npiv",
+      "Version": "0.1.3",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Nonparametric Instrumental Variables Estimation and Inference",
+      "Date": "2024-12-10",
+      "Imports": [
+        "progress",
+        "MASS",
+        "Formula",
+        "withr"
+      ],
+      "Authors@R": "c(person(given = \"Jeffrey S.\", family = \"Racine\", role = \"aut\", email = \"racinej@mcmaster.ca\"), person(given = \"Timothy\", family = \"Christensen\", role = c(\"aut\",\"cre\"), email = \"timothy.christensen@yale.edu\"), person(given = \"Patrick\", family = \"Alken\", role = \"ctb\"), person(given = \"Rhys\", family = \"Ulerich\", role = \"ctb\"), person(given = \"Simon N.\", family = \"Wood\", role = \"ctb\", email = \"simon.wood@r-project.org\"))",
+      "Maintainer": "Timothy Christensen <timothy.christensen@yale.edu>",
+      "Description": "Implements methods introduced in Chen, Christensen, and Kankanala (2024) <doi:10.1093/restud/rdae025> for estimating and constructing uniform confidence bands for nonparametric structural functions using instrumental variables, including data-driven choice of tuning parameters. All methods in this package apply to nonparametric regression as a special case.",
+      "License": "GPL (>= 3)",
+      "NeedsCompilation": "yes",
+      "Author": "Jeffrey S. Racine [aut], Timothy Christensen [aut, cre], Patrick Alken [ctb], Rhys Ulerich [ctb], Simon N. Wood [ctb]",
+      "Repository": "CRAN"
+    },
     "numDeriv": {
       "Package": "numDeriv",
       "Version": "2016.8-1.1",
@@ -3475,6 +3781,34 @@
       "URL": "https://osqp.org",
       "Author": "Bartolomeo Stellato [aut, ctb, cph], Goran Banjac [aut, ctb, cph], Paul Goulart [aut, ctb, cph], Stephen Boyd [aut, ctb, cph], Eric Anderson [ctb], Vineet Bansal [aut, ctb], Balasubramanian Narasimhan [cre, aut]",
       "Maintainer": "Balasubramanian Narasimhan <naras@stanford.edu>",
+      "Repository": "CRAN"
+    },
+    "pbapply": {
+      "Package": "pbapply",
+      "Version": "1.7-5",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Adding Progress Bar to '*apply' Functions",
+      "Date": "2026-08-31",
+      "Authors@R": "c(person(given = \"Peter\", family = \"Solymos\", comment = c(ORCID = \"0000-0001-7337-1740\"), role = c(\"aut\", \"cre\"), email = \"psolymos@gmail.com\"), person(given = \"Zygmunt\", family = \"Zawadzki\", role = \"aut\", email = \"zygmunt@zstat.pl\"), person(given = \"Henrik\",  family = \"Bengtsson\",  role = \"ctb\", email = \"henrikb@braju.com\"), person(\"R Core Team\", role = c(\"cph\", \"ctb\")))",
+      "Maintainer": "Peter Solymos <psolymos@gmail.com>",
+      "Description": "A lightweight package that adds progress bar to vectorized R functions ('*apply'). The implementation can easily be added to functions where showing the progress is useful (e.g. bootstrap). The type and style of the progress bar (with percentages or remaining time) can be set through options. Supports several parallel processing backends including mirai and future.",
+      "Depends": [
+        "R (>= 3.2.0)"
+      ],
+      "Imports": [
+        "parallel"
+      ],
+      "Suggests": [
+        "shiny",
+        "future",
+        "future.apply"
+      ],
+      "License": "GPL (>= 2)",
+      "URL": "https://github.com/psolymos/pbapply, https://peter.solymos.org/pbapply/",
+      "BugReports": "https://github.com/psolymos/pbapply/issues",
+      "NeedsCompilation": "no",
+      "Author": "Peter Solymos [aut, cre] (ORCID: <https://orcid.org/0000-0001-7337-1740>), Zygmunt Zawadzki [aut], Henrik Bengtsson [ctb], R Core Team [cph, ctb]",
       "Repository": "CRAN"
     },
     "pillar": {
@@ -3725,6 +4059,42 @@
       "NeedsCompilation": "yes",
       "Author": "Jay Loden [aut], Dave Daeschler [aut], Giampaolo Rodola' [aut], Gábor Csárdi [aut, cre], Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "ptetools": {
+      "Package": "ptetools",
+      "Version": "1.0.1",
+      "Source": "Repository",
+      "Title": "Panel Treatment Effects Tools",
+      "Authors@R": "person(given = \"Brantly\", family = \"Callaway\", role = c(\"aut\", \"cre\"), email = \"brantly.callaway@uga.edu\")",
+      "URL": "https://github.com/bcallaway11/ptetools",
+      "BugReports": "https://github.com/bcallaway11/ptetools/issues",
+      "Description": "Generic code for estimating treatment effects with panel data.  The idea is to break into separate steps organizing the data, looping over groups and time periods, computing group-time average treatment effects, and aggregating group-time average treatment effects.  Often, one is able to implement a new identification/estimation procedure by simply replacing the step on estimating group-time average treatment effects.  See several different examples of this approach in the package documentation.",
+      "Depends": [
+        "R (>= 4.1.0)"
+      ],
+      "License": "GPL-3",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "Imports": [
+        "BMisc (>= 1.4.8)",
+        "Matrix",
+        "ggplot2",
+        "DRDID",
+        "data.table",
+        "dplyr",
+        "pbapply",
+        "splines2"
+      ],
+      "Suggests": [
+        "testthat (>= 3.0.0)",
+        "did"
+      ],
+      "Config/testthat/edition": "3",
+      "Config/roxygen2/version": "8.0.0",
+      "NeedsCompilation": "no",
+      "Author": "Brantly Callaway [aut, cre]",
+      "Maintainer": "Brantly Callaway <brantly.callaway@uga.edu>",
       "Repository": "CRAN"
     },
     "purrr": {
@@ -4602,6 +4972,42 @@
       "Author": "Tyler Morgan-Wall [aut, cph, cre] (<https://orcid.org/0000-0002-3131-3814>), Andrew Helmer [ctb, cph], Leonhard Grünschloß [ctb, cph], Eric Heitz [ctb, cph]",
       "Repository": "CRAN"
     },
+    "splines2": {
+      "Package": "splines2",
+      "Version": "0.5.4",
+      "Source": "Repository",
+      "Title": "Regression Spline Functions and Classes",
+      "Authors@R": "c( person(given = \"Wenjie\", family = \"Wang\", email = \"wang@wwenjie.org\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-0363-3180\")), person(given = \"Jun\", family = \"Yan\", role = \"aut\", comment = c(ORCID = \"0000-0003-4401-7296\")) )",
+      "Description": "Constructs basis functions of B-splines, M-splines, I-splines, convex splines (C-splines), periodic splines, natural cubic splines, generalized Bernstein polynomials, their derivatives, and integrals (except C-splines) by closed-form recursive formulas. It also contains a C++ head-only library integrated with Rcpp. See Wang and Yan (2021) <doi:10.6339/21-JDS1020> for details.",
+      "Imports": [
+        "stats",
+        "graphics",
+        "Rcpp"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "tinytest",
+        "RcppArmadillo"
+      ],
+      "Depends": [
+        "R (>= 3.2.3)"
+      ],
+      "VignetteBuilder": "knitr",
+      "License": "GPL (>= 3)",
+      "URL": "https://wwenjie.org/splines2, https://github.com/wenjie2wang/splines2",
+      "BugReports": "https://github.com/wenjie2wang/splines2/issues",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "NeedsCompilation": "yes",
+      "Author": "Wenjie Wang [aut, cre] (<https://orcid.org/0000-0003-0363-3180>), Jun Yan [aut] (<https://orcid.org/0000-0003-4401-7296>)",
+      "Maintainer": "Wenjie Wang <wang@wwenjie.org>",
+      "Repository": "CRAN"
+    },
     "stringi": {
       "Package": "stringi",
       "Version": "1.8.7",
@@ -5099,6 +5505,28 @@
       "NeedsCompilation": "no",
       "Author": "Yihui Xie [aut, cre, cph] (ORCID: <https://orcid.org/0000-0003-0645-5666>), Posit Software, PBC [cph, fnd], Christophe Dervieux [ctb] (ORCID: <https://orcid.org/0000-0003-4474-2498>), Devon Ryan [ctb] (ORCID: <https://orcid.org/0000-0002-8549-0971>), Ethan Heinzen [ctb], Fernando Cagua [ctb]",
       "Maintainer": "Yihui Xie <xie@yihui.name>",
+      "Repository": "CRAN"
+    },
+    "trust": {
+      "Package": "trust",
+      "Version": "0.1-9",
+      "Source": "Repository",
+      "Authors@R": "person(given = c(\"Charles\", \"J.\"), family = \"Geyer\", role = c(\"aut\", \"cre\"), email = \"geyer@umn.edu\", comment = c(ORCID = \"0000-0003-1471-1703\"))",
+      "Date": "2026-02-10",
+      "Title": "Trust Region Optimization",
+      "Depends": [
+        "R (>= 4.2.0)"
+      ],
+      "Imports": [
+        "stats"
+      ],
+      "ByteCompile": "TRUE",
+      "Description": "Does local optimization using two derivatives and trust regions. Guaranteed to converge to local minimum of objective function.",
+      "License": "MIT + file LICENSE",
+      "URL": "http://www.stat.umn.edu/geyer/trust/",
+      "NeedsCompilation": "no",
+      "Author": "Charles J. Geyer [aut, cre] (ORCID: <https://orcid.org/0000-0003-1471-1703>)",
+      "Maintainer": "Charles J. Geyer <geyer@umn.edu>",
       "Repository": "CRAN"
     },
     "tzdb": {
