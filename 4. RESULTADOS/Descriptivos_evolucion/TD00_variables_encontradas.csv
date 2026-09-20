@@ -1,0 +1,12 @@
+concepto,variable,disponible
+ventas,VALORVEN,sí
+produccion,produccion_bruta_prodbr2,sí
+valor_agregado,valor_agregado_valagri,sí
+consumo,consumo_intermedio_consin2,sí
+costo_laboral,costos_totales_personal_total_c3r10c3,sí
+inversion,inversion_total_c7r10c2,sí
+activos,activos_fijos_activfi,sí
+terceros,terceros_total_c3r41c3,sí
+agencias,agencias_personal_temporal_total_c3r8c3,sí
+energia,energia_consumida_kwh_c5r1c4,sí
+exportado,porcentaje_exportado_porcvt,sí

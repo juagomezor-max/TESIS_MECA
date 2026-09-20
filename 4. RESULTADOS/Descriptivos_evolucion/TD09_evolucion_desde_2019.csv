@@ -1,0 +1,11 @@
+exposicion,ANIO,empleo,ventas,valor_agregado,salario,productividad
+Baja exposición,2019,100,100,100,100,100
+Baja exposición,2021,100,119.5,121.1,110.8,124
+Baja exposición,2022,103.9,156.8,152.4,122.2,149.9
+Baja exposición,2023,102.6,153.2,157.5,132.8,150.7
+Baja exposición,2024,105.2,158.9,163.8,146.9,152.2
+Alta exposición,2019,100,100,100,100,100
+Alta exposición,2021,96.6,104.4,106.8,108.6,110.2
+Alta exposición,2022,100,124.2,121.8,117.2,124.3
+Alta exposición,2023,96.6,129.1,129.4,132.6,132.8
+Alta exposición,2024,96.6,138.5,139,146.8,140.7
