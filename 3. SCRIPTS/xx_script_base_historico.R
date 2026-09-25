@@ -1,5 +1,5 @@
 # ==============================================================================
-# 99_script_base_historico.R
+# xx_script_base_historico.R
 #
 # Título:  Análisis manual del efecto del salario mínimo 2023 sobre firmas
 #          manufactureras (EAM)
@@ -18,13 +18,13 @@
 # ------------------------------------------------------------------------------
 # HISTÓRICO -- NO CORRER
 #
-# Superado por 02_resultados_poster.R. Se conserva como registro
+# Superado por 01_descriptivos_y_contexto.R. Se conserva como registro
 # de la revisión que se hizo en su momento (ver "REGISTRO DE CORRECCIONES"
 # abajo, con 9 correcciones metodológicas que pueden servir de referencia
 # para la sección de metodología de la tesis).
 #
 # No correrlo: su carpeta de salida (4. RESULTADOS/Descriptivos/, Estimacion/,
-# Robustez/, Validaciones/) colisiona con la de 02_resultados_poster.R --
+# Robustez/, Validaciones/) colisiona con la de 01_descriptivos_y_contexto.R --
 # pisaría esos resultados.
 # ------------------------------------------------------------------------------
 #

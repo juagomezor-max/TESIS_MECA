@@ -1,5 +1,5 @@
 # ==============================================================================
-# 05_primer_eslabon_medidas.R
+# 03_primer_eslabon_medidas.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -29,8 +29,8 @@
 # Cifra clave:  2,98% por DE de Bite — efecto sobre la TASA DE CRECIMIENTO del
 #               costo laboral 2022-2023, en corte transversal. No es la cifra
 #               principal de la tesis (esa es 4,03%, del event study).
-# Depende de:   01_exposicion_alternativa.R
-# Se relaciona: 06_decision_medida.R (cierra la decisión de medida)
+# Depende de:   02_medidas_exposicion.R
+# Se relaciona: 04_decision_medida.R (cierra la decisión de medida)
 #               07_reconciliacion.R (explica por qué 2,98 ≠ 4,03)
 #
 # SUPERADO POR VERSIONES POSTERIORES:
@@ -38,7 +38,7 @@
 #     sección. La estimación se conserva; su lectura cambia.
 #   - La concentración en el quintil 5 de la sección 8.3 es un hallazgo de
 #     medianas SIN controles. Con controles la relación es monotónica
-#     (06_decision_medida.R, sección 6).
+#     (04_decision_medida.R, sección 6).
 # ------------------------------------------------------------------------------
 
 
@@ -456,7 +456,7 @@ titulo("6. SESGO DE DIVISIÓN: MEDIDAS CON BASE 2019")
 # que la persistencia existe: el test es informativo.
 #
 # Bite y Exposure no tienen versión 2019 construida. Si se quiere comparación
-# completa, hay que construirlas con la misma lógica de 01_exposicion_alternativa.R.
+# completa, hay que construirlas con la misma lógica de 02_medidas_exposicion.R.
 
 etiquetas_2019 <- c(
   golpe_c_2019     = "Golpe C (base 2019)",
@@ -646,7 +646,7 @@ guardar_tabla(agrupado_sector, "T06_errores_agrupados_sector",
 # tamaño de la sección 4. Lo que sale aquí es que el efecto se concentra en el
 # quintil 5 -- eso NO es la última palabra sobre la forma de la relación. Con
 # los mismos controles de la especificación principal, la relación por
-# quintiles resulta monotónica creciente (06_decision_medida.R,
+# quintiles resulta monotónica creciente (04_decision_medida.R,
 # sección 6). No es una contradicción: son dos especificaciones distintas
 # (con y sin controles) que pueden mostrar formas distintas. No generalizar
 # a partir de esta tabla sola.
@@ -681,7 +681,7 @@ if ("golpe_c_de" %in% names(medidas) && "Bite2022_obreros_de" %in% names(medidas
                                   quintil_golpe_c = COLOR_ALTA),
                        labels = c("Bite (Kaitz de obreros)", "Golpe C")) +
     labs(title = "Crecimiento del costo laboral 2022-2023 por quintil de exposición (sin controles)",
-         subtitle = "Medianas crudas -- con controles la relación es monotónica (06_decision_medida.R, sección 6)",
+         subtitle = "Medianas crudas -- con controles la relación es monotónica (04_decision_medida.R, sección 6)",
          x = "Quintil de exposición (1 = menos expuesta)",
          y = "Crecimiento mediano (%)", color = NULL,
          caption = "Medianas sin controles. Sirve para ver la forma de la relación, no para medir el efecto.") +
@@ -726,7 +726,7 @@ criterios, en orden:
      outcome -- si el efecto sobrevive aquí, es economía, no sesgo de
      división. Este criterio pesa más que la magnitud.
   3. Cobertura de muestra (sección 2, tabla T01) y estabilidad de la medida
-     entre años base -- ver 06_decision_medida.R, que compara
+     entre años base -- ver 04_decision_medida.R, que compara
      cada medida calculada con base 2022 y con base 2019.
 
 CRITERIO ELIMINADO EN ESTA REVISIÓN: el placebo 2018-2019 de la sección 7 NO

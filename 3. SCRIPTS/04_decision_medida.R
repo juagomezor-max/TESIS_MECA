@@ -1,5 +1,5 @@
 # ==============================================================================
-# 06_decision_medida.R
+# 04_decision_medida.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -22,8 +22,8 @@
 #               eligió?
 # Cifra clave:  Bite gana la celda limpia con +1,15% por DE (p=0,008) --
 #               sección 3, tabla T01_celda_limpia.
-# Depende de:   01_exposicion_alternativa.R,
-#               05_primer_eslabon_medidas.R (mismo problema de
+# Depende de:   02_medidas_exposicion.R,
+#               03_primer_eslabon_medidas.R (mismo problema de
 #               sesgo de división, misma solución de celda limpia)
 #
 # CAPÍTULO 6 -- NO SUAVIZAR: la sensibilidad al año base de exposición es una
@@ -519,7 +519,7 @@ cat("\nLECTURA: una estabilidad baja indica más atenuación en la celda limpia,
 # ==============================================================================
 titulo("6. EFECTO POR TRAMOS DE EXPOSICIÓN")
 
-# 05_primer_eslabon_medidas.R sugirió, con medianas SIN controles,
+# 03_primer_eslabon_medidas.R sugirió, con medianas SIN controles,
 # que el efecto estaba concentrado en el quintil más expuesto. Con controles
 # esa lectura no se sostiene: la relación resulta monotónica creciente. Lo
 # dejamos aquí para documentar la corrección, con la exposición de 2019
@@ -571,7 +571,7 @@ grafico_tramos <- ggplot(tramos, aes(x = quintil, y = 100 * coeficiente,
        subtitle = "Diferencia frente al quintil menos expuesto, con controles",
        x = "Quintil de exposición (1 = menos expuesta)",
        y = "Diferencia en el crecimiento (%)", color = NULL,
-       caption = "Con controles la relación es monotónica. Las medianas crudas de 05_primer_eslabon_medidas.R sugerían lo contrario.") +
+       caption = "Con controles la relación es monotónica. Las medianas crudas de 03_primer_eslabon_medidas.R sugerían lo contrario.") +
   tema_tesis
 guardar_grafico(grafico_tramos, "G03_efecto_por_tramos")
 
@@ -669,7 +669,7 @@ QUÉ ESCRIBIR EN LA TESIS:
      la composición ocupacional por sí sola no mide exposición al mínimo.
 
   3. LA RELACIÓN ES MONOTÓNICA con controles. Las medianas crudas de
-     05_primer_eslabon_medidas.R sugerían concentración en el
+     03_primer_eslabon_medidas.R sugerían concentración en el
      quintil 5; con controles no se sostiene.
      Corregir esa afirmación donde aparezca.
 

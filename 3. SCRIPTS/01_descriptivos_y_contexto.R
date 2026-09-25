@@ -1,5 +1,5 @@
 # ==============================================================================
-# 02_resultados_poster.R
+# 01_descriptivos_y_contexto.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -25,7 +25,7 @@
 # (agrega costos laborales por categoría, tipos de contrato, inversión,
 # producción y otras variables). Si no se ha corrido, la sección 1 lo avisa.
 #
-# El script anterior (99_script_base_historico.R) queda en el repositorio
+# El script anterior (xx_script_base_historico.R) queda en el repositorio
 # como registro histórico de la revisión que hicimos -- no correrlo, su
 # carpeta de salida colisiona con la de este.
 # ==============================================================================

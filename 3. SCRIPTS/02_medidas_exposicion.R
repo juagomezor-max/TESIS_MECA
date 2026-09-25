@@ -1,5 +1,5 @@
 # ==============================================================================
-# 01_exposicion_alternativa.R
+# 02_medidas_exposicion.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -29,8 +29,8 @@
 #               tabla T06).
 # Depende de:   (nada propio del proyecto -- lee directamente
 #               1. DATOS/panel_firma_eam_expalt_completo.rds)
-# Alimenta a:   05_primer_eslabon_medidas.R (prueba cuál medida
-#               predice el choque), 06_decision_medida.R (cierra
+# Alimenta a:   03_primer_eslabon_medidas.R (prueba cuál medida
+#               predice el choque), 04_decision_medida.R (cierra
 #               la decisión de medida principal)
 #
 # OJO -- hay material de otro capítulo dentro de este script:

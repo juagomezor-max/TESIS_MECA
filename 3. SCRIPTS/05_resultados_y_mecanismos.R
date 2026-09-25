@@ -1,5 +1,5 @@
 # ==============================================================================
-# 03_resultados_y_mecanismos.R
+# 05_resultados_y_mecanismos.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -26,7 +26,7 @@
 #               heterogeneidad)
 # Por qué Bite: la medida principal usada en las secciones 5, 6 y 7 (donde
 #               solo se corre una) es Bite2022_obreros porque es la que gana
-#               la celda limpia en 06_decision_medida.R (+1,15%,
+#               la celda limpia en 04_decision_medida.R (+1,15%,
 #               p=0,008) -- ver ese script para la regla de decisión completa.
 #               No se re-justifica aquí, solo se usa.
 #
@@ -42,7 +42,7 @@
 # MECANISMOS Y TENDENCIAS PREVIAS: si al revisar p_previos (sección 5) resulta
 # que la mayoría de los mecanismos tiene tendencias diferenciales antes del
 # choque, su coeficiente de 2023 no es interpretable como efecto tal como se
-# calcula aquí (solo lectura A). 04_mecanismos_por_grupo.R resuelve
+# calcula aquí (solo lectura A). 06_mecanismos_por_grupo.R resuelve
 # ese problema usando la lectura B para cada mecanismo (el salto contra la
 # trayectoria previa de esa variable, no contra cero) -- remitir ahí cuando
 # ese sea el caso. La advertencia de que los mecanismos siguen siendo
@@ -91,7 +91,7 @@
 # las que llegaron a 2022 con el costo más bajo, y su trayectoria previa se ve
 # descendente. Es una propiedad conocida de los diseños con bite salarial, no un
 # defecto de implementación. La lectura B existe precisamente para corregirla,
-# y la validación con exposición de 2019 (06_decision_medida.R) da
+# y la validación con exposición de 2019 (04_decision_medida.R) da
 # un efecto positivo y significativo sin depender del año base. Las dos cosas
 # van escritas en la tesis como matices del resultado, no como su refutación.
 # ==============================================================================
@@ -668,7 +668,7 @@ cat("\nCÓMO LEER LA TABLA DE MECANISMOS:\n",
     "   tendencias diferenciales antes del choque y su coeficiente no es\n",
     "   interpretable como efecto AQUÍ (esta tabla solo usa la lectura A). Si\n",
     "   son varios los mecanismos en ese caso, ver\n",
-    "   04_mecanismos_por_grupo.R (lectura B).\n",
+    "   06_mecanismos_por_grupo.R (lectura B).\n",
     " - Los indicadores (usa_agencias, hace_outsourcing, invierte) están en\n",
     "   puntos porcentuales, no en cambio porcentual. No mezclar escalas.\n")
 
@@ -876,7 +876,7 @@ QUÉ REPORTAR EN LA TESIS:
   3. TENDENCIA PREVIA (CAPÍTULO 6, no capítulo 5). Declararla de frente: es
      esperable por construcción de la medida y es una propiedad conocida de
      los diseños con bite salarial. Las defensas son la lectura B y la
-     validación con exposición de 2019 de 06_decision_medida.R
+     validación con exposición de 2019 de 04_decision_medida.R
      (+1,15%, p=0,008), que no depende del año base.
 
   4. SEGUNDO ESLABÓN. No escribir 'el empleo no cae'. Escribir 'no detectamos
@@ -889,7 +889,7 @@ QUÉ REPORTAR EN LA TESIS:
      previas significativas no es interpretable como efecto tal como se
      calcula aquí (solo lectura A): revisar p_previos fila por fila. Si la
      mayoría de los mecanismos cae en ese caso, ver
-     04_mecanismos_por_grupo.R, que usa la lectura B (salto contra
+     06_mecanismos_por_grupo.R, que usa la lectura B (salto contra
      la trayectoria previa de cada mecanismo, no contra cero) para no perder
      esos canales por un problema que es de la lectura, no del mecanismo.
 
