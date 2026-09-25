@@ -16,6 +16,19 @@
 # "0. ANALISIS INICIAL IA/".
 #
 # ------------------------------------------------------------------------------
+# HISTÓRICO -- NO CORRER
+#
+# Superado por principal/10_resultados_poster.R. Se conserva como registro
+# de la revisión que se hizo en su momento (ver "REGISTRO DE CORRECCIONES"
+# abajo, con 9 correcciones metodológicas que pueden servir de referencia
+# para la sección de metodología de la tesis).
+#
+# No correrlo: su carpeta de salida (4. RESULTADOS/Descriptivos/, Estimacion/,
+# Robustez/, Validaciones/) colisiona con la de principal/10_resultados_
+# poster.R -- pisaría esos resultados.
+# ------------------------------------------------------------------------------
+#
+# ------------------------------------------------------------------------------
 # REGISTRO DE CORRECCIONES (2026-09-16) respecto a la versión del 15-sep
 # ------------------------------------------------------------------------------
 # [C1] CONTROLES FIJADOS EN 2022. En el panel, tamano_empresa se calcula cada
