@@ -1,5 +1,5 @@
 # ==============================================================================
-# 07_mecanismos_por_grupo.R
+# 12_mecanismos_por_grupo.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -7,7 +7,7 @@
 #
 # ¿POR DÓNDE AJUSTAN LAS FIRMAS, Y QUIÉNES AJUSTAN POR DÓNDE?
 #
-# El script 06 mostró dos cosas que se combinan aquí:
+# principal/11_resultados_y_mecanismos.R mostró dos cosas que se combinan aquí:
 #
 #   - El efecto sobre el costo laboral y sobre el empleo varía fuertemente por
 #     tamaño de firma: +4,92% de costo y -2,42% de empleo en las pequeñas,
@@ -22,6 +22,18 @@
 #           1. DATOS/panel_analitico_firma_eam.rds
 # Salidas:  4. RESULTADOS/Mecanismos_por_grupo/
 # ==============================================================================
+
+# ------------------------------------------------------------------------------
+# LUGAR EN LA TESIS
+#
+# Capítulo:     5. Resultados (mecanismos, heterogeneidad)
+# Cifra clave:  compresión salarial, 0,22 DE -- cuatro veces cualquier otro
+#               canal, y estable en los tres grupos de tamaño (0,218 pequeñas
+#               / 0,212 medianas / 0,179 grandes).
+# Depende de:   principal/11_resultados_y_mecanismos.R (mismo problema de
+#               tendencias previas en los mecanismos, resuelto aquí con la
+#               lectura B -- ver "DOS DECISIONES DE MEDICIÓN" abajo)
+# ------------------------------------------------------------------------------
 
 
 # ==============================================================================
