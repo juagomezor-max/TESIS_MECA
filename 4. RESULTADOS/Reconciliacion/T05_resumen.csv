@@ -1,0 +1,5 @@
+bloque,especificacion,efecto_pct,p_valor,significancia,observaciones,firmas
+Especificaciones originales,"A. Panel, outcome con propietarios, winsorizado",-1.0227727580316508,0.010621996242472058,**,44611,5098
+Especificaciones originales,"B. Corte, outcome sin propietarios, filtrado",2.1225372241484948,4.7382171336459365e-5,***,4481,4481
+Sobre la misma muestra,"Panel, muestra común",-1.535460263909796,1.5285154712316596e-4,***,39463,4481
+Sobre la misma muestra,"Corte, muestra común",2.1225372241484948,4.7382171336459365e-5,***,4481,4481

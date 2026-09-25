@@ -1,0 +1,6 @@
+medida,crit_1_limpia_positiva_y_sig,efecto_limpia_pct,p_limpia,crit_2_estandar_positiva_y_sig,efecto_estandar_pct,estabilidad_pearson,n_celda_limpia,razon_limpia_sobre_estandar
+Bite,Sí,1.145,0.0084,Sí,2.983,0.57,3880,0.384
+Golpe costo,Sí,1.017,0.0297,Sí,9.597,0.732,5486,0.106
+Golpe A,Sí,0.872,0.0292,Sí,3.459,0.732,5417,0.252
+Golpe C,No,0.758,0.096,Sí,3.564,0.723,5439,0.213
+Exposure,No,0.457,0.3236,No,0.193,0.76,5912,2.365
