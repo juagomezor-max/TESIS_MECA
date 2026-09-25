@@ -1,5 +1,5 @@
 # ==============================================================================
-# 04_decision_medida.R
+# 21_decision_medida.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -13,6 +13,36 @@
 #           1. DATOS/panel_analitico_firma_eam.rds
 # Salidas:  4. RESULTADOS/Decision_medida/
 # ==============================================================================
+
+# ------------------------------------------------------------------------------
+# LUGAR EN LA TESIS
+#
+# Capítulos:    2 (Medición) y 6 (Validaciones adicionales y amenazas)
+# Pregunta:     ¿Qué medida de exposición usa la tesis, y con qué evidencia se
+#               eligió?
+# Cifra clave:  Bite gana la celda limpia con +1,15% por DE (p=0,008) --
+#               sección 3, tabla T01_celda_limpia.
+# Depende de:   construccion/exposicion_alternativa.R,
+#               validacion/20_primer_eslabon_medidas.R (mismo problema de
+#               sesgo de división, misma solución de celda limpia)
+#
+# CAPÍTULO 6 -- NO SUAVIZAR: la sensibilidad al año base de exposición es una
+# amenaza reconocida, no un detalle técnico. Con exposición 2022 el
+# coeficiente estándar da +4,03% por DE; con exposición 2019 (celda limpia)
+# da -1,95% contra el outcome que arrastra base 2019 (sección 4, fila "Exp
+# 2022 / Crec 2019-23" de la matriz, y comparación de secciones 3 vs. 7). Un
+# coeficiente que cambia de signo según el año en que se mide la exposición
+# es exactamente el tipo de resultado que va al capítulo 6, declarado como
+# tal, no minimizado en el texto.
+#
+# YA VERIFICADO EN ESTE SCRIPT (no requirió corrección): la "prueba del
+# outcome rebasado" que una versión intermedia proponía como decisiva está
+# aquí correctamente declarada INVÁLIDA (ver "EL PROBLEMA Y CÓMO SE
+# RESUELVE" abajo y la sección 4) -- el outcome 2021-2023 incluye el aumento
+# del mínimo de 2022, anterior al año en que se mide la exposición 2022, lo
+# que deja la exposición post-tratamiento. Este script ya tiene la versión
+# final correcta.
+# ------------------------------------------------------------------------------
 
 
 # ==============================================================================
@@ -489,11 +519,11 @@ cat("\nLECTURA: una estabilidad baja indica más atenuación en la celda limpia,
 # ==============================================================================
 titulo("6. EFECTO POR TRAMOS DE EXPOSICIÓN")
 
-# El script 03 sugirió, con medianas SIN controles, que el efecto estaba
-# concentrado en el quintil más expuesto. Con controles esa lectura no se
-# sostiene: la relación resulta monotónica creciente. Lo dejamos aquí para
-# documentar la corrección, con la exposición de 2019 (celda limpia) además de
-# la de 2022.
+# validacion/20_primer_eslabon_medidas.R sugirió, con medianas SIN controles,
+# que el efecto estaba concentrado en el quintil más expuesto. Con controles
+# esa lectura no se sostiene: la relación resulta monotónica creciente. Lo
+# dejamos aquí para documentar la corrección, con la exposición de 2019
+# (celda limpia) además de la de 2022.
 
 estimar_tramos <- function(variable, etiqueta, outcome = "crecimiento_23_22") {
   if (!variable %in% names(datos)) return(NULL)
@@ -541,7 +571,7 @@ grafico_tramos <- ggplot(tramos, aes(x = quintil, y = 100 * coeficiente,
        subtitle = "Diferencia frente al quintil menos expuesto, con controles",
        x = "Quintil de exposición (1 = menos expuesta)",
        y = "Diferencia en el crecimiento (%)", color = NULL,
-       caption = "Con controles la relación es monotónica. Las medianas crudas del script 03 sugerían lo contrario.") +
+       caption = "Con controles la relación es monotónica. Las medianas crudas de validacion/20 sugerían lo contrario.") +
   tema_tesis
 guardar_grafico(grafico_tramos, "G03_efecto_por_tramos")
 
@@ -638,8 +668,9 @@ QUÉ ESCRIBIR EN LA TESIS:
      valida con evidencia la decisión pre-comiteada de descartarla y muestra que
      la composición ocupacional por sí sola no mide exposición al mínimo.
 
-  3. LA RELACIÓN ES MONOTÓNICA con controles. Las medianas crudas del script 03
-     sugerían concentración en el quintil 5; con controles no se sostiene.
+  3. LA RELACIÓN ES MONOTÓNICA con controles. Las medianas crudas de
+     validacion/20_primer_eslabon_medidas.R sugerían concentración en el
+     quintil 5; con controles no se sostiene.
      Corregir esa afirmación donde aparezca.
 
   4. EL PLACEBO 2018-2019 NO ES INFORMATIVO. Ver el encabezado de este script.
