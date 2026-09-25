@@ -1,5 +1,5 @@
 # ==============================================================================
-# 03_tratamiento_continuo.R
+# 23_tratamiento_continuo.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -25,6 +25,41 @@
 #
 # Se corre desde la raíz del repositorio (abriendo TESIS_MECA.Rproj).
 # ==============================================================================
+
+# ------------------------------------------------------------------------------
+# LUGAR EN LA TESIS -- este script alimenta DOS capítulos, marcado sección por
+# sección abajo, no en bloque.
+#
+# Capítulo 4 (Validación de la identificación -- pruebas que el diseño PASA):
+#   C1. Distribución de la exposición.
+#   C2 / C2b / C2c. Efecto por quintiles, el salto de 2023 por quintil, y el
+#       mismo ejercicio contra 2015-2019.
+#   C3. Comparación de formas funcionales (lineal, cuadrática, por tramos).
+#   C4. Estudio de evento por nivel de exposición.
+#   C5. El resultado sin el quintil más expuesto.
+#   C6. Contraste con el paquete contdid.
+#
+# Capítulo 6 (Validaciones adicionales y amenazas -- lo que NO cierra):
+#   C7 (C7.1/C7.2/C7.3). ¿El salto del salario es el choque o reversión a la
+#       media? C7.2 en particular es un placebo que SÍ es informativo (a
+#       diferencia del placebo del primer eslabón en validacion/20): aquí
+#       detecta que la medida actual produce un salto salarial falso en 2019,
+#       un año sin choque -- es la amenaza que motiva C8.
+#   C8 (C8.1/C8.2/C8.3). Tres formas de construir la exposición, probadas
+#       contra el mismo placebo que C7.2. AÚN NO TIENE UN VEREDICTO FIJADO EN
+#       ESTE SCRIPT: su lugar en la tesis depende de cuál medida (A, B o C)
+#       termine pasando la comparación real-vs-placebo de C8.3. Mientras eso
+#       no se decida, C8 completo queda en el capítulo 6 junto con C7, porque
+#       es la misma investigación de una amenaza sin resolver, no una prueba
+#       que el diseño ya pasó. Si una medida concreta resuelve el problema,
+#       ESE hallazgo puntual pasaría al capítulo 4 -- no se anticipa aquí.
+#
+# Panel usado: panel_analitico_firma_eam.rds (el ORIGINAL, sección 1), NO
+# panel_firma_eam_expalt_completo.rds (el ampliado, con 2020 y categorías
+# ocupacionales separadas). Las cifras de este script NO son directamente
+# comparables con las de validacion/20, validacion/21, validacion/22 ni con
+# principal/11 y principal/12, que sí usan el panel ampliado.
+# ------------------------------------------------------------------------------
 
 rm(list = ls())
 
