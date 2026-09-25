@@ -274,8 +274,12 @@ mapa_control_personal <- tibble::tribble(
   "control_permanente_propietarios_persoesc","PERSOESC",
   "control_temporal_directo_pertem3",       "PERTEM3",
   "control_permanente_y_temporal_pperytem", "PPERYTEM",
-  "control_temporal_agencias_mujer_c4r4c9t","C4R4C9T",
-  "control_temporal_agencias_hombre_c4r4c10t","C4R4C10T"
+  # PASO Cierre-1: renombradas. La etiqueta EAM real de C4R4C9T/C4R4C10T es
+  # "Total Personal Ocupado Mujer/Hombre" -- NO son temporal via agencias
+  # (ese error de nombre se cometio al escribir el mapa la primera vez, sin
+  # verificar la etiqueta). Corregido tras auditar poblacion fila por fila.
+  "control_total_ocupado_mujer_c4r4c9t",    "C4R4C9T",
+  "control_total_ocupado_hombre_c4r4c10t",  "C4R4C10T"
 )
 faltan_control <- setdiff(mapa_control_personal$codigo_eam, names(macro_base))
 if (length(faltan_control) > 0) cat("AVISO -- totales de control no encontrados:", paste(faltan_control, collapse=", "), "\n")
@@ -635,6 +639,100 @@ cat("\n3.3 -- Identidad de costos (C3R10C1+C3R10PT+C3R10C2 = C3R10C3), por año:
 print(as.data.frame(identidad_costos_anio), row.names = FALSE)
 resultados_validacion$v3_identidad_costos <- identidad_costos_anio
 
+# --- 3.3b (Cierre-2) Estructura del cuadro 3: ¿C3R10 = suma(C3R1..C3R9),
+#     por categoria? Se prueba explicitamente porque determina si se puede
+#     construir un costo laboral "por permanente" que incluya cotizaciones/
+#     parafiscales (solo se podria si esos rubros estuvieran desagregados
+#     por tipo de vinculo dentro de C3R1..C3R9 sumando exacto a C3R10). ---
+verificar_estructura_c3r10 <- function(total_col, comp_cols, etiqueta_cat) {
+  comp_cols <- intersect(comp_cols, names(panel_completo))
+  mat <- as.data.frame(lapply(panel_completo[comp_cols], safe_numeric))
+  suma <- rowSums(mat, na.rm = TRUE)
+  total <- safe_numeric(panel_completo[[total_col]])
+  dif <- suma - total
+  tibble::tibble(ANIO = panel_completo$ANIO, .dif = dif, .total_na = is.na(total)) %>%
+    dplyr::filter(!.total_na) %>%
+    dplyr::group_by(ANIO) %>%
+    dplyr::summarise(n_firmas = dplyr::n(), pct_coincide_exacto = round(100 * mean(abs(.dif) < 0.5, na.rm = TRUE), 2), .groups = "drop") %>%
+    dplyr::mutate(categoria = etiqueta_cat)
+}
+
+cols_comp_obreros <- c("salario_integral_obreros_c3r1c1", "sueldos_permanentes_obreros_c3r2c1",
+  "prestaciones_permanentes_obreros_c3r3c1", "sueldos_prest_temporal_directo_obreros_c3r4c1",
+  "cotizaciones_obreros_c3r5c1", "parafiscales_obreros_c3r6c1", "seguros_vida_voluntarios_obreros_c3r7c1",
+  "pago_agencias_temporales_obreros_c3r8c1", "otros_gastos_personal_obreros_c3r9c1")
+cols_comp_proftec <- c("salario_integral_profesional_tecnico_c3r1pt", "sueldos_permanentes_profesional_tecnico_c3r2pt",
+  "prestaciones_permanentes_profesional_tecnico_c3r3pt", "sueldos_prest_temporal_directo_profesional_tecnico_c3r4pt",
+  "cotizaciones_profesional_tecnico_c3r5pt", "parafiscales_profesional_tecnico_c3r6pt", "seguros_vida_voluntarios_profesional_tecnico_c3r7pt",
+  "pago_agencias_temporales_profesional_tecnico_c3r8pt", "otros_gastos_personal_profesional_tecnico_c3r9pt")
+cols_comp_admin <- c("salario_integral_administrativos_c3r1c2", "sueldos_permanentes_administrativos_c3r2c2",
+  "prestaciones_permanentes_administrativos_c3r3c2", "sueldos_prest_temporal_directo_administrativos_c3r4c2",
+  "cotizaciones_administrativos_c3r5c2", "parafiscales_administrativos_c3r6c2", "seguros_vida_voluntarios_administrativos_c3r7c2",
+  "pago_agencias_temporales_administrativos_c3r8c2", "otros_gastos_personal_administrativos_c3r9c2")
+cols_comp_total <- c("salario_integral_total_c3r1c3", "sueldos_permanentes_total_c3r2c3",
+  "prestaciones_permanentes_total_c3r3c3", "sueldos_prest_temporal_directo_total_c3r4c3",
+  "cotizaciones_total_c3r5c3", "parafiscales_total_c3r6c3", "seguros_vida_voluntarios_total_c3r7c3",
+  "pago_agencias_temporales_total_c3r8c3", "otros_gastos_personal_total_c3r9c3")
+
+estructura_c3r10 <- dplyr::bind_rows(
+  verificar_estructura_c3r10("costos_totales_personal_obreros_c3r10c1", cols_comp_obreros, "obreros (C1)"),
+  verificar_estructura_c3r10("costos_totales_personal_profesional_tecnico_c3r10pt", cols_comp_proftec, "profesional_tecnico (PT)"),
+  verificar_estructura_c3r10("costos_totales_personal_administrativos_c3r10c2", cols_comp_admin, "administrativos (C2)"),
+  verificar_estructura_c3r10("costos_totales_personal_total_c3r10c3", cols_comp_total, "total (C3)")
+)
+cat("\n3.3b -- Estructura: C3R10 = suma(C3R1..C3R9), por categoria y año (Item 2):\n")
+print(as.data.frame(estructura_c3r10), row.names = FALSE)
+cat("\nRango de coincidencia observado:", round(min(estructura_c3r10$pct_coincide_exacto),1), "% a",
+    round(max(estructura_c3r10$pct_coincide_exacto),1), "%. NO cierra de forma confiable -- ver README ",
+    "para la conclusion sobre que medidas quedan habilitadas.\n")
+resultados_validacion$v3b_estructura_c3r10 <- estructura_c3r10
+
+# --- 3.3c (Cierre-5) R1/R2/R3CSAP: identidad contra R4CSAP y correlacion
+#     contra aprendices por categoria, para intentar resolver a que
+#     categoria ocupacional corresponde cada una. ---
+csap_check <- panel_completo %>%
+  dplyr::transmute(
+    r1 = safe_numeric(apoyo_sostenimiento_aprendices_1_r1csap),
+    r2 = safe_numeric(apoyo_sostenimiento_aprendices_2_r2csap),
+    r3 = safe_numeric(apoyo_sostenimiento_aprendices_3_r3csap),
+    r4 = safe_numeric(apoyo_sostenimiento_aprendices_total_r4csap),
+    obreros_apr = safe_numeric(obreros_aprendices),
+    proftec_apr = safe_numeric(profesional_tecnico_aprendices),
+    admin_apr = safe_numeric(administrativos_aprendices)
+  )
+pct_identidad_csap <- round(100 * mean(abs(csap_check$r1 + csap_check$r2 + csap_check$r3 - csap_check$r4) < 0.5, na.rm = TRUE), 2)
+cat("\n3.3c -- CSAP: R1+R2+R3 = R4:", pct_identidad_csap, "% de las filas no-NA (Item 5)\n")
+correlaciones_csap <- tibble::tribble(
+  ~serie, ~vs_obreros_apr, ~vs_proftec_apr, ~vs_admin_apr,
+  "R1CSAP", cor(csap_check$r1, csap_check$obreros_apr, use = "pairwise.complete.obs"),
+            cor(csap_check$r1, csap_check$proftec_apr, use = "pairwise.complete.obs"),
+            cor(csap_check$r1, csap_check$admin_apr, use = "pairwise.complete.obs"),
+  "R2CSAP", cor(csap_check$r2, csap_check$obreros_apr, use = "pairwise.complete.obs"),
+            cor(csap_check$r2, csap_check$proftec_apr, use = "pairwise.complete.obs"),
+            cor(csap_check$r2, csap_check$admin_apr, use = "pairwise.complete.obs"),
+  "R3CSAP", cor(csap_check$r3, csap_check$obreros_apr, use = "pairwise.complete.obs"),
+            cor(csap_check$r3, csap_check$proftec_apr, use = "pairwise.complete.obs"),
+            cor(csap_check$r3, csap_check$admin_apr, use = "pairwise.complete.obs")
+) %>% dplyr::mutate(dplyr::across(-serie, ~round(.x, 3)))
+cat("Correlaciones R1/R2/R3CSAP vs aprendices por categoria (max |r| =",
+    round(max(abs(as.matrix(correlaciones_csap[-1]))), 3), "-- ninguna es concluyente):\n")
+print(as.data.frame(correlaciones_csap), row.names = FALSE)
+resultados_validacion$v3c_csap <- list(pct_identidad = pct_identidad_csap, correlaciones = correlaciones_csap)
+
+# --- 3.3d (Cierre-3) CIIU3 (2008-2011) vs CIIU4 (2012-2024): ¿coexisten en
+#     algun año? Si no, no hay forma empirica de construir un empalme
+#     dentro de este panel. ---
+solapamiento_ciiu <- panel_completo %>%
+  dplyr::mutate(ciiu4_no_na = !is.na(CIIU4) & CIIU4 != "", ciiu3_no_na = !is.na(CIIU3) & CIIU3 != "") %>%
+  dplyr::group_by(ANIO) %>%
+  dplyr::summarise(pct_ciiu4_disponible = round(100 * mean(ciiu4_no_na), 1),
+                    pct_ciiu3_disponible = round(100 * mean(ciiu3_no_na), 1), .groups = "drop")
+cat("\n3.3d -- Disponibilidad CIIU3 vs CIIU4 por año (Item 3):\n")
+print(as.data.frame(solapamiento_ciiu), row.names = FALSE)
+anios_solapados <- solapamiento_ciiu$ANIO[solapamiento_ciiu$pct_ciiu4_disponible > 0 & solapamiento_ciiu$pct_ciiu3_disponible > 0]
+cat("Años donde CIIU3 y CIIU4 coexisten:", if (length(anios_solapados) == 0) "NINGUNO" else paste(anios_solapados, collapse=","), "\n")
+resultados_validacion$v3d_solapamiento_ciiu <- solapamiento_ciiu
+
 # --- 3.4 Cobertura: % faltantes y % ceros por variable clave y por año ---
 variables_clave_cobertura <- c(
   "obreros_permanentes", "obreros_total_ocupado", "obreros_temporal_directo",
@@ -730,6 +828,18 @@ g_cobertura <- ggplot2::ggplot(
 guardar_grafico(g_cobertura, "EA03_pct_faltantes_variables_clave")
 
 titulo("PASO 3 COMPLETO -- validaciones guardadas")
+
+# Las columnas auxiliares que se agregaron a panel_completo SOLO para poder
+# calcular las validaciones de esta sección (sumas reconstruidas y
+# diferencias) NO son variables del panel -- son subproductos de este
+# script. Se descartan aquí, antes de construir el diccionario y guardar,
+# para que "una fila del diccionario por columna del panel" se cumpla sin
+# tener que documentarlas como si fueran datos.
+panel_completo <- panel_completo %>%
+  dplyr::select(-dplyr::any_of(c(
+    "suma_total_ocupado_3cat", "suma_propietarios_3cat", "suma_pertotal_reconstruido", "dif_pertotal",
+    "suma_costo_personal_3cat", "dif_costo_total"
+  )))
 
 # ==============================================================================
 # PASO 4 -- DICCIONARIO
@@ -834,8 +944,18 @@ filas_control <- mapa_control_personal %>%
     categoria_ocupacional = NA_character_,
     unidad = "personas",
     periodicidad = "anual",
-    poblacion = "ver_notas",
-    definicion = "Total de control ya presente en la macrobase, usado para contrastar contra las sumas de grupo (Paso 3).",
+    # PASO Cierre-1: poblacion tomada directamente de la etiqueta EAM
+    # (etiqueta_de(codigo_eam)), no dejada en "ver_notas" generico.
+    poblacion = dplyr::case_when(
+      codigo_eam == "PERTOTAL" ~ "total (permanentes+propietarios+temporal_directo+temporal_agencias+aprendices)",
+      codigo_eam == "PERSOCU" ~ "permanentes",
+      codigo_eam == "PERSOESC" ~ "permanentes_y_propietarios",
+      codigo_eam == "PERTEM3" ~ "temporal_directo",
+      codigo_eam == "PPERYTEM" ~ "permanentes_y_temporal_directo",
+      codigo_eam %in% c("C4R4C9T", "C4R4C10T") ~ "total_ocupado",
+      TRUE ~ "no_determinada"
+    ),
+    definicion = paste0("Total de control ya presente en la macrobase, usado para contrastar contra las sumas de grupo (Paso 3). Etiqueta EAM: ", etiqueta, "."),
     fuente = "original",
     formula = codigo_eam
   ) %>%
@@ -847,14 +967,53 @@ filas_costos <- mapa_costos %>%
   dplyr::mutate(
     variable = variable_final,
     etiqueta = etiqueta_de(codigo_eam),
-    unidad = "miles de pesos (supuesto, ver PASO 0.5)",
+    # Solo C3R2C1 tiene verificacion EMPIRICA de magnitud (Paso 0.5, contra
+    # el SMLV). El resto de C3R* hereda ese supuesto sin re-verificar cada
+    # magnitud por separado -- se distingue explicitamente para no
+    # sobre-afirmar (Item 6, Cierre).
+    unidad = ifelse(codigo_eam == "C3R2C1",
+                     "miles de pesos anuales (empirico, confirmado en PASO 0.5)",
+                     "miles de pesos anuales (heredado del supuesto verificado para C3R2C1, PASO 0.5 -- no re-verificado variable por variable)"),
     periodicidad = "anual",
+    # PASO Cierre-1: revisado fila por fila contra la etiqueta EAM cruda
+    # (etiqueta_de(codigo_eam)), no en bloque. Antes de esta correccion
+    # TODO concepto que no fuera "apoyo_sostenimiento_aprendices" o
+    # "salario_integral" caia en un fallback generico "permanentes" -- eso
+    # era incorrecto para C3R4 (temporal directo), C3R5/C3R6/C3R7/C3R10
+    # (personal ocupado, no solo permanentes) y C3R8 (agencias).
     poblacion = dplyr::case_when(
       concepto == "apoyo_sostenimiento_aprendices" ~ "aprendices",
       concepto == "salario_integral" ~ "permanentes (>=10 SMLV, solo 2008-2019)",
-      TRUE ~ "permanentes"
+      concepto == "sueldos_permanentes" ~ "permanentes",
+      concepto == "prestaciones_permanentes" ~ "permanentes",
+      concepto == "sueldos_prest_temporal_directo" ~ "temporal_directo",
+      # C3R5: etiqueta EAM "Cotizaciones patronales obligatorias, salud, ARP
+      # y pension DEL PERSONAL OCUPADO" -- explicito.
+      concepto == "cotizaciones" ~ "total_ocupado",
+      # C3R6: etiqueta EAM truncada a 80 caracteres ("...ICBF) - Produccion"),
+      # no declara poblacion de forma explicita en el texto disponible.
+      # Aportes sobre nomina (parafiscales) se asume sobre la misma base
+      # amplia que cotizaciones por ser la fila inmediatamente siguiente del
+      # mismo cuadro y compartir naturaleza de aporte patronal -- marcado
+      # como INFERIDO, no confirmado por texto, ver notas.
+      concepto == "parafiscales" ~ "total_ocupado (inferido, etiqueta EAM truncada -- ver notas)",
+      # C3R7: etiqueta EAM explicita "...que AMPARA AL PERSONAL OCUPADO".
+      concepto == "seguros_vida_voluntarios" ~ "total_ocupado",
+      # C3R8: etiqueta EAM "Valor causado por las empresas que suministran
+      # PERSONAL TEMPORAL al establecimiento" -- coincide con la definicion
+      # de temporal via agencias (C4R4), no con temporal directo (C4R3).
+      concepto == "pago_agencias_temporales" ~ "temporal_agencias",
+      # C3R9: etiqueta EAM "Otros gastos del personal no incluidos antes" --
+      # no especifica poblacion. No se adivina.
+      concepto == "otros_gastos_personal" ~ "no_determinada (etiqueta EAM no especifica poblacion)",
+      # C3R10: etiqueta EAM explicita "Costos y Gastos Causados POR EL
+      # PERSONAL OCUPADO".
+      concepto == "costo_total_personal" ~ "total_ocupado",
+      concepto == "control" ~ "ver_notas",
+      TRUE ~ "no_determinada"
     ),
-    definicion = paste0("Costo laboral, concepto: ", concepto, ", categoria: ", categoria_ocupacional, "."),
+    definicion = paste0("Costo laboral, concepto: ", concepto, ", categoria: ", categoria_ocupacional,
+                         ". Etiqueta EAM: ", etiqueta, "."),
     fuente = "original",
     formula = codigo_eam
   ) %>%
@@ -866,10 +1025,15 @@ filas_tercerizacion <- mapa_tercerizacion %>%
   dplyr::mutate(
     variable = variable_final,
     etiqueta = etiqueta_de(codigo_eam),
-    unidad = "miles de pesos (supuesto, ver PASO 0.5)",
+    unidad = "miles de pesos anuales (heredado del supuesto verificado para C3R2C1, PASO 0.5 -- no re-verificado variable por variable)",
     periodicidad = "anual",
+    # PASO Cierre-1: no son costos de personal -- todas sus etiquetas EAM
+    # (verificadas) hablan de "servicios contratados con terceros",
+    # "honorarios y servicios tecnicos" o "impuesto de renta para la
+    # equidad", ninguna declara una poblacion de personal. "no_aplica" se
+    # mantiene tras revisar, no es el valor por defecto sin revisar.
     poblacion = "no_aplica",
-    definicion = paste0("Tercerizacion/ajuste, concepto: ", concepto, "."),
+    definicion = paste0("Tercerizacion/ajuste, concepto: ", concepto, ". Etiqueta EAM: ", etiqueta, "."),
     fuente = "original",
     formula = codigo_eam
   ) %>%
@@ -883,7 +1047,19 @@ filas_produccion <- mapa_produccion %>%
     etiqueta = etiqueta_de(codigo_eam),
     codigo_eam = codigo_eam,
     categoria_ocupacional = NA_character_,
-    unidad = ifelse(tipo == "wmean", "porcentaje (0-100)", "miles de pesos o unidad fisica (ver etiqueta EAM)"),
+    # PASO Cierre-6: unidad resuelta caso por caso, no una etiqueta generica
+    # que en realidad significaba "no resuelto". EELEC es energia (kWh, por
+    # su propia etiqueta EAM "Energia Electrica en kw"), PORCVT es
+    # porcentaje; el resto son monetarias. El supuesto "miles de pesos
+    # anuales" para las monetarias se HEREDA de la verificacion empirica
+    # hecha para C3R2C1 (Paso 0.5) -- no se repitio el chequeo de magnitud
+    # variable por variable aqui, se marca "(heredado)" para dejarlo
+    # trazable.
+    unidad = dplyr::case_when(
+      codigo_eam == "PORCVT" ~ "porcentaje (0-100)",
+      codigo_eam == "EELEC" ~ "kWh anuales (segun etiqueta EAM: 'Energia Electrica en kw')",
+      TRUE ~ "miles de pesos anuales (heredado del supuesto verificado para C3R2C1, PASO 0.5 -- no re-verificado variable por variable)"
+    ),
     periodicidad = "anual",
     poblacion = "no_aplica",
     definicion = ifelse(tipo == "wmean", "Promedio ponderado por VALORVEN al agregar a firma.", "Suma directa al agregar a firma."),
@@ -906,9 +1082,50 @@ filas_identificadores_derivadas <- tibble::tribble(
   "empleo_total_sin_propietarios", "Empleo total (sin propietarios), 3 categorias", NA_character_, "total", "personas", "anual", "total_ocupado_sin_propietarios", "Igual definicion que empleo_total del panel actual: permanentes+temporal_directo+temporal_agencias+aprendices de las 3 categorias, SIN propietarios.", "suma de originales", "suma de 12 variables de grupo"
 )
 
+# --- Cierre-4: filas para los codigos EAM crudos que el panel conserva tal
+# cual (ademas de su version renombrada), para trazabilidad -- documentadas
+# por referencia a su version renombrada, no reinventadas. ---
+mapa_renombrado_completo <- dplyr::bind_rows(
+  filas_grupos %>% dplyr::transmute(variable_final = variable, codigo_eam = NA_character_, poblacion),
+  filas_desagregados %>% dplyr::transmute(variable_final = variable, codigo_eam, poblacion),
+  filas_control %>% dplyr::transmute(variable_final = variable, codigo_eam, poblacion),
+  filas_costos %>% dplyr::transmute(variable_final = variable, codigo_eam, poblacion),
+  filas_tercerizacion %>% dplyr::transmute(variable_final = variable, codigo_eam, poblacion),
+  filas_produccion %>% dplyr::transmute(variable_final = variable, codigo_eam, poblacion)
+) %>%
+  dplyr::filter(!is.na(codigo_eam)) %>%
+  dplyr::distinct(codigo_eam, .keep_all = TRUE)
+
+documentadas_hasta_ahora <- c(
+  filas_identificadores_derivadas$variable, filas_grupos$variable, filas_desagregados$variable,
+  filas_control$variable, filas_costos$variable, filas_tercerizacion$variable, filas_produccion$variable
+)
+codigos_crudos_pendientes <- setdiff(names(panel_completo), documentadas_hasta_ahora)
+
+filas_crudas_passthrough <- purrr::map_dfr(codigos_crudos_pendientes, function(cod) {
+  fila_ref <- mapa_renombrado_completo[mapa_renombrado_completo$codigo_eam == cod, ]
+  poblacion_heredada <- if (nrow(fila_ref) > 0) fila_ref$poblacion[1] else "no_determinada"
+  variable_ref <- if (nrow(fila_ref) > 0) fila_ref$variable_final[1] else NA_character_
+  tibble::tibble(
+    variable = cod,
+    etiqueta = etiqueta_de(cod),
+    codigo_eam = cod,
+    categoria_ocupacional = NA_character_,
+    unidad = "ver variable renombrada",
+    periodicidad = "anual",
+    poblacion = poblacion_heredada,
+    definicion = paste0("Codigo EAM crudo, se conserva junto a su version renombrada '", variable_ref,
+                         "' (mismos valores, misma columna agregada a firma-año) para trazabilidad."),
+    fuente = "original",
+    formula = cod
+  )
+})
+cat("Filas de diccionario agregadas para codigos crudos pass-through:", nrow(filas_crudas_passthrough), "\n")
+
 diccionario_final <- dplyr::bind_rows(
   filas_identificadores_derivadas, filas_grupos, filas_desagregados,
-  filas_control, filas_costos, filas_tercerizacion, filas_produccion
+  filas_control, filas_costos, filas_tercerizacion, filas_produccion,
+  filas_crudas_passthrough
 ) %>%
   dplyr::rowwise() %>%
   dplyr::mutate(
@@ -917,10 +1134,23 @@ diccionario_final <- dplyr::bind_rows(
     pct_ceros = pct_ceros_de(variable),
     notas = dplyr::case_when(
       variable %in% c("apoyo_sostenimiento_aprendices_1_r1csap", "apoyo_sostenimiento_aprendices_2_r2csap", "apoyo_sostenimiento_aprendices_3_r3csap") ~
-        "Categoria ocupacional NO determinada: etiqueta EAM truncada e identica para R1/R2/R3CSAP. No se adivino.",
-      variable == "CIIU3" ~ "Cobertura muy limitada -- confirmar años antes de usar.",
+        paste0("Categoria ocupacional NO determinada: etiqueta EAM truncada e identica para R1/R2/R3CSAP. ",
+               "Se probaron 2 vias (Item 5, Cierre): (1) identidad R1+R2+R3=R4, cumple ", pct_identidad_csap,
+               "% -- confirma que R4 es el total, no dice nada de R1/R2/R3 individualmente; (2) correlacion contra ",
+               "aprendices por categoria, maxima |r| observada = ", round(max(abs(as.matrix(correlaciones_csap[-1]))), 3),
+               " -- ninguna correlacion es concluyente. No se adivino."),
+      variable == "apoyo_sostenimiento_aprendices_total_r4csap" ~
+        paste0("Etiqueta EAM dice 'Total' explicitamente. Identidad R1+R2+R3=R4 confirmada en ", pct_identidad_csap, "% de las filas."),
+      variable == "CIIU3" ~ paste0("Disponible SOLO 2008-2011, CIIU4 disponible SOLO 2012-2024 -- 0 años de solapamiento ",
+                                    "(Item 3, Cierre). No existe en la macrobase una tabla de correlacion CIIU3->CIIU4 ",
+                                    "(las columnas CORRELA* son de la EAC, sobre 'dominios de estudio', no un empalme de vintage CIIU). ",
+                                    "No se construyo ninguna variable de sector armonizada por falta de un empalme defendible: ",
+                                    "el panel solo tiene sector confiable (CIIU4) desde 2012."),
+      variable == "CIIU4" ~ "Disponible SOLO 2012-2024 (33.43% NA en el panel completo, todo en 2008-2011). Ver nota de CIIU3 -- no hay empalme defendible con los años previos.",
       grepl("_c3r1c1$|_c3r1pt$|_c3r1c2$|_c3r1c3$", variable) ~ "Solo disponible 2008-2019 (PASO 0.4). Salario integral es >=10 SMLV por ley.",
       grepl("_c3r20c1$|_c3r20c2$|_c3r20c3$", variable) ~ "Solo disponible 2013-2024 (PASO 0.4).",
+      grepl("^parafiscales_", variable) ~ "poblacion inferida, no confirmada por texto -- etiqueta EAM truncada antes de declararla (ver columna poblacion).",
+      grepl("^otros_gastos_personal_", variable) ~ "poblacion no determinada -- etiqueta EAM no la especifica ('Otros gastos del personal no incluidos antes').",
       TRUE ~ ""
     )
   ) %>%
@@ -936,6 +1166,23 @@ titulo("PASO 4 COMPLETO -- diccionario construido")
 # GUARDAR SALIDAS
 # ==============================================================================
 titulo("GUARDANDO SALIDAS")
+
+# --- Cierre-4: verificacion programatica, no visual -- una fila de
+# diccionario por columna del panel, en ambas direcciones. Si algo no
+# cuadra, nos detenemos: no se guarda un panel con un diccionario
+# incompleto o con filas huerfanas. ---
+columnas_sin_documentar <- setdiff(names(panel_completo), diccionario_final$variable)
+variables_sin_columna <- setdiff(diccionario_final$variable, names(panel_completo))
+if (length(columnas_sin_documentar) > 0 || length(variables_sin_columna) > 0) {
+  stop(
+    "El diccionario y el panel no reconcilian.\n",
+    "Columnas del panel sin fila de diccionario (", length(columnas_sin_documentar), "): ",
+    paste(columnas_sin_documentar, collapse = ", "), "\n",
+    "Filas de diccionario sin columna en el panel (", length(variables_sin_columna), "): ",
+    paste(variables_sin_columna, collapse = ", ")
+  )
+}
+cat("Reconciliacion panel <-> diccionario: OK --", ncol(panel_completo), "columnas,", nrow(diccionario_final), "filas de diccionario, 1 a 1.\n")
 
 ruta_panel_nuevo <- file.path(datos_raiz, "panel_firma_eam_expalt_completo.rds")
 ruta_diccionario_nuevo <- file.path(datos_raiz, "diccionario_panel_firma_eam_expalt_completo.csv")
@@ -966,17 +1213,29 @@ guardar_tabla(as.data.frame(resultados_validacion$v6_firmas_por_anio), "EA_T05_f
               "Numero de firmas por año, 2020-2021 marcados como pandemia")
 guardar_tabla(as.data.frame(diccionario_final), "EA_T06_diccionario_panel",
               "Diccionario del panel completo (todas las variables)", decimales = 2)
+guardar_tabla(as.data.frame(resultados_validacion$v3b_estructura_c3r10), "EA_T07_estructura_c3r10",
+              "Estructura del cuadro 3: C3R10 = suma(C3R1..C3R9), por categoria y año (Item 2)")
+guardar_tabla(as.data.frame(resultados_validacion$v3c_csap$correlaciones), "EA_T08_csap_correlaciones",
+              "R1/R2/R3CSAP: correlacion contra aprendices por categoria (Item 5)")
+guardar_tabla(as.data.frame(resultados_validacion$v3d_solapamiento_ciiu), "EA_T09_solapamiento_ciiu",
+              "Disponibilidad de CIIU3 vs CIIU4 por año -- 0 años de solapamiento (Item 3)")
 
 # ==============================================================================
 # PASO 5 -- REPORTE (README.md)
 # ==============================================================================
 titulo("PASO 5: REPORTE FINAL")
 
-pct_2020_faltantes_empleo <- cobertura_por_anio %>%
-  dplyr::filter(ANIO == 2020, variable == "obreros_permanentes") %>%
+# obreros_permanentes/obreros_total_ocupado son sumas con na.rm=TRUE, casi
+# nunca quedan en NA (dan 0 en vez de NA salvo que TODAS las columnas
+# fuente falten) -- pct_na no es informativo para ellas (ver el hallazgo de
+# CEROS, no de faltantes, en el punto 7 de "Cierre del panel" arriba). Para
+# 2020-en-cobertura se usa una variable cruda de encuesta que si puede
+# quedar genuinamente NA.
+pct_2020_faltantes_costo <- cobertura_por_anio %>%
+  dplyr::filter(ANIO == 2020, variable == "sueldos_permanentes_obreros_c3r2c1") %>%
   dplyr::pull(pct_na)
-pct_2019_faltantes_empleo <- cobertura_por_anio %>%
-  dplyr::filter(ANIO == 2019, variable == "obreros_permanentes") %>%
+pct_2019_faltantes_costo <- cobertura_por_anio %>%
+  dplyr::filter(ANIO == 2019, variable == "sueldos_permanentes_obreros_c3r2c1") %>%
   dplyr::pull(pct_na)
 
 readme_texto <- c(
@@ -1033,24 +1292,142 @@ paste0("**0.5 -- Unidades:** confirmado empíricamente (no declarado por el ",
        "para el resto de variables `C3R*`, documentado como supuesto (no como hecho ",
        "verificado variable por variable) en la columna `unidad` del diccionario."),
 "",
+"## Cierre del panel: 6 correcciones tras la revisión del diccionario",
+"",
+paste0("Esta sección documenta la revisión que encontró y corrigió seis problemas en la ",
+       "primera versión del panel/diccionario. Los tres primeros eran bloqueantes porque ",
+       "cambian qué medidas de exposición se pueden construir."),
+"",
+"### 1. La columna `poblacion` estaba mal en casi todos los costos",
+"",
+paste0("Confirmado: un `case_when` con `TRUE ~ \"permanentes\"` como último caso capturaba ",
+       "por defecto todo lo que no fuera `apoyo_sostenimiento_aprendices` o `salario_integral`, ",
+       "sin mirar la etiqueta EAM real de cada variable. Corregido fila por fila contra la ",
+       "etiqueta cruda:"),
+"",
+"| Concepto | `poblacion` antes | `poblacion` ahora (según etiqueta EAM) |",
+"|---|---|---|",
+"| C3R4* (sueldos+prest. temporal directo) | permanentes | **temporal_directo** (\"personal contratado directamente\") |",
+"| C3R5* (cotizaciones) | permanentes | **total_ocupado** (\"...del personal ocupado\", explícito) |",
+"| C3R6* (parafiscales) | permanentes | **total_ocupado (inferido)** -- etiqueta truncada antes de declarar población, no confirmado por texto |",
+"| C3R7* (seguros vida voluntarios) | permanentes | **total_ocupado** (\"...ampara al personal ocupado\", explícito) |",
+"| C3R8* (pago agencias temporales) | permanentes | **temporal_agencias** (\"empresas que suministran personal temporal\") |",
+"| C3R9* (otros gastos personal) | permanentes | **no_determinada** -- etiqueta no especifica población |",
+"| C3R10* (costo total personal) | permanentes | **total_ocupado** (\"Costos y Gastos Causados por el Personal Ocupado\", explícito) |",
+"",
+paste0("De paso, se encontró y corrigió un error de nombre: las variables que se habían ",
+       "llamado `control_temporal_agencias_mujer/hombre_c4r4c9t/c10t` en realidad son ",
+       "`C4R4C9T`/`C4R4C10T` = \"Total Personal Ocupado Mujer/Hombre\" -- no tienen nada que ",
+       "ver con agencias temporales. Renombradas a `control_total_ocupado_mujer/hombre_...`."),
+"",
+"### 2. Estructura del cuadro 3: la identidad NO cierra",
+"",
+paste0("Se probó `C3R10 = C3R2+C3R3+C3R4+C3R5+C3R6+C3R7+C3R8+C3R9 (+C3R1 donde existe)` por ",
+       "categoría y en el total. Ver tabla `EA_T07_estructura_c3r10`. **No cierra de forma ",
+       "confiable en ningún año ni categoría**: el % de filas que coincide exacto va de ",
+       round(min(estructura_c3r10$pct_coincide_exacto), 1), "% a ", round(max(estructura_c3r10$pct_coincide_exacto), 1),
+       "%, con una caída marcada a partir de 2021 en todas las categorías. Se revisó si faltaba ",
+       "una fila C3R11/C3R12 en la macrobase que explicara la diferencia -- no existe ninguna. ",
+       "La causa exacta queda abierta (no se inventa una explicación): puede ser redondeo ",
+       "sistemático, un cambio de formulario en 2021, o que el establecimiento reporte C3R10 ",
+       "de forma independiente y no como suma mecánica de las filas anteriores."),
+"",
+paste0("**Esto no invalida la conclusión sobre qué medidas son internamente consistentes**, ",
+       "porque esa conclusión se apoya en la etiqueta propia de cada variable (C3R2/C3R3 dicen ",
+       "explícitamente \"del personal permanente\"; C3R10 dice explícitamente \"del Personal ",
+       "Ocupado\"), no en que la suma cierre. Las dos combinaciones que quedan habilitadas:"),
+"",
+"- **Salarial**: `(C3R2 + C3R3) / permanentes` -- numerador y denominador sobre permanentes.",
+"- **Costo total**: `C3R10 / (total_ocupado - propietarios)` -- numerador y denominador sobre ocupados.",
+"",
+paste0("No hay punto intermedio defendible: cotizaciones (C3R5) y parafiscales (C3R6) están ",
+       "sobre personal ocupado, no desagregados por tipo de vínculo, así que no se puede armar ",
+       "un costo laboral \"por permanente\" que los incluya. Nota de paso: bajo esta lectura, el ",
+       "`salario_promedio` que usa `01_resultados_principales.R` (C3R10C3 / empleo_total) es ",
+       "internamente consistente -- ambos lados sobre personal ocupado."),
+"",
+"### 3. CIIU4 falta en 2008-2011 -- no hay empalme defendible con CIIU3",
+"",
+paste0("Ver tabla `EA_T09_solapamiento_ciiu`. Confirmado: `CIIU4` (2012-2024) y `CIIU3` ",
+       "(2008-2011) tienen **0 años de solapamiento** -- nunca coexisten en la misma fila. Sin ",
+       "años en común no hay forma de aprender un empalme empírico dentro de este panel. Se ",
+       "revisaron las columnas `CORRELA*` de la macrobase: pertenecen a la **EAC, no a la EAM**, ",
+       "y codifican \"dominios de estudio\" (16 o 9), una clasificación distinta a CIIU -- no son ",
+       "una tabla de correlación CIIU3→CIIU4. No se encontró ninguna tabla de correlación oficial ",
+       "en el repositorio. **No se construyó ninguna variable de sector armonizada.** Conclusión ",
+       "explícita: la ventana del panel con sector confiable (CIIU4) empieza en 2012, no en 2008. ",
+       "`CIIU3` queda como variable propia, sin integrar, para quien quiera intentar un empalme ",
+       "con una tabla externa del DANE por su cuenta."),
+"",
+"### 4. Reconciliación panel-diccionario",
+"",
+paste0("El script ahora verifica programáticamente, antes de guardar, que ",
+       "`setdiff(names(panel), diccionario$variable)` y su inverso estén ambos vacíos -- si no, ",
+       "se detiene con `stop()` en vez de guardar un panel/diccionario que no reconcilian. Causa ",
+       "de la brecha original (295 columnas vs. 158 filas): 131 columnas eran códigos EAM crudos ",
+       "que el panel conserva junto a su versión renombrada, por trazabilidad, y nunca se ",
+       "documentaron; las otras 4 eran columnas auxiliares de esta misma validación (sumas y ",
+       "diferencias reconstruidas) que se colaron en el panel guardado por error de scoping -- ",
+       "se descartan ahora antes de guardar, no son datos."),
+"",
+"### 5. R1/R2/R3CSAP: sigue sin determinarse, con las dos pruebas hechas",
+"",
+paste0("Ver tablas `EA_T08_csap_correlaciones`. Identidad `R1+R2+R3=R4`: cumple ",
+       round(pct_identidad_csap, 2), "% de las filas -- confirma que R4 es el total, pero no dice ",
+       "nada sobre a qué categoría corresponde cada uno de R1/R2/R3 individualmente. Correlación ",
+       "de cada una contra el conteo de aprendices por categoría (obreros/profesional-técnico/",
+       "administrativos): la correlación máxima observada en las 9 combinaciones es ",
+       round(max(abs(as.matrix(correlaciones_csap[-1]))), 3),
+       " -- prácticamente nula. **La pista del parecido en % de ceros no se confirma con la ",
+       "correlación real.** Se probaron las dos vías que pedía la tarea y ninguna resuelve la ",
+       "ambigüedad -- queda `no_determinada`, documentado con ambos resultados en el diccionario."),
+"",
+"### 6. Unidades: el README y el diccionario se contradecían",
+"",
+paste0("Corregido. El diccionario ya no dice `\"(supuesto)\"` en las variables de costo laboral ",
+       "(el Paso 0.5 sí lo confirmó empíricamente para C3R2C1, y se hereda como supuesto explícito ",
+       "-- no verificado variable por variable -- para el resto de `C3R*`). Para producción, se ",
+       "resolvió caso por caso: `PORCVT` es porcentaje (0-100); `EELEC` es kWh anuales (etiqueta ",
+       "EAM: \"Energía Eléctrica en kw\"); el resto (`VALORVEN`, `PRODBR2`, `INVEBRTA`, etc.) son ",
+       "monetarias, miles de pesos anuales heredado del mismo supuesto de C3R2C1, marcado como no ",
+       "re-verificado variable por variable."),
+"",
+"### 7. Obreros permanentes: selección sobre el mecanismo (limitación declarada)",
+"",
+paste0("`obreros_total_ocupado` tiene 2.7%-4.2% de ceros según el año; `obreros_permanentes` ",
+       "tiene 17.0%-24.4% (ver tabla `EA_T03_cobertura_variables_clave`, columna `pct_cero`, para ",
+       "el detalle año por año). La fracción es relativamente estable en el tiempo -- **no ",
+       "creciente** (de hecho, algo más alta en 2008-2012 que en 2019-2024). `Exposure2022_obreros` ",
+       "usa el total ocupado como denominador; `Bite2022_obreros` (Kaitz) usa permanentes. De ahí ",
+       "la pérdida de firmas al construir Kaitz: no son \"firmas sin obreros\", son **firmas sin un ",
+       "solo obrero permanente** -- producción enteramente con personal temporal o de agencia. Esto ",
+       "no es un problema de cobertura de datos: es una limitación de diseño. El Kaitz actual ",
+       "excluye del tratamiento precisamente a las firmas que ya usan la temporalidad como margen ",
+       "de ajuste -- uno de los mecanismos que la tesis quiere estudiar. Es selección sobre el ",
+       "mecanismo, no ruido de medición."),
+"",
 "## Resultado de las identidades (PASO 3)",
 "",
 paste0("Ver tablas `EA_T01_identidad_empleo` y `EA_T02_identidad_costos`. ",
        "`EA_T01`: permanentes+propietarios+temporal_directo+temporal_agencias+aprendices ",
        "(3 categorías) = `PERTOTAL`. Esta MISMA descomposición de 5 componentes por ",
        "categoría se validó al 100.00% contra la macrobase antes de escribir este script ",
-       "(ver PASO 0.2/0.3 arriba); al re-verificarla ya en el panel agregado a firma-año, ",
-       "el porcentaje que coincide exacto varía por año -- rango observado: ",
+       "(ver PASO 0.2/0.3 arriba) -- rango observado al re-verificarla ya en el panel ",
+       "agregado a firma-año: ",
        round(min(identidad_empleo_anio$pct_coincide_exacto), 1), "% a ",
-       round(max(identidad_empleo_anio$pct_coincide_exacto), 1), "%. La caída frente al ",
-       "100% de la macrobase es un artefacto conocido de la regla de agregación ",
-       "'todas NA -> NA, si no suma con na.rm=TRUE' aplicada columna por columna: si en ",
-       "una firma-año una columna tiene NA en algunas plantas/años pero otra columna ",
-       "relacionada no, cada suma trata esos NA de forma independiente y la identidad se ",
-       "puede romper aunque cada columna esté bien agregada por separado. Es la MISMA ",
-       "regla ya validada y usada por `pipeline/01_construir_base.R`, no una regla nueva. ",
-       "`EA_T02` (costos, `C3R10C1+C3R10PT+C3R10C2=C3R10C3`) usa las mismas 4 columnas ",
-       "sin desagregar en sub-componentes, así que no hereda este artefacto de la misma forma."),
+       round(max(identidad_empleo_anio$pct_coincide_exacto), 1), "%. Cierra al 100% en los 17 años: ",
+       "coincide exactamente con el resultado a nivel establecimiento, sin degradarse al agregar a ",
+       "firma. (Una primera versión de este chequeo comparaba contra una descomposición distinta, ",
+       "'total_ocupado + propietarios', que sí se degradaba al agregar por un artefacto de la regla ",
+       "'todas NA -> NA, si no suma con na.rm=TRUE' aplicada columna por columna -- se corrigió para ",
+       "usar la MISMA descomposición de 5 componentes ya validada en el Paso 0, no la que se degradaba.) ",
+       "`EA_T02` (costos, `C3R10C1+C3R10PT+C3R10C2=C3R10C3`, las 3 categorías sumadas contra el total ",
+       "ya reportado) cierra 92-99% según el año -- confirmado que esa brecha ya existe a nivel ",
+       "establecimiento antes de cualquier agregación (94.43% en la macrobase cruda, mediana de ",
+       "diferencia ±1), así que es una característica de los datos fuente, no un artefacto de la ",
+       "agregación a firma. Distinto y más severo es `EA_T07` (Cierre, punto 2): la estructura ",
+       "completa del cuadro 3, `C3R10 = suma(C3R1..C3R9)`, NO cierra de forma confiable (26%-83% ",
+       "según año y categoría) -- ver esa sección arriba."),
 "",
 "## Comparación contra `panel_analitico_firma_eam.rds`",
 "",
@@ -1058,9 +1435,13 @@ paste0("Ver tablas `EA_T01_identidad_empleo` y `EA_T02_identidad_costos`. ",
 "",
 "## 2020 en cobertura",
 "",
-paste0("`obreros_permanentes`: ", pct_2019_faltantes_empleo, "% de faltantes en 2019 vs. ",
-       pct_2020_faltantes_empleo, "% en 2020 (ver tabla `EA_T03_cobertura_variables_clave` completa para todas las variables clave y todos los años). ",
-       "Esta cifra es la que debe informar si 2020 se usa o no en la estimación -- no se tomó esa decisión aquí."),
+paste0("`sueldos_permanentes_obreros_c3r2c1` (variable cruda de encuesta, no una suma derivada): ",
+       pct_2019_faltantes_costo, "% de faltantes en 2019 vs. ", pct_2020_faltantes_costo,
+       "% en 2020 (ver tabla `EA_T03_cobertura_variables_clave` completa para todas las variables ",
+       "clave y todos los años -- ahí también está el hallazgo de CEROS, no faltantes, del punto 7 ",
+       "de \"Cierre del panel\" arriba, que es la señal más relevante para Kaitz). ",
+       "Esta cifra de faltantes es la que debe informar si 2020 tuvo problemas de recolección -- ",
+       "no se tomó ninguna decisión de incluir/excluir 2020 en la estimación aquí."),
 "",
 "## Variables buscadas y no encontradas, o con categoría ambigua",
 "",
