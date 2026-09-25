@@ -1,60 +1,51 @@
 # 3. SCRIPTS — estructura y convenciones
 
 Reorganizado el 2026-09-24 tras perder el orden del repositorio en un cambio de
-rama (ver commits de esa fecha para el diagnóstico completo). El número de
-cada script ahora codifica su **rol**, no el orden en que se creó, para que dos
-scripts nunca vuelvan a colisionar en el mismo prefijo — eso fue justo lo que
-pasó con los dos `03_` de esta reorganización.
+rama (ver commits de esa fecha para el diagnóstico completo). Primero se
+agruparon los 9 scripts en subcarpetas por rol (`construccion/`, `principal/`,
+`validacion/`, `descartado/`); ese mismo día se aplanaron de vuelta a
+`3. SCRIPTS/` porque las subcarpetas dificultaban la navegación, y se
+renumeraron de forma correlativa siguiendo el orden real de ejecución.
 
-## Estructura de carpetas
+## Convención de numeración
 
-```
-3. SCRIPTS/
-├── construccion/   construye bases, no estima nada
-├── principal/       10, 11, 12...  resultados que van en la tesis
-├── validacion/       20, 21, 22, 23...  robustez y diagnósticos
-└── descartado/       histórico, no se corre
-```
+Dos dígitos, correlativos, en el orden en que hay que correr los scripts:
+`01`-`08` para el pipeline vivo, `99` reservado para material histórico que
+**no se corre** (queda al final de cualquier listado alfabético y el nombre lo
+deja explícito). Dos dígitos y no uno solo porque con nueve archivos un `10_`
+se ordenaría antes que un `2_` en cualquier listado alfabético, rompiendo el
+orden visual.
 
-- **`construccion/`**: hoy solo `exposicion_alternativa.R` (sin número — es el
-  único script de esta carpeta y no hay riesgo de colisión ahí). Construye
-  `exposicion_alternativa_2022.rds`, no produce resultados de tesis.
-- **`principal/`**: numeración desde 10. Lo que efectivamente va en la tesis.
-- **`validacion/`**: numeración desde 20. Robustez, decisión de medida,
-  reconciliación, diagnósticos.
-- **`descartado/`**: scripts superados, se conservan como registro histórico de
-  decisiones metodológicas. **No correr.**
-
-Convención para sesiones futuras: al agregar un script nuevo, seguir la
-siguiente decena disponible en `principal/` o `validacion/` (13, 14... / 24,
-25...) — nunca reutilizar un número, y nunca empezar un nombre de archivo con
-un prefijo que ya exista en otra carpeta.
+Convención para sesiones futuras: un script nuevo que se inserte en el
+pipeline va después del último número vivo (`09`, `10`...) — nunca se
+reutiliza un número ya asignado, y el histórico permanece en `99` en adelante
+si llega a acumularse más de uno.
 
 ## Inventario
 
-| Script | Líneas | Lee | Escribe | Carpeta de salida |
-|---|---|---|---|---|
-| `descartado/00_script_base.R` | 829 | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones` |
-| `principal/10_resultados_poster.R` | 1076 | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Principal`, `Estimacion`, `Validaciones`, `Robustez` |
-| `principal/11_resultados_y_mecanismos.R` | 870 | los tres paneles | — | `Resultados_mecanismos` |
-| `principal/12_mecanismos_por_grupo.R` | 622 | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `Mecanismos_por_grupo` |
-| `construccion/exposicion_alternativa.R` | 753 | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (comparación contra el Kaitz actual, sección 7 — si el archivo no existe, sigue sin esa comparación) | **`1. DATOS/exposicion_alternativa_2022.rds`** | `Exposicion_alternativa` |
-| `validacion/20_primer_eslabon_medidas.R` | 665 | los tres paneles | — | `Primer_eslabon` |
-| `validacion/21_decision_medida.R` | 665 | los tres paneles | — | `Decision_medida` |
-| `validacion/22_reconciliacion.R` | 534 | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `Reconciliacion` |
-| `validacion/23_tratamiento_continuo.R` | 1183 | `panel_analitico_firma_eam.rds` | — | `Continuo` |
+| Script | Líneas | Rol | Lee | Escribe | Carpeta de salida |
+|---|---|---|---|---|---|
+| `01_exposicion_alternativa.R` | 753 | Construye las medidas de exposición | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (comparación contra el Kaitz actual, sección 7 — si el archivo no existe, sigue sin esa comparación) | **`1. DATOS/exposicion_alternativa_2022.rds`** | `Exposicion_alternativa` |
+| `02_resultados_poster.R` | 1076 | Descriptivos y resultados principales | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Principal`, `Estimacion`, `Validaciones`, `Robustez` |
+| `03_resultados_y_mecanismos.R` | 870 | Resultados y mecanismos | los tres paneles | — | `Resultados_mecanismos` |
+| `04_mecanismos_por_grupo.R` | 622 | Mecanismos por tamaño | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `Mecanismos_por_grupo` |
+| `05_primer_eslabon_medidas.R` | 665 | Primera etapa, cinco medidas | los tres paneles | — | `Primer_eslabon` |
+| `06_decision_medida.R` | 665 | Decisión de medida | los tres paneles | — | `Decision_medida` |
+| `07_reconciliacion.R` | 534 | Las tres lecturas | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `Reconciliacion` |
+| `08_tratamiento_continuo.R` | 1183 | Forma funcional | `panel_analitico_firma_eam.rds` | — | `Continuo` |
+| `99_script_base_historico.R` | 829 | Histórico, **NO correr** | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones` |
 
 "Los tres paneles" = `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds`, `1. DATOS/exposicion_alternativa_2022.rds`.
 
 **Notas sobre el inventario** (correcciones encontradas al verificarlo contra
 el repositorio real, 2026-09-24):
-- `12_mecanismos_por_grupo.R` tiene 622 líneas, no 665 — la cifra original
+- `04_mecanismos_por_grupo.R` tiene 622 líneas, no 665 — la cifra original
   quedó desactualizada. El script termina con su bloque de cierre completo, no
   está truncado.
-- `construccion/exposicion_alternativa.R` también lee
-  `panel_analitico_firma_eam.rds` (lectura condicional), no solo el panel
-  ampliado — no estaba en el inventario original.
-- `20_primer_eslabon_medidas.R` y `21_decision_medida.R` coinciden en 665
+- `01_exposicion_alternativa.R` también lee `panel_analitico_firma_eam.rds`
+  (lectura condicional), no solo el panel ampliado — no estaba en el
+  inventario original.
+- `05_primer_eslabon_medidas.R` y `06_decision_medida.R` coinciden en 665
   líneas cada uno por pura coincidencia — son 948 líneas distintas entre sí
   (verificado con diff), temas claramente distintos. No es duplicación.
 
@@ -63,30 +54,30 @@ el repositorio real, 2026-09-24):
 Conviven dos paneles de firma distintos:
 
 - **`panel_analitico_firma_eam.rds`** (el original): usado por
-  `principal/10_resultados_poster.R` y `validacion/23_tratamiento_continuo.R`.
+  `02_resultados_poster.R` y `08_tratamiento_continuo.R`.
 - **`panel_firma_eam_expalt_completo.rds`** (el ampliado): incluye 2020 y
   variables desagregadas por categoría ocupacional (obreros/profesional-técnico/
   administrativos). Usado por el resto de los scripts.
 
 **Los resultados de unos y otros no son directamente comparables** — distinta
-ventana temporal y distinta granularidad de variables. Si una tabla de
-`principal/` no cuadra con una de `validacion/`, lo primero que hay que
-revisar es cuál de los dos paneles usa cada una.
+ventana temporal y distinta granularidad de variables. Si una tabla de un
+script no cuadra con la de otro, lo primero que hay que revisar es cuál de los
+dos paneles usa cada uno.
 
 ## Orden de ejecución
 
-Única dependencia real del repositorio: `construccion/exposicion_alternativa.R`
-escribe `1. DATOS/exposicion_alternativa_2022.rds`, que leen
-`validacion/20_primer_eslabon_medidas.R`, `validacion/21_decision_medida.R` y
-`principal/11_resultados_y_mecanismos.R`. Correr `construccion/` primero.
+Única dependencia real del repositorio: `01_exposicion_alternativa.R` escribe
+`1. DATOS/exposicion_alternativa_2022.rds`, que leen `03_resultados_y_mecanismos.R`,
+`05_primer_eslabon_medidas.R` y `06_decision_medida.R`. Correr `01` primero.
 
-El resto de los scripts son terminales (no producen insumos que otro script
-lea) y se pueden correr en cualquier orden entre sí.
+El resto de los scripts (`02`, `04`, `07`, `08`) son terminales (no producen
+insumos que otro script lea) y se pueden correr en cualquier orden entre sí,
+después de `01`.
 
-`descartado/00_script_base.R` **no debe correrse**: su carpeta de salida
-colisiona con la de `principal/10_resultados_poster.R` (ambos escriben en
+`99_script_base_historico.R` **no debe correrse**: su carpeta de salida
+colisiona con la de `02_resultados_poster.R` (ambos escriben en
 `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones`) — es el script manual
-inicial, superado por `10_resultados_poster.R`. Se conserva únicamente como
+inicial, superado por `02_resultados_poster.R`. Se conserva únicamente como
 registro histórico: su encabezado documenta 9 correcciones metodológicas
 (controles fijados en 2022, muestra común entre medidas, escala comparable,
 winsorización sobre el corte transversal, pre-tendencias sobre toda la

@@ -1,5 +1,5 @@
 # ==============================================================================
-# 23_tratamiento_continuo.R
+# 08_tratamiento_continuo.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -42,7 +42,7 @@
 # Capítulo 6 (Validaciones adicionales y amenazas -- lo que NO cierra):
 #   C7 (C7.1/C7.2/C7.3). ¿El salto del salario es el choque o reversión a la
 #       media? C7.2 en particular es un placebo que SÍ es informativo (a
-#       diferencia del placebo del primer eslabón en validacion/20): aquí
+#       diferencia del placebo del primer eslabón en 05_primer_eslabon_medidas.R): aquí
 #       detecta que la medida actual produce un salto salarial falso en 2019,
 #       un año sin choque -- es la amenaza que motiva C8.
 #   C8 (C8.1/C8.2/C8.3). Tres formas de construir la exposición, probadas
@@ -57,8 +57,8 @@
 # Panel usado: panel_analitico_firma_eam.rds (el ORIGINAL, sección 1), NO
 # panel_firma_eam_expalt_completo.rds (el ampliado, con 2020 y categorías
 # ocupacionales separadas). Las cifras de este script NO son directamente
-# comparables con las de validacion/20, validacion/21, validacion/22 ni con
-# principal/11 y principal/12, que sí usan el panel ampliado.
+# comparables con las de 05_primer_eslabon_medidas.R, 06_decision_medida.R, 07_reconciliacion.R ni con
+# 03_resultados_y_mecanismos.R y 04_mecanismos_por_grupo.R, que sí usan el panel ampliado.
 # ------------------------------------------------------------------------------
 
 rm(list = ls())

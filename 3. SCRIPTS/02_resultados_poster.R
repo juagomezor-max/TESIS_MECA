@@ -1,5 +1,5 @@
 # ==============================================================================
-# 10_resultados_poster.R
+# 02_resultados_poster.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -25,7 +25,7 @@
 # (agrega costos laborales por categoría, tipos de contrato, inversión,
 # producción y otras variables). Si no se ha corrido, la sección 1 lo avisa.
 #
-# El script anterior (descartado/00_script_base.R) queda en el repositorio
+# El script anterior (99_script_base_historico.R) queda en el repositorio
 # como registro histórico de la revisión que hicimos -- no correrlo, su
 # carpeta de salida colisiona con la de este.
 # ==============================================================================
@@ -66,16 +66,16 @@
 #     existe en otro script no revisado en esta tarea, no se pudo verificar
 #     aquí -- no se inventó la cifra.
 #
-# PENDIENTE CONECTADO A validacion/22_reconciliacion.R: la "Lectura B" del
+# PENDIENTE CONECTADO A 07_reconciliacion.R: la "Lectura B" del
 # primer eslabón (sección 11, línea ~1035: "salto 2023 frente al cambio
 # típico 2016-2019") se calcula con contraste() (línea ~665), que resta el
 # promedio de los coeficientes 2016-2019 al de 2023 -- es decir, SÍ parece
 # ser "el salto ajustado por la pendiente previa" tal como se define en el
-# glosario de validacion/22, no "la pendiente previa" en sí misma. Esto es
-# evidencia a favor de que la nota pendiente de validacion/22 (punto 6) se
+# glosario de 07_reconciliacion.R, no "la pendiente previa" en sí misma. Esto es
+# evidencia a favor de que la nota pendiente de 07_reconciliacion.R (punto 6) se
 # origina en una descripción imprecisa del póster, no en dos cálculos
 # distintos -- pero no se confirmó corriendo el número, así que la nota de
-# validacion/22 se deja como está, sin marcarla resuelta.
+# 07_reconciliacion.R se deja como está, sin marcarla resuelta.
 # ------------------------------------------------------------------------------
 
 

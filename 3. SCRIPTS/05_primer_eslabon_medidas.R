@@ -1,5 +1,5 @@
 # ==============================================================================
-# 20_primer_eslabon_medidas.R
+# 05_primer_eslabon_medidas.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -29,16 +29,16 @@
 # Cifra clave:  2,98% por DE de Bite — efecto sobre la TASA DE CRECIMIENTO del
 #               costo laboral 2022-2023, en corte transversal. No es la cifra
 #               principal de la tesis (esa es 4,03%, del event study).
-# Depende de:   construccion/exposicion_alternativa.R
-# Se relaciona: validacion/21_decision_medida.R (cierra la decisión de medida)
-#               validacion/22_reconciliacion.R (explica por qué 2,98 ≠ 4,03)
+# Depende de:   01_exposicion_alternativa.R
+# Se relaciona: 06_decision_medida.R (cierra la decisión de medida)
+#               07_reconciliacion.R (explica por qué 2,98 ≠ 4,03)
 #
 # SUPERADO POR VERSIONES POSTERIORES:
 #   - El placebo 2018-2019 de la sección 7 NO es informativo. Ver la nota en esa
 #     sección. La estimación se conserva; su lectura cambia.
 #   - La concentración en el quintil 5 de la sección 8.3 es un hallazgo de
 #     medianas SIN controles. Con controles la relación es monotónica
-#     (validacion/21, sección 6).
+#     (06_decision_medida.R, sección 6).
 # ------------------------------------------------------------------------------
 
 
@@ -206,8 +206,8 @@ cat("En porcentaje, la mediana es:",
 # referencia) es la mediana de corte transversal que se calcula aquí; 1,15% es
 # la celda limpia con exposición medida en 2019 (sin traslape aritmético); y
 # -1,95% es el coeficiente de 2023 contra año base 2019. Confundirlas es el
-# tipo de error que un jurado detecta de inmediato -- validacion/22_
-# reconciliacion.R explica por qué no coinciden.
+# tipo de error que un jurado detecta de inmediato -- 07_reconciliacion.R
+# explica por qué no coinciden.
 cat("\nCrecimiento 2018->2019 (placebo):\n")
 print(round(quantile(outcomes$crecimiento_2019,
                      c(0.10, 0.25, 0.50, 0.75, 0.90), na.rm = TRUE), 4))
@@ -456,7 +456,7 @@ titulo("6. SESGO DE DIVISIÓN: MEDIDAS CON BASE 2019")
 # que la persistencia existe: el test es informativo.
 #
 # Bite y Exposure no tienen versión 2019 construida. Si se quiere comparación
-# completa, hay que construirlas con la misma lógica de construccion/exposicion_alternativa.R.
+# completa, hay que construirlas con la misma lógica de 01_exposicion_alternativa.R.
 
 etiquetas_2019 <- c(
   golpe_c_2019     = "Golpe C (base 2019)",
@@ -646,7 +646,7 @@ guardar_tabla(agrupado_sector, "T06_errores_agrupados_sector",
 # tamaño de la sección 4. Lo que sale aquí es que el efecto se concentra en el
 # quintil 5 -- eso NO es la última palabra sobre la forma de la relación. Con
 # los mismos controles de la especificación principal, la relación por
-# quintiles resulta monotónica creciente (validacion/21_decision_medida.R,
+# quintiles resulta monotónica creciente (06_decision_medida.R,
 # sección 6). No es una contradicción: son dos especificaciones distintas
 # (con y sin controles) que pueden mostrar formas distintas. No generalizar
 # a partir de esta tabla sola.
@@ -681,7 +681,7 @@ if ("golpe_c_de" %in% names(medidas) && "Bite2022_obreros_de" %in% names(medidas
                                   quintil_golpe_c = COLOR_ALTA),
                        labels = c("Bite (Kaitz de obreros)", "Golpe C")) +
     labs(title = "Crecimiento del costo laboral 2022-2023 por quintil de exposición (sin controles)",
-         subtitle = "Medianas crudas -- con controles la relación es monotónica (validacion/21, sección 6)",
+         subtitle = "Medianas crudas -- con controles la relación es monotónica (06_decision_medida.R, sección 6)",
          x = "Quintil de exposición (1 = menos expuesta)",
          y = "Crecimiento mediano (%)", color = NULL,
          caption = "Medianas sin controles. Sirve para ver la forma de la relación, no para medir el efecto.") +
@@ -726,7 +726,7 @@ criterios, en orden:
      outcome -- si el efecto sobrevive aquí, es economía, no sesgo de
      división. Este criterio pesa más que la magnitud.
   3. Cobertura de muestra (sección 2, tabla T01) y estabilidad de la medida
-     entre años base -- ver validacion/21_decision_medida.R, que compara
+     entre años base -- ver 06_decision_medida.R, que compara
      cada medida calculada con base 2022 y con base 2019.
 
 CRITERIO ELIMINADO EN ESTA REVISIÓN: el placebo 2018-2019 de la sección 7 NO

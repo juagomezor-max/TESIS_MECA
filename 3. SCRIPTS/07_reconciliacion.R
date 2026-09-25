@@ -1,12 +1,12 @@
 # ==============================================================================
-# 22_reconciliacion.R
+# 07_reconciliacion.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
 # Autores: Julio Gómez y Nicolás Jácome
 #
 # ¿Por qué el primer eslabón da 4,03% en el póster (event study, panel) y
-# 2,98% en validacion/20_primer_eslabon_medidas.R (corte transversal)?
+# 2,98% en 05_primer_eslabon_medidas.R (corte transversal)?
 #
 # No son dos resultados contradictorios: son dos especificaciones distintas del
 # mismo objeto, y hasta ahora nadie ha verificado qué decisión concreta genera
@@ -23,8 +23,8 @@
 # Capítulo:     3. Identificación
 # Pregunta:     ¿Por qué circulan cifras distintas del primer eslabón, y cuál
 #               es la principal?
-# Depende de:   validacion/20_primer_eslabon_medidas.R (da 2,98%),
-#               validacion/21_decision_medida.R (da 1,15%, celda limpia)
+# Depende de:   05_primer_eslabon_medidas.R (da 2,98%),
+#               06_decision_medida.R (da 1,15%, celda limpia)
 #
 # GLOSARIO DE CIFRAS -- este es el script que las ordena, así que quedan aquí
 # con su definición exacta, no solo el número:
@@ -35,13 +35,13 @@
 #          el póster (ver el pendiente de la sección 6, punto 6: esa
 #          confusión sigue sin resolverse).
 #   2,98%  Tasa de crecimiento del costo laboral 2022-2023 en corte
-#          transversal, sin efectos fijos (validacion/20, sección 1).
+#          transversal, sin efectos fijos (05_primer_eslabon_medidas.R, sección 1).
 #   1,15%  Celda limpia: exposición 2019 contra crecimiento 2022-2023, rompe
-#          el traslape aritmético (validacion/21, sección 3). Es la
+#          el traslape aritmético (06_decision_medida.R, sección 3). Es la
 #          estimación más creíble, aunque no la más citada.
 #   -1,95% Coeficiente de 2023 con exposición 2022 y el outcome que arrastra
 #          año base 2019 -- exposición post-tratamiento, no interpretable
-#          (validacion/21, sección 4).
+#          (06_decision_medida.R, sección 4).
 # ------------------------------------------------------------------------------
 
 
@@ -208,7 +208,7 @@ cat("\nLECTURA: si pocas firmas tienen propietarios y la correlación es alta,\n
 
 # --- Las dos formas de tratar los extremos --------------------------------------
 # El póster winsoriza (recorta al 1% y 99%, conservando la firma con un valor
-# modificado). validacion/20_primer_eslabon_medidas.R aplica un filtro de
+# modificado). 05_primer_eslabon_medidas.R aplica un filtro de
 # plausibilidad (Bite > 1,3 pasa a NA, porque implica un trabajador que
 # cuesta menos del mínimo, lo cual es imposible en el sector formal salvo
 # por medio tiempo o error de reporte).
@@ -266,7 +266,7 @@ estimar_panel <- function(outcome, tratamiento, efectos = EFECTOS_PANEL,
          firmas = n_distinct(datos$NORDEMP[obs(modelo)]))
 }
 
-# --- B. Corte transversal (la de validacion/20_primer_eslabon_medidas.R) -------
+# --- B. Corte transversal (la de 05_primer_eslabon_medidas.R) -------
 # Una fila por firma: la tasa de crecimiento del costo laboral 2022-2023.
 
 corte <- base %>%
@@ -309,7 +309,7 @@ originales <- bind_rows(
 
 ver(originales)
 guardar_tabla(originales, "T01_especificaciones_originales",
-              "Tabla 1. Las dos especificaciones tal como están en el póster y en validacion/20")
+              "Tabla 1. Las dos especificaciones tal como están en el póster y en 05_primer_eslabon_medidas.R")
 
 cat("\nSi estos dos números reproducen 4,03% y 2,98%, la descomposición de la\n",
     "sección 3 es válida. Si no, primero hay que averiguar por qué no reproducen.\n")
@@ -321,7 +321,7 @@ cat("\nSi estos dos números reproducen 4,03% y 2,98%, la descomposición de la\
 titulo("3. DESCOMPOSICIÓN DE LA BRECHA")
 
 # Partimos de la especificación del póster y vamos cambiando un elemento a la
-# vez hasta llegar a la de validacion/20. Cada fila aísla el efecto de UNA decisión.
+# vez hasta llegar a la de 05_primer_eslabon_medidas.R. Cada fila aísla el efecto de UNA decisión.
 # Así, en lugar de "dan distinto", tendremos "la diferencia viene de X".
 
 pasos <- bind_rows(
@@ -345,7 +345,7 @@ pasos <- bind_rows(
   
   # Paso 4: el corte transversal completo
   estimar_corte("crecimiento_sin_prop", "bite_filtro_de",
-                etiqueta = "4. validacion/20: corte transversal")
+                etiqueta = "4. 05_primer_eslabon_medidas.R: corte transversal")
 ) %>%
   mutate(
     significancia = estrellas(p_valor),
@@ -354,7 +354,7 @@ pasos <- bind_rows(
 
 ver(pasos)
 guardar_tabla(pasos, "T02_descomposicion_brecha",
-              "Tabla 2. De la especificación del póster a la de validacion/20, un cambio a la vez")
+              "Tabla 2. De la especificación del póster a la de 05_primer_eslabon_medidas.R, un cambio a la vez")
 
 cat("\nCÓMO LEER: 'cambio_vs_anterior_pct' dice cuánto mueve cada decisión. El\n",
     "paso con el salto más grande es el que explica la brecha. Si ningún paso\n",
@@ -543,16 +543,16 @@ CÓMO DECIDIR, Y QUÉ ESCRIBIR:
      elasticidad bien definida.
 
   5. En cualquier caso, la robustez de la celda limpia
-     (validacion/21_decision_medida.R: exposición medida en 2019, efecto de
+     (06_decision_medida.R: exposición medida en 2019, efecto de
      1,15%) va reportada al lado, y también la advertencia de que la
      relación por tramos se aplana en el quintil más expuesto.
      [NOTA de esta revisión, contradicción NO resuelta por cuenta propia:
      este punto dice que la relación por tramos 'se aplana en el quintil
-     más expuesto'. validacion/21_decision_medida.R (sección 6) dice, con
+     más expuesto'. 06_decision_medida.R (sección 6) dice, con
      los mismos controles, que la relación es MONOTÓNICA CRECIENTE -- no
      aplanada. No se sabe cuál de las dos descripciones quedó desactualizada
      al escribir la otra. Verificar contra la tabla T04_efecto_por_tramos de
-     validacion/21 antes de escribir cualquiera de las dos afirmaciones en
+     06_decision_medida.R antes de escribir cualquiera de las dos afirmaciones en
      la tesis.]
 
   6. PENDIENTE DEL PÓSTER QUE ESTE SCRIPT NO RESUELVE: la casilla que dice
