@@ -129,3 +129,44 @@ Ver `RC_T09_contraste_totales_control`. `SALARPER` vs. `C3R2C3` y `PRESSPER` vs.
 
 **Lo que queda pendiente**: identificar la causa exacta del residuo restante tras descontar R4CSAP (12.37% de las filas con R4CSAP>0 caen fuera del rango 0.9-1.1 en la razón residuo/R4CSAP) -- no se investigó más a fondo por quedar fuera del alcance de esta tarea. Candidato más plausible para ese remanente: redondeo o pequeñas inconsistencias de reporte en R1CSAP/R2CSAP/R3CSAP individuales (ver el 96.83% -no 100%- de la identidad R1+R2+R3=R4 ya documentado en el cierre anterior).
 
+
+## Validación de la tasa de parafiscales como ventana a la distribución salarial
+
+Prueba si `tasa_parafiscales = C3R6 / nómina` revela la fracción de nómina por encima de 10 SMLV, aprovechando la exención de SENA+ICBF (Ley 1607 de 2013) para trabajadores bajo ese umbral. Esta sección NO construye ninguna medida -- solo prueba si la señal existe.
+
+### Base de aportes elegida
+
+Se probaron 3 definiciones del denominador. Ver `TP_T01_comparacion_bases_denominador`. **Elegida: C3R2 + C3R4 (permanentes + temporal directo)**, con 98% de las tasas dentro del rango teórico [0, 0.10], frente a 85.67% y 89.56% de las otras dos. C3R2 solo (sueldos permanentes) subestima la base al dejar fuera a los temporales directos, que también generan parafiscales.
+
+### PRUEBA 1: bimodalidad -- PASA
+
+Ver `TP_T02_bandas_percentiles_2022` y `TP01_histograma_tasa_2022`. En la categoría total, 44.15% de las firmas cae en [0.035, 0.045] (banda de exención total) y 7.59% en [0.085, 0.095] (banda sin exención), con 40.58% distribuidas en el medio y solo 1.46% fuera del rango [0, 0.10]. Hay masa reconocible en ambos extremos teóricos, con más peso cerca de 0.04 que de 0.09 -- coherente con que la mayoría de la nómina está por debajo de un umbral tan alto como 10 SMLV.
+
+### PRUEBA 2: placebo pre-2013 -- PASA (la que decide)
+
+Ver `TP_T03_serie_anual_placebo`, `TP_T04_veredicto_prueba2`, `TP02_serie_anual_placebo` y `TP03_histograma_2011_vs_2022`. En 2008-2012 la mediana de la tasa (categoría total) es **exactamente 0.0900 los 5 años**, con dispersión baja. Desde 2013 la mediana cae y la dispersión sube (SD promedio 0.18 en 2013-2024 frente a 0.038 en 2008-2012, 4.8x). 2013 es un año de transición clara (mediana ~0.065, a medio camino entre 0.09 y 0.04) -- coherente con una Ley 1607 que no aplicó desde el 1 de enero para todas las firmas. Desde 2014 la mediana se estabiliza cerca de 0.04. **No se detectó un quiebre claro en 2016-2017** (Ley 1819, eliminación del CREE) -- la mediana se mueve de forma continua en esos años, sin salto visible.
+
+**Nota de calidad de dato**: la SD post-2013 está inflada por valores atípicos extremos en algunos años/categorías (ej. SD=1.71 en administrativos 2021, muy por encima del rango teórico [0,0.1] de la propia tasa) -- son unas pocas firmas con denominadores muy pequeños generando razones extremas, no una dispersión genuina de esa magnitud. El criterio de la prueba (SD se duplica) se cumple ampliamente incluso ignorando ese ruido; los percentiles p10/p90 (robustos a outliers, en la misma tabla) muestran el mismo patrón de apertura desde 2013 de forma más limpia.
+
+### Diagnósticos adicionales (solo porque ambas pruebas pasaron)
+
+**3. Consistencia interna** (`TP_T05_consistencia_interna`): % de firmas con fracción implícita aritméticamente incoherente con su salario promedio observado -- administrativos 31.16%, obreros 30.76%, profesional_tecnico 27.83%, total 34.19%.
+
+**4. Cruce con salario integral, 2008-2019** (`TP_T06_cruce_salario_integral`, `TP_T07_test_wilcoxon_salario_integral`): p-valor Wilcoxon por categoría -- obreros=0, profesional_tecnico=0, administrativos=0, total=0.
+
+**5. Correlación con `Bite2022_obreros`** (`TP_T08_correlacion_bite2022`): Pearson = -0.052, Spearman = -0.143 (n=5099) -- correlación débil, casi nula. La fracción implícita captura información en buena medida DISTINTA de Kaitz, no una reformulación de lo mismo.
+
+
+### Veredicto
+
+**La señal existe y es parcialmente usable, con una reserva importante.** Las dos pruebas que deciden (bimodalidad y, sobre todo, el placebo pre-2013) pasan con evidencia contundente: la mediana pre-2013 da exactamente 0.09 los 5 años, y la dispersión se abre de forma clara justo cuando entra en vigor la Ley 1607. El cruce con salario integral (punto 4) es la validación externa más limpia de las tres: las firmas que sí reportan salario integral tienen una tasa sistemáticamente más alta, en las 4 categorías, con p-valores indistinguibles de cero. La correlación con `Bite2022_obreros` (punto 5) es débil -- esto sería información nueva, no una repetición de lo que ya se tiene.
+
+**La reserva**: la prueba de consistencia interna (punto 3) encuentra que 31% en promedio de las firmas (27.8%-34.2% según categoría) tiene una fracción implícita sobre 10 SMLV que es aritméticamente incoherente con su propio salario promedio observado -- más de una cuarta parte de la muestra. Por instrucción de la tarea ("si es alto, la señal está contaminada"), este % es alto y no se minimiza: la fórmula lineal `(tasa-0.04)/0.05` es una aproximación razonable para ver SI hay señal (que es lo que pedía esta tarea), pero no es directamente utilizable como medida firma por firma sin refinarla -- posiblemente porque ignora la exención parcial del salario integral (base 70%, tasa efectiva 6.3% no 9%, ver caveats) y trata la relación tasa-fracción como lineal cuando probablemente no lo es en los extremos. **Conclusión operativa: la idea se queda para otra sesión, con esta reserva documentada -- no se recomienda usarla en su forma actual sin resolver la inconsistencia del punto 3.**
+
+### Caveats
+
+- La exención requiere ser contribuyente de renta y tener 2+ empleados -- casi todas las firmas EAM califican, pero no todas.
+- Para trabajadores con salario integral la base de aportes es el 70% del salario, así que su tasa efectiva es 6.3%, no 9% -- afecta la lectura de los valores intermedios, sobre todo en 2008-2019 donde C3R1 existe.
+- No se usó C3R5 (salud, pensión, ARL) para este ejercicio: el ARL varía por clase de riesgo y ensucia la tasa.
+- El umbral de la exención es **10 SMLV, no 1**. Esta tasa NO identifica el % de trabajadores en el salario mínimo -- identifica la fracción por encima de 10 mínimos.
+

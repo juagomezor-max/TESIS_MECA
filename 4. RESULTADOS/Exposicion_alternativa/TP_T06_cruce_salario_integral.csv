@@ -1,0 +1,5 @@
+categoria,n_salario_integral_FALSE,n_salario_integral_TRUE,tasa_mediana_salario_integral_FALSE,tasa_mediana_salario_integral_TRUE
+administrativos,72860,19194,0.0715,0.097
+obreros,92420,756,0.065,0.0803
+profesional_tecnico,44399,9983,0.0678,0.0923
+total,77314,20378,0.0681,0.083
