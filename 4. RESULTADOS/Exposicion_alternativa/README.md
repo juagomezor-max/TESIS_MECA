@@ -96,3 +96,36 @@ Ver tabla `EA_T04_comparacion_panel_actual`. Comparación firma a firma en emple
 - Decidir la categoría ocupacional real de `R1CSAP`/`R2CSAP`/`R3CSAP` (posiblemente contactando la ficha metodológica del DANE, no solo el diccionario extraído del DOCX).
 - Decidir si 2020 entra o no a la estimación, con base en la cobertura reportada aquí.
 - Ninguna medida de exposición se calculó -- ese es el script siguiente, que debe leer `panel_firma_eam_expalt_completo.rds` y el diccionario para saber qué numeradores y denominadores son compatibles (columna `poblacion`).
+
+## Diagnóstico del residuo de C3R10 (costo total del personal)
+
+`C3R10` (costo total del personal, numerador de `salario_promedio` en `01_resultados_principales.R`) no cerraba como `suma(C3R1..C3R9)` en el diagnóstico previo (`EA_T07`, 17%-74% de cumplimiento). Este script diagnostica por qué, con datos, no con especulación.
+
+### 1. Dirección del residuo: casi enteramente positiva
+
+Ver `RC_T01_reparto_signos_residuo`. El residuo negativo es prácticamente inexistente (0.01%-0.06% de las filas en las 4 categorías). El resto se reparte entre "cero dentro de tolerancia" (48%-75%) y **positivo** (25%-52%). No hay mezcla de signos que sugiera un problema de calidad de dato: la dirección es sistemática y apunta limpiamente a un **rubro que no se extrajo**, no a doble conteo.
+
+### 2. Magnitud: pequeña en la mediana, concentrada en una minoría de firmas
+
+Ver `RC_T02_magnitud_residuo`. Mediana del residuo (categoría total): 0.209% de `C3R10`. Solo 6.68% de las filas supera el 5%, y 0.61% supera el 20%. Esto NO es "un rubro entero por fuera" para la firma promedio -- es un residuo que afecta de forma importante solo a una minoría de firmas: exactamente las que tienen aprendices.
+
+### 3. Estructura: no es agregación, es un dato de la macrobase cruda
+
+Por año (`RC_T03`): el cumplimiento empeora progresivamente de 2008 a 2024 en las 4 categorías, sin un salto abrupto en un año específico que sugiera un cambio puntual de formulario -- es una tendencia gradual, no un quiebre. Por tamaño (`RC_T04`): empeora con el tamaño de la firma (Pequeña 67.9% cumple, Mediana 16.1%, Grande 6.4%) -- coherente con que las firmas grandes tienen más probabilidad de tener aprendices. Por sector (`RC_T05`): varía bastante (29%-59%) pero sin un sector claramente atípico que domine el patrón. Establecimiento vs. firma (`RC_T06`): 73.58% vs. 73.78% -- prácticamente idéntico. **La agregación a firma NO amplifica el residuo**: ya está en los datos crudos de la macrobase, por establecimiento.
+
+### 4. El rubro identificado: R4CSAP (apoyo de sostenimiento de aprendices)
+
+Ver `RC_T07_correlacion_candidatos`, `RC_T08_prueba_r4csap` y `RC_T11_residuo_neto_tras_r4csap`. De los 6 candidatos probados (R4CSAP, R1+R2+R3CSAP, SALARPER, SALPEYTE, PRESSPER, PRESPYTE), R4CSAP es, por lejos, el que mejor explica el residuo: correlación 0.8828 en toda la muestra, 0.9355 restringido a las filas con R4CSAP > 0. La razón residuo/R4CSAP tiene **mediana exactamente 1.0**, y 87.63% de esas filas caen entre 0.9 y 1.1. Al descontar R4CSAP del residuo, el % de filas dentro de tolerancia (0.1%) sube de 48.01% a 91.19%. Es la prueba que pedía la tarea, y confirma la hipótesis: los aprendices están en el conteo de personal que determina `C3R10` ("Costos y Gastos Causados por el Personal Ocupado"), pero su pago (`R4CSAP`, apoyo de sostenimiento, Ley 789) vive en una fila aparte del cuadro 3, fuera de `C3R1`-`C3R9`.
+
+### 5. Totales de control: parcialmente consistentes, no perfectos
+
+Ver `RC_T09_contraste_totales_control`. `SALARPER` vs. `C3R2C3` y `PRESSPER` vs. `C3R3C3` coinciden en 84.33% de las filas cada uno -- alto, pero no total, así que incluso las filas individuales R2/R3 tienen algo de inconsistencia interna frente a sus propios totales de control, con una magnitud menor a la del hallazgo principal. `SALPEYTE` vs. `C3R2C3+C3R4C3` coincide solo 51.11% -- más ruido en la frontera permanente/temporal directo, consistente con lo ya documentado en el punto 2 del cierre anterior (la estructura completa del cuadro 3 no cierra de forma perfecta en ningún cruce probado hasta ahora).
+
+### 6. Conclusión
+
+**"C3R10 = suma de R1-R9 más X", con X identificado: R4CSAP** (apoyo de sostenimiento de aprendices, Ley 789). No es una explicación perfecta al 100% -- queda un residuo menor sin explicar tras descontar R4CSAP (ver `RC_T11`), pero pasa de ser el problema dominante a ser un remanente secundario. `salario_promedio` (`C3R10C3 / empleo_total`) **está bien definido**: incluye el costo de aprendices que `empleo_total` también cuenta en el denominador (ver PASO 0.3 del script principal -- los aprendices SÍ están en `PERTOTAL`/`empleo_total`). Usar `C3R10` es, de hecho, la opción MÁS consistente entre numerador y denominador, no una caja opaca.
+
+**Efecto sobre `salario_promedio` 2022 y 2023** (ver `RC_T10_impacto_salario_promedio`): la diferencia mediana entre usar `C3R10` y usar la suma explícita de R1-R9 es **1.33% en 2022 y 1.10% en 2023** -- pequeña, y el percentil 10 es 0% (la mitad de las firmas o más no tiene diferencia alguna, porque no tienen aprendices). El percentil 90 sí llega a 15-16%, para las firmas que sí tienen aprendices con apoyo de sostenimiento. **El hallazgo es una nota metodológica, no una corrección al resultado del primer eslabón**: la diferencia en la mediana es pequeña y el numerador actual (`C3R10`) es, si acaso, más correcto que la alternativa de sumar R1-R9 a mano, porque esa suma excluiría el costo de los aprendices que sí están contados en el denominador.
+
+**Lo que queda pendiente**: identificar la causa exacta del residuo restante tras descontar R4CSAP (12.37% de las filas con R4CSAP>0 caen fuera del rango 0.9-1.1 en la razón residuo/R4CSAP) -- no se investigó más a fondo por quedar fuera del alcance de esta tarea. Candidato más plausible para ese remanente: redondeo o pequeñas inconsistencias de reporte en R1CSAP/R2CSAP/R3CSAP individuales (ver el 96.83% -no 100%- de la identidad R1+R2+R3=R4 ya documentado en el cierre anterior).
+

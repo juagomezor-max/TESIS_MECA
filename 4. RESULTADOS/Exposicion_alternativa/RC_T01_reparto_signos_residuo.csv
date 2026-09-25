@@ -1,0 +1,13 @@
+categoria,signo,n,pct
+administrativos,cero (dentro de tolerancia),84517,64.59
+administrativos,negativo (C3R10 < suma R1-R9),77,0.06
+administrativos,positivo (C3R10 > suma R1-R9),46263,35.35
+obreros,cero (dentro de tolerancia),96552,73.78
+obreros,negativo (C3R10 < suma R1-R9),27,0.02
+obreros,positivo (C3R10 > suma R1-R9),34278,26.2
+profesional_tecnico,cero (dentro de tolerancia),97494,74.5
+profesional_tecnico,negativo (C3R10 < suma R1-R9),16,0.01
+profesional_tecnico,positivo (C3R10 > suma R1-R9),33347,25.48
+total,cero (dentro de tolerancia),62820,48.01
+total,negativo (C3R10 < suma R1-R9),60,0.05
+total,positivo (C3R10 > suma R1-R9),67977,51.95
