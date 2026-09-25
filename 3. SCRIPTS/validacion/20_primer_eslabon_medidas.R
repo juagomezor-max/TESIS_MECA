@@ -1,5 +1,5 @@
 # ==============================================================================
-# 03_primer_eslabon.R
+# 20_primer_eslabon_medidas.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -456,7 +456,7 @@ titulo("6. SESGO DE DIVISIÓN: MEDIDAS CON BASE 2019")
 # que la persistencia existe: el test es informativo.
 #
 # Bite y Exposure no tienen versión 2019 construida. Si se quiere comparación
-# completa, hay que construirlas con la misma lógica del script 02.
+# completa, hay que construirlas con la misma lógica de construccion/exposicion_alternativa.R.
 
 etiquetas_2019 <- c(
   golpe_c_2019     = "Golpe C (base 2019)",
@@ -710,25 +710,33 @@ guardar_tabla(resumen, "T08_resumen_decision",
 # insumo para DECIDIR qué medida usar, no un resultado para citar como "el"
 # primer eslabón. Ver la nota de la sección 1 sobre las cinco cifras.
 cat("
-CÓMO SE TOMA LA DECISIÓN (regla comiteada en NOTA_DECISIONES.md):
+CÓMO SE TOMA LA DECISIÓN (regla comiteada en NOTA_DECISIONES.md, corregida en
+la revisión de comentarios de 2026-09 -- ver 'CRITERIO ELIMINADO' abajo):
 
 La medida principal es la que predice el aumento diferencial del costo laboral
-en 2023, y NO se revisa después según los resultados de empleo. Los criterios,
-en orden:
+en 2023, y NO se revisa después según los resultados de empleo. Tres
+criterios, en orden:
 
-  1. Que el coeficiente sea positivo y significativo en la MUESTRA COMÚN
-     (sección 5). En muestras distintas los coeficientes no son comparables.
-  2. Que SOBREVIVA con base 2019 (sección 6). Si solo aparece con base 2022,
-     es sesgo de división. Este criterio pesa más que la magnitud.
-  3. Que el placebo de 2018-2019 sea claramente menor (sección 7).
-     [NOTA de esta revisión: este criterio, tal como está escrito, depende de
-     un placebo que la sección 7 determinó que NO es informativo -- da
-     negativo en las cinco medidas por construcción, así que no distingue
-     entre ellas. No se reescribe este criterio aquí porque hacerlo cambiaría
-     la regla de decisión, y esta tarea solo corrige comentarios. Queda
-     reportado como algo que hay que decidir: cómo ajustar o reemplazar el
-     criterio 3, o si la decisión debe apoyarse solo en 1, 2 y 4.]
-  4. Que no dependa enteramente de los controles (sección 8.1).
+  1. Que el coeficiente sea positivo y significativo en la especificación
+     estándar, MUESTRA COMÚN (sección 5). En muestras distintas los
+     coeficientes no son comparables.
+  2. Que se sostenga en la CELDA LIMPIA: exposición medida en 2019 contra el
+     crecimiento del costo laboral 2022-2023 (sección 6). Esto rompe el
+     traslape aritmético entre el denominador de la exposición y la base del
+     outcome -- si el efecto sobrevive aquí, es economía, no sesgo de
+     división. Este criterio pesa más que la magnitud.
+  3. Cobertura de muestra (sección 2, tabla T01) y estabilidad de la medida
+     entre años base -- ver validacion/21_decision_medida.R, que compara
+     cada medida calculada con base 2022 y con base 2019.
+
+CRITERIO ELIMINADO EN ESTA REVISIÓN: el placebo 2018-2019 de la sección 7 NO
+entra en esta decisión. La regla anterior lo traía como tercer criterio ('que
+el placebo sea claramente menor') -- se retira porque el placebo da negativo
+y significativo en las cinco medidas por construcción (sección 7), así que no
+distingue entre ellas. Su lugar es el capítulo 6, como limitación reconocida:
+se intentó un placebo sobre el primer eslabón y resultó no informativo por
+construcción, lo que explica por qué la validación descansa en la celda
+limpia (criterio 2) y no en un placebo.
 
 Si ninguna medida pasa los criterios 1 y 2, el problema NO es de robustez sino
 de diseño. Está registrado como riesgo desde septiembre: en ese caso habría que
