@@ -1,5 +1,5 @@
 # ==============================================================================
-# 01_resultados_principales.R
+# 10_resultados_poster.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -25,9 +25,58 @@
 # (agrega costos laborales por categoría, tipos de contrato, inversión,
 # producción y otras variables). Si no se ha corrido, la sección 1 lo avisa.
 #
-# El script anterior (00_script_base.R) queda en el repositorio como registro
-# de la revisión que hicimos.
+# El script anterior (descartado/00_script_base.R) queda en el repositorio
+# como registro histórico de la revisión que hicimos -- no correrlo, su
+# carpeta de salida colisiona con la de este.
 # ==============================================================================
+
+# ------------------------------------------------------------------------------
+# LUGAR EN LA TESIS -- este script alimenta TRES capítulos, marcado sección
+# por sección.
+#
+# Capítulo 1 (Análisis inicial y descriptivos): secciones 1-4 (carga de
+#   datos, Kaitz 2022, estadísticas descriptivas, comparación simple
+#   antes/después). La sección 5 (controles de pandemia/subsidios) es de
+#   transición: metodológicamente sostiene la identificación (capítulo 3),
+#   pero se deja aquí porque es donde se calcula.
+#
+# Capítulo 5 (Resultados): secciones 6-9 (primer eslabón/salario promedio,
+#   resultado principal de empleo, resultados exploratorios, heterogeneidad
+#   por tamaño).
+#
+# Capítulo 4 (Validación de la identificación): sección 10 (supuestos del
+#   modelo) -- es un mapa de qué evidencia de ESTE script respalda cada
+#   supuesto y qué queda pendiente en el script de validaciones. No es en sí
+#   misma una prueba nueva.
+#
+# Sección 11 (resumen): transversal a los tres capítulos, solo reordena
+# cifras ya calculadas arriba.
+#
+# YA VERIFICADO EN ESTE SCRIPT (no requirió corrección):
+#   - No se encontró la frase "el empleo no cae" en ninguna parte. El texto
+#     ya usa consistentemente "no se detecta un efecto distinto de cero" /
+#     "no alcanzamos a distinguirlo de cero", con el intervalo de confianza
+#     completo al lado (secciones 7 y 11).
+#   - Se buscó un "placebo de 2018 sobre empleo (p=0,22)" como prueba
+#     puntual y NO se encontró tal cual en este script. Lo que SÍ existe es
+#     una prueba CONJUNTA de todos los años previos (2015-2019, 2021) contra
+#     2022, vía estudio_evento()$p_antes (sección 7, líneas ~774-784) --
+#     esa es la evidencia de "sin anticipación"/tendencias paralelas que
+#     corresponde al capítulo 4. Si el placebo específico de 2018 con p=0,22
+#     existe en otro script no revisado en esta tarea, no se pudo verificar
+#     aquí -- no se inventó la cifra.
+#
+# PENDIENTE CONECTADO A validacion/22_reconciliacion.R: la "Lectura B" del
+# primer eslabón (sección 11, línea ~1035: "salto 2023 frente al cambio
+# típico 2016-2019") se calcula con contraste() (línea ~665), que resta el
+# promedio de los coeficientes 2016-2019 al de 2023 -- es decir, SÍ parece
+# ser "el salto ajustado por la pendiente previa" tal como se define en el
+# glosario de validacion/22, no "la pendiente previa" en sí misma. Esto es
+# evidencia a favor de que la nota pendiente de validacion/22 (punto 6) se
+# origina en una descripción imprecisa del póster, no en dos cálculos
+# distintos -- pero no se confirmó corriendo el número, así que la nota de
+# validacion/22 se deja como está, sin marcarla resuelta.
+# ------------------------------------------------------------------------------
 
 
 # ==============================================================================
