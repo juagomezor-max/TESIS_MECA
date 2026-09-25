@@ -1,5 +1,5 @@
 # ==============================================================================
-# 02_exposicion_alternativa.R
+# exposicion_alternativa.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -16,6 +16,32 @@
 # Para correrlo abrimos TESIS_MECA.Rproj, así R trabaja desde la raíz del
 # repositorio y encuentra las carpetas.
 # ==============================================================================
+
+# ------------------------------------------------------------------------------
+# LUGAR EN LA TESIS
+#
+# Capítulo:     2. Medición
+# Pregunta:     ¿Cómo se construyen las medidas alternativas de exposición
+#               (golpe_c, golpe_a, golpe_costo, brecha) al aumento del mínimo
+#               de 2023?
+# Cifra clave:  5.742 firmas con golpe_c definido, frente a 5.099 con el Kaitz
+#               de obreros (Bite2022_obreros) -- 643 recuperadas (sección 7,
+#               tabla T06).
+# Depende de:   (nada propio del proyecto -- lee directamente
+#               1. DATOS/panel_firma_eam_expalt_completo.rds)
+# Alimenta a:   validacion/20_primer_eslabon_medidas.R (prueba cuál medida
+#               predice el choque), validacion/21_decision_medida.R (cierra
+#               la decisión de medida principal)
+#
+# OJO -- hay material de otro capítulo dentro de este script:
+#   La sección 8 (tabla T09_cerca_del_minimo_por_categoria, gráfico G02)
+#   reporta que el obrero permanente típico gana ~1,44 salarios mínimos. Esa
+#   cifra es un DESCRIPTIVO de la distribución salarial -- capítulo 1 (quién
+#   está expuesto), no un resultado de medición (capítulo 2). Se calcula aquí
+#   porque sostiene el argumento metodológico de usar las tres categorías en
+#   vez de solo obreros, pero si se cita en la tesis como hecho descriptivo,
+#   corresponde al capítulo 1, no a este.
+# ------------------------------------------------------------------------------
 
 
 # ==============================================================================
@@ -666,7 +692,13 @@ grafico_categorias <- ggplot(salarios_categoria, aes(x = veces_el_minimo, fill =
 guardar_grafico(grafico_categorias, "G02_salarios_por_categoria")
 
 # Cuántos administrativos están cerca del mínimo: la prueba directa del
-# argumento de que la categoría ocupacional no basta
+# argumento de que la categoría ocupacional no basta.
+#
+# NOTA DE UBICACIÓN: la mediana de "veces_el_minimo" que sale aquí para
+# obreros (~1,44) es una cifra DESCRIPTIVA de la distribución salarial --
+# material del capítulo 1 (quién está expuesto), no del capítulo 2. Se usa
+# en este script como evidencia de apoyo al argumento metodológico de abajo,
+# no como resultado propio de esta sección.
 cerca_del_minimo <- salarios_categoria %>%
   group_by(categoria) %>%
   summarise(
