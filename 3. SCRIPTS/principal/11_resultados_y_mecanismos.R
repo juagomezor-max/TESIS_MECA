@@ -1,5 +1,5 @@
 # ==============================================================================
-# 06_resultados_y_mecanismos.R
+# 11_resultados_y_mecanismos.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -18,6 +18,37 @@
 #           1. DATOS/panel_analitico_firma_eam.rds
 # Salidas:  4. RESULTADOS/Resultados_mecanismos/
 # ==============================================================================
+
+# ------------------------------------------------------------------------------
+# LUGAR EN LA TESIS
+#
+# Capítulo:     5. Resultados (primer eslabón, segundo eslabón, mecanismos,
+#               heterogeneidad)
+# Por qué Bite: la medida principal usada en las secciones 5, 6 y 7 (donde
+#               solo se corre una) es Bite2022_obreros porque es la que gana
+#               la celda limpia en validacion/21_decision_medida.R (+1,15%,
+#               p=0,008) -- ver ese script para la regla de decisión completa.
+#               No se re-justifica aquí, solo se usa.
+#
+# CAPÍTULO 6 -- LA TENDENCIA PREVIA DEL COSTO LABORAL: el hallazgo de que las
+# firmas expuestas venían con su costo laboral relativo cayendo 2015-2022
+# (sección 3, gráfico G02, lectura B) es material de amenazas, no de
+# resultado limpio. Es esperable por construcción, no un defecto de
+# implementación: Kaitz se mide con el salario de 2022, así que las firmas de
+# exposición alta son por definición las que llegaron a 2022 con el costo más
+# bajo. Documentarlo en el capítulo 6 con esa explicación, no ocultarlo ni
+# presentarlo como sorpresa.
+#
+# MECANISMOS Y TENDENCIAS PREVIAS: si al revisar p_previos (sección 5) resulta
+# que la mayoría de los mecanismos tiene tendencias diferenciales antes del
+# choque, su coeficiente de 2023 no es interpretable como efecto tal como se
+# calcula aquí (solo lectura A). principal/12_mecanismos_por_grupo.R resuelve
+# ese problema usando la lectura B para cada mecanismo (el salto contra la
+# trayectoria previa de esa variable, no contra cero) -- remitir ahí cuando
+# ese sea el caso. La advertencia de que los mecanismos siguen siendo
+# exploratorios (circularidad, pruebas múltiples) se mantiene en los dos
+# scripts.
+# ------------------------------------------------------------------------------
 
 
 # ==============================================================================
@@ -59,10 +90,10 @@
 # el salario de 2022, así que las firmas de exposición alta son por definición
 # las que llegaron a 2022 con el costo más bajo, y su trayectoria previa se ve
 # descendente. Es una propiedad conocida de los diseños con bite salarial, no un
-# defecto de implementación. La lectura B existe precisamente para corregirla, y
-# la validación con exposición de 2019 (script 04) da un efecto positivo y
-# significativo sin depender del año base. Las dos cosas van escritas en la
-# tesis como matices del resultado, no como su refutación.
+# defecto de implementación. La lectura B existe precisamente para corregirla,
+# y la validación con exposición de 2019 (validacion/21_decision_medida.R) da
+# un efecto positivo y significativo sin depender del año base. Las dos cosas
+# van escritas en la tesis como matices del resultado, no como su refutación.
 # ==============================================================================
 
 
@@ -635,7 +666,9 @@ cat("\nCÓMO LEER LA TABLA DE MECANISMOS:\n",
     "   espera un falso positivo aunque no haya ningún efecto real.\n",
     " - Revisar 'p_previos' de cada fila: si es bajo, ese mecanismo ya tenía\n",
     "   tendencias diferenciales antes del choque y su coeficiente no es\n",
-    "   interpretable como efecto.\n",
+    "   interpretable como efecto AQUÍ (esta tabla solo usa la lectura A). Si\n",
+    "   son varios los mecanismos en ese caso, ver\n",
+    "   principal/12_mecanismos_por_grupo.R (lectura B).\n",
     " - Los indicadores (usa_agencias, hace_outsourcing, invierte) están en\n",
     "   puntos porcentuales, no en cambio porcentual. No mezclar escalas.\n")
 
@@ -840,10 +873,11 @@ QUÉ REPORTAR EN LA TESIS:
      la definición de exposición, y eso es robustez real. Si Exposure se aparta,
      recordar que no usa salarios y por eso no capta el canal del piso salarial.
 
-  3. TENDENCIA PREVIA. Declararla de frente: es esperable por construcción de la
-     medida y es una propiedad conocida de los diseños con bite salarial. Las
-     defensas son la lectura B y la validación con exposición de 2019 del
-     script 04 (+1,15%, p=0,008), que no depende del año base.
+  3. TENDENCIA PREVIA (CAPÍTULO 6, no capítulo 5). Declararla de frente: es
+     esperable por construcción de la medida y es una propiedad conocida de
+     los diseños con bite salarial. Las defensas son la lectura B y la
+     validación con exposición de 2019 de validacion/21_decision_medida.R
+     (+1,15%, p=0,008), que no depende del año base.
 
   4. SEGUNDO ESLABÓN. No escribir 'el empleo no cae'. Escribir 'no detectamos
      una caída', y reportar el intervalo completo. Con el primer eslabón de esta
@@ -852,8 +886,12 @@ QUÉ REPORTAR EN LA TESIS:
 
   5. MECANISMOS. Exploratorios, con p ajustados, y con la advertencia de
      circularidad para la participación de obreros. Un mecanismo con tendencias
-     previas significativas no es interpretable como efecto: revisar p_previos
-     fila por fila.
+     previas significativas no es interpretable como efecto tal como se
+     calcula aquí (solo lectura A): revisar p_previos fila por fila. Si la
+     mayoría de los mecanismos cae en ese caso, ver
+     principal/12_mecanismos_por_grupo.R, que usa la lectura B (salto contra
+     la trayectoria previa de cada mecanismo, no contra cero) para no perder
+     esos canales por un problema que es de la lectura, no del mecanismo.
 
   6. LO QUE NO SE PUEDE CONCLUIR. Que el salario mínimo no afecta el empleo. Lo
      que se puede concluir es que, en manufactura formal, en el corto plazo, con
