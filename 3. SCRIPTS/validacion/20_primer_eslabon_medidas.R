@@ -20,6 +20,27 @@
 # Para correrlo abrimos TESIS_MECA.Rproj.
 # ==============================================================================
 
+# ------------------------------------------------------------------------------
+# LUGAR EN LA TESIS
+#
+# Capítulo:     2. Medición
+# Pregunta:     ¿Cuál de las cinco medidas de exposición predice el aumento
+#               diferencial del costo laboral en 2023?
+# Cifra clave:  2,98% por DE de Bite — efecto sobre la TASA DE CRECIMIENTO del
+#               costo laboral 2022-2023, en corte transversal. No es la cifra
+#               principal de la tesis (esa es 4,03%, del event study).
+# Depende de:   construccion/exposicion_alternativa.R
+# Se relaciona: validacion/21_decision_medida.R (cierra la decisión de medida)
+#               validacion/22_reconciliacion.R (explica por qué 2,98 ≠ 4,03)
+#
+# SUPERADO POR VERSIONES POSTERIORES:
+#   - El placebo 2018-2019 de la sección 7 NO es informativo. Ver la nota en esa
+#     sección. La estimación se conserva; su lectura cambia.
+#   - La concentración en el quintil 5 de la sección 8.3 es un hallazgo de
+#     medianas SIN controles. Con controles la relación es monotónica
+#     (validacion/21, sección 6).
+# ------------------------------------------------------------------------------
+
 
 # ==============================================================================
 # LA IDEA Y LA TRAMPA
@@ -53,8 +74,14 @@
 #   Bite, golpe_c, golpe_a  (denominador salarial, relacionado pero no idéntico)
 #   Exposure2022_obreros  (composición, no usa salarios: inmune)
 #
-# Y por eso el PLACEBO de la sección 7: si la exposición predice igual de bien
-# el crecimiento de 2018->2019, entonces no está capturando el choque de 2023.
+# La sección 7 corre además un placebo 2018->2019. La idea original era: si la
+# exposición predice igual de bien el crecimiento en un período sin choque, no
+# está capturando el de 2023. Esa idea no se sostiene: el placebo da negativo
+# y significativo en las CINCO medidas, incluida Exposure (que no usa salarios
+# y no debería compartir el sesgo de división de las otras cuatro) -- el signo
+# sale de una cadena aritmética casi inevitable, no de un problema de diseño.
+# Ver la nota completa en la sección 7. La estimación se conserva como registro
+# de que se probó; ya no se lee como validación del diseño.
 # ==============================================================================
 
 
@@ -170,6 +197,17 @@ print(round(quantile(outcomes$crecimiento_2023,
 cat("En porcentaje, la mediana es:",
     round(100 * (exp(median(outcomes$crecimiento_2023, na.rm = TRUE)) - 1), 2), "%\n")
 
+# ESTA cifra (tasa de crecimiento 2022-2023 del costo laboral, mediana del
+# corte transversal) es UN estimando entre cinco que circulan para "el primer
+# eslabón", no la cifra principal de la tesis. Los cinco no son
+# intercambiables porque miden objetos distintos: 4,03% es el coeficiente de
+# 2023 del event study (la cifra principal); 4,80% es ese mismo salto ajustado
+# por la pendiente previa (lectura B); ésta (~2,98% en la corrida de
+# referencia) es la mediana de corte transversal que se calcula aquí; 1,15% es
+# la celda limpia con exposición medida en 2019 (sin traslape aritmético); y
+# -1,95% es el coeficiente de 2023 contra año base 2019. Confundirlas es el
+# tipo de error que un jurado detecta de inmediato -- validacion/22_
+# reconciliacion.R explica por qué no coinciden.
 cat("\nCrecimiento 2018->2019 (placebo):\n")
 print(round(quantile(outcomes$crecimiento_2019,
                      c(0.10, 0.25, 0.50, 0.75, 0.90), na.rm = TRUE), 4))
@@ -479,16 +517,35 @@ if (length(disponibles_2019) > 0) {
 # ==============================================================================
 titulo("7. PLACEBO: CRECIMIENTO DEL COSTO LABORAL 2018-2019")
 
-# Si la exposición predice igual de bien el crecimiento del costo laboral en un
-# período sin choque, entonces no está capturando el aumento de 2023 sino una
-# tendencia preexistente.
+# ESTE PLACEBO NO ES INFORMATIVO. Se conserva la estimación -- va al capítulo 6
+# de amenazas a la validez -- pero no se lee como evidencia a favor del diseño.
+# Una versión anterior de este script sí lo reportaba como validación; se
+# corrige aquí porque el argumento que la sostenía no se sostiene.
 #
-# CAVEAT que hay que decir en la tesis: este placebo usa exposición medida en
-# 2022, o sea DESPUÉS del período del placebo. Un coeficiente significativo aquí
-# puede reflejar reversión a la media o persistencia de la exposición, no
-# necesariamente una tendencia diferencial. Es evidencia sugestiva, no
-# concluyente. La versión limpia sería con exposición medida en 2017, que no
-# está construida.
+# EL ARGUMENTO ORIGINAL (ya no vale): si la exposición predice igual de bien el
+# crecimiento del costo laboral en un período sin choque, no está capturando el
+# aumento de 2023 sino una tendencia preexistente. Eso supone que un resultado
+# "limpio" (coeficiente chico o no significativo) era posible aquí. No lo es.
+#
+# POR QUÉ EL SIGNO NEGATIVO ESTÁ CASI GARANTIZADO (aritmética, no diseño).
+# Exposición alta significa costo laboral bajo en 2022. Por la persistencia del
+# costo de una firma en el tiempo (golpe_c tiene Spearman 0,72 entre 2019 y
+# 2022, sección 6), un costo bajo en 2022 implica uno bajo también en 2019. Y
+# dado el costo de 2018, un costo 2019 bajo implica un crecimiento
+# 2018->2019 = log(costo_2019) - log(costo_2018) bajo. El signo negativo sale
+# de esa cadena, no de una pre-tendencia real ni de reversión a la media.
+#
+# LA PRUEBA DE QUE ES ESTO Y NO OTRA COSA: el placebo da coeficiente negativo y
+# significativo en las CINCO medidas, incluida Exposure2022_obreros, que es
+# composición ocupacional, no usa salarios, y por tanto no debería compartir
+# ningún sesgo de división con las otras cuatro. Un placebo que da el mismo
+# resultado para una medida que no comparte el mecanismo de las demás no está
+# midiendo una propiedad de las medidas -- está midiendo algo que comparten
+# todas por construcción del ejercicio, no por economía.
+#
+# OJO -- no confundir con el placebo de 2018 sobre EMPLEO (otro script, p=0,22,
+# no rechaza), que sí es informativo. Son pruebas distintas sobre outcomes
+# distintos.
 
 placebo <- bind_rows(lapply(MEDIDAS_2022, function(m)
   estimar_primer_eslabon(m, outcome = "crecimiento_2019",
@@ -506,7 +563,14 @@ comparacion_placebo <- bind_rows(principal_para_comparar, placebo) %>%
 
 ver(comparacion_placebo, filas = 12)
 guardar_tabla(comparacion_placebo, "T04_placebo_2018_2019",
-              "Tabla 4. Primer eslabón en el año del choque y en un período sin choque")
+              "Tabla 4. Primer eslabón en el año del choque y en el placebo 2018-2019 (placebo no informativo, ver nota en el script)")
+
+cat("\nCÓMO LEER esta tabla: NO como 'si el placebo es distinto del choque, la\n",
+    "medida es válida'. El placebo da negativo y significativo en las cinco\n",
+    "medidas por la razón aritmética explicada arriba, así que un placebo\n",
+    "'parecido' al choque no descarta nada y uno 'distinto' tampoco confirma\n",
+    "nada. Se reporta para dejar registro de que se probó, no como evidencia a\n",
+    "favor del diseño.\n")
 
 grafico_placebo <- ggplot(comparacion_placebo,
                           aes(x = reorder(medida, coeficiente),
@@ -518,10 +582,10 @@ grafico_placebo <- ggplot(comparacion_placebo,
   coord_flip() +
   scale_color_manual(values = c(`Choque 2022-2023` = COLOR_ALTA,
                                 `Placebo 2018-2019` = COLOR_BAJA)) +
-  labs(title = "El efecto sobre el costo laboral, ¿es del choque de 2023?",
-       subtitle = "Si el coeficiente del placebo es parecido al del choque, la medida no captura 2023",
+  labs(title = "Costo laboral: choque 2022-2023 vs. placebo 2018-2019 (placebo no informativo)",
+       subtitle = "El placebo da negativo en las 5 medidas por construcción -- no valida ni invalida el diseño",
        x = NULL, y = "Efecto (%)", color = NULL,
-       caption = "La exposición se mide en 2022 en los dos casos, también en el placebo. Ver el caveat del script.") +
+       caption = "La exposición se mide en 2022 en los dos casos. Ver la nota completa antes de esta sección.") +
   tema_tesis
 guardar_grafico(grafico_placebo, "G02_placebo")
 
@@ -577,6 +641,15 @@ guardar_tabla(agrupado_sector, "T06_errores_agrupados_sector",
 # 8.3 Por tramos de exposición: ¿la relación es monotónica?
 # La especificación lineal supone que el efecto es proporcional. Si no lo es,
 # el coeficiente lineal puede esconder el patrón real. Lo miramos con quintiles.
+#
+# OJO: esto usa MEDIANAS CRUDAS, sin los controles de sector/departamento/
+# tamaño de la sección 4. Lo que sale aquí es que el efecto se concentra en el
+# quintil 5 -- eso NO es la última palabra sobre la forma de la relación. Con
+# los mismos controles de la especificación principal, la relación por
+# quintiles resulta monotónica creciente (validacion/21_decision_medida.R,
+# sección 6). No es una contradicción: son dos especificaciones distintas
+# (con y sin controles) que pueden mostrar formas distintas. No generalizar
+# a partir de esta tabla sola.
 if ("golpe_c_de" %in% names(medidas) && "Bite2022_obreros_de" %in% names(medidas)) {
   
   tramos <- medidas %>%
@@ -607,8 +680,8 @@ if ("golpe_c_de" %in% names(medidas) && "Bite2022_obreros_de" %in% names(medidas
     scale_color_manual(values = c(quintil_bite = COLOR_BAJA,
                                   quintil_golpe_c = COLOR_ALTA),
                        labels = c("Bite (Kaitz de obreros)", "Golpe C")) +
-    labs(title = "Crecimiento del costo laboral 2022-2023 por quintil de exposición",
-         subtitle = "Si la relación es monotónica creciente, la medida ordena bien a las firmas",
+    labs(title = "Crecimiento del costo laboral 2022-2023 por quintil de exposición (sin controles)",
+         subtitle = "Medianas crudas -- con controles la relación es monotónica (validacion/21, sección 6)",
          x = "Quintil de exposición (1 = menos expuesta)",
          y = "Crecimiento mediano (%)", color = NULL,
          caption = "Medianas sin controles. Sirve para ver la forma de la relación, no para medir el efecto.") +
@@ -631,6 +704,11 @@ ver(resumen)
 guardar_tabla(resumen, "T08_resumen_decision",
               "Tabla 8. Resumen del primer eslabón en la muestra común")
 
+# La columna efecto_pct de esta tabla es "cuánto cambia el crecimiento del
+# costo laboral por una DE más de exposición, en esta medida y esta muestra" --
+# tampoco es la cifra principal de la tesis (4,03%, event study). Es el
+# insumo para DECIDIR qué medida usar, no un resultado para citar como "el"
+# primer eslabón. Ver la nota de la sección 1 sobre las cinco cifras.
 cat("
 CÓMO SE TOMA LA DECISIÓN (regla comiteada en NOTA_DECISIONES.md):
 
@@ -643,6 +721,13 @@ en orden:
   2. Que SOBREVIVA con base 2019 (sección 6). Si solo aparece con base 2022,
      es sesgo de división. Este criterio pesa más que la magnitud.
   3. Que el placebo de 2018-2019 sea claramente menor (sección 7).
+     [NOTA de esta revisión: este criterio, tal como está escrito, depende de
+     un placebo que la sección 7 determinó que NO es informativo -- da
+     negativo en las cinco medidas por construcción, así que no distingue
+     entre ellas. No se reescribe este criterio aquí porque hacerlo cambiaría
+     la regla de decisión, y esta tarea solo corrige comentarios. Queda
+     reportado como algo que hay que decidir: cómo ajustar o reemplazar el
+     criterio 3, o si la decisión debe apoyarse solo en 1, 2 y 4.]
   4. Que no dependa enteramente de los controles (sección 8.1).
 
 Si ninguna medida pasa los criterios 1 y 2, el problema NO es de robustez sino
