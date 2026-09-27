@@ -15,7 +15,7 @@
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
 #           1. DATOS/exposicion_alternativa_2022.rds
 #           1. DATOS/panel_analitico_firma_eam.rds   (para Bite y Exposure)
-# Salidas:  4. RESULTADOS/Primer_eslabon/
+# Salidas:  4. RESULTADOS/03_primer_eslabon_medidas/
 #
 # Para correrlo abrimos TESIS_MECA.Rproj.
 # ==============================================================================
@@ -98,7 +98,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Primer_eslabon")
+CARPETA <- file.path("4. RESULTADOS", "03_primer_eslabon_medidas")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

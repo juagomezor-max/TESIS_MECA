@@ -46,7 +46,7 @@
 #      2022) lado a lado, para las cinco medidas.
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
-# Salidas:  4. RESULTADOS/Detalle_tendencias_previas/
+# Salidas:  4. RESULTADOS/12_detalle_tendencias_previas/
 # ==============================================================================
 
 
@@ -64,7 +64,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Detalle_tendencias_previas")
+CARPETA <- file.path("4. RESULTADOS", "12_detalle_tendencias_previas")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

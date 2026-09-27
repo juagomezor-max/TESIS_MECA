@@ -142,7 +142,7 @@ y, cuando aplica, el archivo y la línea donde quedó registrada.
 | Fecha y commit | `10fe264`, 2026-09-17 01:22 (mismo commit que la entrada 10) |
 | Decisión | Ninguna decisión de diseño — es un hallazgo que se documenta y se explica |
 | Evidencia disponible entonces | "C sale negativo porque el salario relativo de las firmas con Kaitz 2022 alto cae de forma sostenida entre 2015 y 2022 (prueba de años previos p < 0,001)" |
-| Evidencia que NO existía todavía | La generalización de este mismo patrón a *todos* los años de la serie (placebo rodante, `descartado/Diagnostico_reversion/T01`, sin fecha propia en git — ver `AUDITORIA_CADENA.md` sección 0) y la prueba directa de esta auditoría (sección 2 de `AUDITORIA_CADENA.md`) |
+| Evidencia que NO existía todavía | La generalización de este mismo patrón a *todos* los años de la serie (placebo rodante, `descartado/Diagnostico_reversion/T01` (archivado; ver commit 89b959e), sin fecha propia en git — ver `AUDITORIA_CADENA.md` sección 0) y la prueba directa de esta auditoría (sección 2 de `AUDITORIA_CADENA.md`) |
 | Alternativas consideradas | No registradas — se documenta la explicación ("esperable por construcción") sin registrar si se consideró tratarla como amenaza a la especificación principal, no solo al período previo |
 | Dónde quedó registrada | `NOTA_DECISIONES.md`, sección "3. Primer eslabón: tres lecturas"; retomado en `05_resultados_y_mecanismos.R` (bloque "LUGAR EN LA TESIS", capítulo 6) en esta sesión, semanas después |
 
@@ -200,7 +200,7 @@ demás años de la serie?
 ¿Qué criterio elige la medida principal, y es independiente del outcome que
 va a explicar?
 
-- **Ya existe**: la regla v2 (`04_decision_medida.R`), la prueba directa de contaminación (`AUDITORIA_CADENA.md` sección 2, ya corrida sobre las cinco medidas con outcome 2023→2024), y el placebo rodante de `descartado/Diagnostico_reversion/T01` (sin código versionado).
+- **Ya existe**: la regla v2 (`04_decision_medida.R`), la prueba directa de contaminación (`AUDITORIA_CADENA.md` sección 2, ya corrida sobre las cinco medidas con outcome 2023→2024), y el placebo rodante de `descartado/Diagnostico_reversion/T01` (archivado; ver commit 89b959e) (sin código versionado).
 - **Falta**: aplicar el mismo criterio de independencia (outcome que no comparte año base) a la propia regla de decisión, no solo a la especificación estándar cross-seccional; y decidir formalmente si la regla v2 reemplaza a la v1 o si ambas deben reconciliarse (entrada 13 de la cronología).
 
 ### 3. La primera etapa

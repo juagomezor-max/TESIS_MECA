@@ -196,8 +196,8 @@ salario mínimo, o el traslape aritmético entre el denominador de Bite
   fijos en 2022 (sección "Diagnóstico de validez" del `README.md`) viene de
   los controles o de la restricción de muestra que trae esa corrección:
   100% controles, 0% muestra.
-- Detalle completo y cronología: `4. RESULTADOS/AUDITORIA_CADENA.md` y
-  `4. RESULTADOS/CRONOLOGIA_DECISIONES.md`.
+- Detalle completo y cronología: `3. SCRIPTS/AUDITORIA_CADENA.md` y
+  `3. SCRIPTS/CRONOLOGIA_DECISIONES.md`.
 
 **Esto NO reemplaza el glosario de la sección 2** ni resuelve por sí solo
 cuál de las cinco cifras del primer eslabón es "la correcta" -- añade

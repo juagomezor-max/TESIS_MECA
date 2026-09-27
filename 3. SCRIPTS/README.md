@@ -37,17 +37,17 @@ permanece en `xx` en adelante si llega a acumularse más de uno.
 
 | Script | Líneas | Sección del estudio | Lee | Escribe | Carpeta de salida |
 |---|---|---|---|---|---|
-| `01_descriptivos_y_contexto.R` | 1076 | Descriptivos y resultados principales | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Principal`, `Estimacion`, `Validaciones`, `Robustez` |
-| `02_medidas_exposicion.R` | 753 | Construcción de las medidas de exposición | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (comparación contra el Kaitz actual, sección 7 — si el archivo no existe, sigue sin esa comparación) | **`1. DATOS/exposicion_alternativa_2022.rds`** | `Exposicion_alternativa` |
-| `03_primer_eslabon_medidas.R` | 665 | Primera etapa con las cinco medidas | los tres paneles | — | `Primer_eslabon` |
-| `04_decision_medida.R` | 665 | Elección de la medida principal | los tres paneles | — | `Decision_medida` |
-| `05_resultados_y_mecanismos.R` | 870 | Análisis principal y mecanismos | los tres paneles | — | `Resultados_mecanismos` |
-| `06_mecanismos_por_grupo.R` | 622 | Mecanismos por tamaño de firma | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `Mecanismos_por_grupo` |
-| `07_reconciliacion.R` | 534 | Validaciones (las tres lecturas) | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `Reconciliacion` |
-| `08_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `Continuo` |
-| `09_validez_exposicion.R` | — | Diagnóstico: validez de la medida de exposición (Bite) | `panel_firma_eam_expalt_completo.rds` | — | `Validez_exposicion` |
-| `10_bug_controles.R` | 328 | Diagnóstico: descomposición del bug de controles fijos en 2022 (controles vs. muestra) | `panel_firma_eam_expalt_completo.rds`, `exposicion_alternativa_2022.rds`, `panel_analitico_firma_eam.rds` | — | `Descomposicion_bug` |
-| `17_variable_instrumental.R` | 628 | Diagnóstico: variable instrumental para el sesgo de división del Kaitz (replica la especificación de `05_resultados_y_mecanismos.R`) | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (verificación de la réplica de Bite — si el archivo no existe, se omite; mismo patrón de lectura que `02_medidas_exposicion.R`) | — | `Variable_instrumental` |
+| `01_descriptivos_y_contexto.R` | 1076 | Descriptivos y resultados principales | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `01_descriptivos_y_contexto/Descriptivos`, `01_descriptivos_y_contexto/Principal`, `01_descriptivos_y_contexto/Estimacion`, `01_descriptivos_y_contexto/Validaciones`, `01_descriptivos_y_contexto/Robustez` |
+| `02_medidas_exposicion.R` | 753 | Construcción de las medidas de exposición | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (comparación contra el Kaitz actual, sección 7 — si el archivo no existe, sigue sin esa comparación) | **`1. DATOS/exposicion_alternativa_2022.rds`** | `02_medidas_exposicion` |
+| `03_primer_eslabon_medidas.R` | 665 | Primera etapa con las cinco medidas | los tres paneles | — | `03_primer_eslabon_medidas` |
+| `04_decision_medida.R` | 665 | Elección de la medida principal | los tres paneles | — | `04_decision_medida` |
+| `05_resultados_y_mecanismos.R` | 870 | Análisis principal y mecanismos | los tres paneles | — | `05_resultados_y_mecanismos` |
+| `06_mecanismos_por_grupo.R` | 622 | Mecanismos por tamaño de firma | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `06_mecanismos_por_grupo` |
+| `07_reconciliacion.R` | 534 | Validaciones (las tres lecturas) | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `07_reconciliacion` |
+| `08_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `08_tratamiento_continuo` |
+| `09_validez_exposicion.R` | — | Diagnóstico: validez de la medida de exposición (Bite) | `panel_firma_eam_expalt_completo.rds` | — | `09_validez_exposicion` |
+| `10_bug_controles.R` | 328 | Diagnóstico: descomposición del bug de controles fijos en 2022 (controles vs. muestra) | `panel_firma_eam_expalt_completo.rds`, `exposicion_alternativa_2022.rds`, `panel_analitico_firma_eam.rds` | — | `10_bug_controles` |
+| `14_variable_instrumental.R` | 628 | Diagnóstico: variable instrumental para el sesgo de división del Kaitz (replica la especificación de `05_resultados_y_mecanismos.R`) | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (verificación de la réplica de Bite — si el archivo no existe, se omite; mismo patrón de lectura que `02_medidas_exposicion.R`) | — | `14_variable_instrumental` |
 | `xx_script_base_historico.R` | 829 | Histórico, **NO correr** | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones` |
 
 "Los tres paneles" = `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds`, `1. DATOS/exposicion_alternativa_2022.rds`.
@@ -107,11 +107,11 @@ ya esté hecho, cuando es al revés.
   que otro script lea) y se pueden correr en cualquier orden, antes o después
   de `02`, siempre que `03`, `04` y `05` corran después de `02`.
 
-`xx_script_base_historico.R` **no debe correrse** en ningún orden: su carpeta
-de salida colisiona con la de `01_descriptivos_y_contexto.R` (ambos escriben
-en `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones`) — es el script
-manual inicial, superado por `01_descriptivos_y_contexto.R`. Se conserva
-únicamente como registro histórico: su encabezado documenta 9 correcciones
+`xx_script_base_historico.R` **no debe correrse** en ningún orden: es
+registro histórico. Sus rutas de salida apuntan a la estructura de carpetas
+anterior y recrearían carpetas sin numerar en `4. RESULTADOS/` — es el
+script manual inicial, superado por `01_descriptivos_y_contexto.R`. Su
+encabezado documenta 9 correcciones
 metodológicas (controles fijados en 2022, muestra común entre medidas, escala
 comparable, winsorización sobre el corte transversal, pre-tendencias sobre
 toda la ventana, primer eslabón, tendencia estimada solo en el pre-período,
@@ -129,7 +129,7 @@ correr el pipeline `01`-`08`, y sus cifras no reemplazan a las del glosario de
 `NARRATIVA.md` — lo complementan con el análisis de robustez.
 
 - **`09_validez_exposicion.R`** consolida en una sola carpeta de salida
-  (`4. RESULTADOS/Validez_exposicion/`) cuatro pruebas que antes vivían en
+  (`4. RESULTADOS/09_validez_exposicion/`) cuatro pruebas que antes vivían en
   scripts separados: placebo rodante con aumentos reales del mínimo, celda
   limpia con la indexación del rezago corregida, sensibilidad del outcome de
   2023 al aumento de 2022, y una auditoría adversarial de cinco afirmaciones
@@ -152,10 +152,9 @@ correr el pipeline `01`-`08`, y sus cifras no reemplazan a las del glosario de
     porque `09_validez_exposicion.R` reproduce sus cifras de forma
     verificada (7 cifras citadas, comprobadas antes de archivar) y no tiene
     sentido mantener dos rutas al mismo resultado.
-  - Las cuatro carpetas de salida que duplicaban a `Validez_exposicion/`
-    (`Placebo_rodante_real`, `Celda_limpia_real`, `Outcome_alternativo`,
-    `Auditoria_adversarial`) se movieron, por el mismo motivo, a
-    `4. RESULTADOS/descartado/`.
+  - Las salidas de los scripts descartados se archivaron y siguen
+    disponibles en el historial de git (commit 89b959e). Su evidencia
+    vigente la reproduce `09_validez_exposicion.R` (secciones 1 a 4).
 
 **Bug de controles fijos en 2022** (encontrado en esta ronda de diagnóstico,
 ya corregido en `05_resultados_y_mecanismos.R`, `06_mecanismos_por_grupo.R` y

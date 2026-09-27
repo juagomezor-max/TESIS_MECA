@@ -57,10 +57,12 @@ Hay 17 scripts, numerados en dos grupos:
 - **`09` a `16`** — diagnóstico de validez de la medida de exposición
   principal (Bite, el índice de Kaitz). No son parte de la estimación: auditan
   el pipeline desde afuera, sin modificarlo ni volver a correrlo. Ver
-  `4. RESULTADOS/AUDITORIA_CADENA.md` y `4. RESULTADOS/CRONOLOGIA_DECISIONES.md`
+  `3. SCRIPTS/AUDITORIA_CADENA.md` y `3. SCRIPTS/CRONOLOGIA_DECISIONES.md`
   para el resumen de hallazgos.
 - **`xx_script_base_historico.R`** — versión manual anterior, superada.
-  **No correr**: su carpeta de salida colisiona con la de `01`.
+  **No correr**: es registro histórico. Sus rutas de salida apuntan a la
+  estructura de carpetas anterior y recrearían carpetas sin numerar en
+  `4. RESULTADOS/`.
 
 **Orden de ejecución real** (distinto del orden de lectura): correr **`02`
 primero** — escribe `1. DATOS/exposicion_alternativa_2022.rds`, que leen `03`,
@@ -84,7 +86,7 @@ no coinciden, algo salió mal antes de estimar:
 Los controles `sector_2022`/`depto_2022`/`tamano_2022` de `05`, `06` y `07`
 se corrigieron el 26-sep-2026 (antes se recalculaban con el año propio de
 cada fila, no con el de 2022 — ver el mensaje del commit correspondiente y
-`4. RESULTADOS/Auditoria_adversarial/` para el detalle). Las cifras de
+`4. RESULTADOS/Auditoria_adversarial/` (archivado; ver commit 89b959e) para el detalle). Las cifras de
 empleo y heterogeneidad por tamaño cambiaron con esa corrección; los números
 vigentes son los que producen los scripts tal como están hoy en esta rama,
 no los de versiones anteriores de la tesis o el póster.

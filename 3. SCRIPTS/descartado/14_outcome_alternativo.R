@@ -49,7 +49,7 @@
 # el contraste de 2015 -- el mismo rezago de 4 años que usa la celda limpia).
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
-# Salidas:  4. RESULTADOS/Outcome_alternativo/
+# Salidas:  4. RESULTADOS/ARCHIVADO_commit_89b959e/Outcome_alternativo/
 # ==============================================================================
 
 
@@ -66,7 +66,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Outcome_alternativo")
+CARPETA <- file.path("4. RESULTADOS", "ARCHIVADO_commit_89b959e", "Outcome_alternativo")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

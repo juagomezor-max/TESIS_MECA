@@ -44,7 +44,7 @@
 # tendencias_previas.R.
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
-# Salidas:  4. RESULTADOS/Auditoria_seccion4_empleo/
+# Salidas:  4. RESULTADOS/13_auditoria_seccion4_empleo/
 # ==============================================================================
 
 rm(list = ls())
@@ -55,7 +55,7 @@ library(readr)
 library(fixest)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Auditoria_seccion4_empleo")
+CARPETA <- file.path("4. RESULTADOS", "13_auditoria_seccion4_empleo")
 dir.create(CARPETA, recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) cat("\n", strrep("=", 78), "\n", texto, "\n", strrep("=", 78), "\n", sep = "")

@@ -9,7 +9,7 @@
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds,
 #           1. DATOS/panel_analitico_firma_eam.rds
-# Salidas:  4. RESULTADOS/Auditoria_adversarial/
+# Salidas:  4. RESULTADOS/ARCHIVADO_commit_89b959e/Auditoria_adversarial/
 # ==============================================================================
 
 rm(list = ls())
@@ -21,7 +21,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Auditoria_adversarial")
+CARPETA <- file.path("4. RESULTADOS", "ARCHIVADO_commit_89b959e", "Auditoria_adversarial")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) cat("\n", strrep("=", 78), "\n", texto, "\n", strrep("=", 78), "\n", sep = "")

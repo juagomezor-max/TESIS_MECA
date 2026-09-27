@@ -112,7 +112,7 @@ paths <- ensure_project_structure()
 # construccion/construir_panel_firma_con_2020.R.
 raiz <- ".."
 datos_raiz <- file.path(raiz, "1. DATOS")
-resultados_raiz <- file.path(raiz, "4. RESULTADOS", "Construccion_panel")
+resultados_raiz <- file.path(raiz, "4. RESULTADOS", "00_construccion_panel")
 carpeta_figuras <- file.path(resultados_raiz, "figuras")
 dir.create(carpeta_figuras, recursive = TRUE, showWarnings = FALSE)
 

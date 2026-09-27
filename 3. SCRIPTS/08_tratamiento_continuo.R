@@ -71,7 +71,7 @@ library(ggplot2)
 library(flextable)
 
 # Carpeta de salida propia, para no pisar nada de lo que ya está validado
-CARPETA <- file.path("4. RESULTADOS", "Continuo")
+CARPETA <- file.path("4. RESULTADOS", "08_tratamiento_continuo")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 # Si el paquete contdid no está instalado, el script corre igual y se salta C6.

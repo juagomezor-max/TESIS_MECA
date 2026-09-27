@@ -11,7 +11,7 @@
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
 #           1. DATOS/exposicion_alternativa_2022.rds
 #           1. DATOS/panel_analitico_firma_eam.rds
-# Salidas:  4. RESULTADOS/Decision_medida/
+# Salidas:  4. RESULTADOS/04_decision_medida/
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Decision_medida")
+CARPETA <- file.path("4. RESULTADOS", "04_decision_medida")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

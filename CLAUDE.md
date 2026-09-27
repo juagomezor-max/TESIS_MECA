@@ -32,7 +32,7 @@
 - Nunca uses git add -A ni git add . ; agrega rutas explícitas.
 - No hagas push, merge, reset, rebase ni checkout/restore de archivos sin
   permiso.
-- Scripts con regla de decisión prefijada (como 17_variable_instrumental.R)
+- Scripts con regla de decisión prefijada (como 14_variable_instrumental.R)
   se comitean ANTES de correrlos.
 
 ## Reportes

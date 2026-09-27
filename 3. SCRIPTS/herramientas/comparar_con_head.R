@@ -17,7 +17,7 @@ TOL <- 1e-8
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) == 0) {
   cat("Uso: Rscript \"3. SCRIPTS/herramientas/comparar_con_head.R\" <carpeta1> [carpeta2 ...]\n")
-  cat("Las carpetas deben darse relativas a la raiz del repo, p. ej. \"4. RESULTADOS/Exposicion_alternativa\"\n")
+  cat("Las carpetas deben darse relativas a la raiz del repo, p. ej. \"4. RESULTADOS/02_medidas_exposicion\"\n")
   quit(save = "no", status = 1)
 }
 

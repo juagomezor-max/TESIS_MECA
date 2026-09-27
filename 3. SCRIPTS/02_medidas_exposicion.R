@@ -11,7 +11,7 @@
 #
 # Entrada:  1. DATOS/panel_firma_eam_expalt_completo.rds
 # Salidas:  1. DATOS/exposicion_alternativa_2022.rds   (una fila por firma)
-#           4. RESULTADOS/Exposicion_alternativa/       (tablas y figuras)
+#           4. RESULTADOS/02_medidas_exposicion/       (tablas y figuras)
 #
 # Para correrlo abrimos TESIS_MECA.Rproj, así R trabaja desde la raíz del
 # repositorio y encuentra las carpetas.
@@ -114,7 +114,7 @@ library(readr)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Exposicion_alternativa")
+CARPETA <- file.path("4. RESULTADOS", "02_medidas_exposicion")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

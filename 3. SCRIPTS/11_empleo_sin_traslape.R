@@ -56,7 +56,7 @@
 #     débil.
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
-# Salidas:  4. RESULTADOS/Empleo_sin_traslape/
+# Salidas:  4. RESULTADOS/11_empleo_sin_traslape/
 # ==============================================================================
 
 
@@ -73,7 +73,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Empleo_sin_traslape")
+CARPETA <- file.path("4. RESULTADOS", "11_empleo_sin_traslape")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

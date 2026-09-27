@@ -14,11 +14,11 @@
 # repositorio y encuentra las carpetas.
 #
 # Resultados (tablas en Word y CSV; gráficos en la subcarpeta "figuras"):
-#   4. RESULTADOS/Descriptivos/   salario mínimo, Kaitz, perfil de firmas, comparación simple, brechas
-#   4. RESULTADOS/Principal/      primer eslabón y empleo total (+ compendio con todas las tablas)
-#   4. RESULTADOS/Estimacion/     resultados exploratorios, compresión salarial, tamaño
-#   4. RESULTADOS/Validaciones/   revisión de carga de datos y supuestos del modelo
-#   4. RESULTADOS/Robustez/       reservada para el script de validaciones
+#   4. RESULTADOS/01_descriptivos_y_contexto/Descriptivos/   salario mínimo, Kaitz, perfil de firmas, comparación simple, brechas
+#   4. RESULTADOS/01_descriptivos_y_contexto/Principal/      primer eslabón y empleo total (+ compendio con todas las tablas)
+#   4. RESULTADOS/01_descriptivos_y_contexto/Estimacion/     resultados exploratorios, compresión salarial, tamaño
+#   4. RESULTADOS/01_descriptivos_y_contexto/Validaciones/   revisión de carga de datos y supuestos del modelo
+#   4. RESULTADOS/01_descriptivos_y_contexto/Robustez/       reservada para el script de validaciones
 #
 # Las bases de 1. DATOS/ se amplían antes con
 # 0. ANALISIS INICIAL IA/3. SCRIPTS/construccion/ampliar_variables_paneles.R
@@ -137,11 +137,11 @@ library(flextable)  # para las tablas en Word (si falta: renv::install("flextabl
 
 # Definimos las carpetas de salida. Cada una tiene una subcarpeta "figuras"
 # para los gráficos. Las creamos si no existen.
-CARPETA_DESCRIPTIVOS <- file.path("4. RESULTADOS", "Descriptivos")
-CARPETA_PRINCIPAL    <- file.path("4. RESULTADOS", "Principal")
-CARPETA_ESTIMACION   <- file.path("4. RESULTADOS", "Estimacion")
-CARPETA_VALIDACIONES <- file.path("4. RESULTADOS", "Validaciones")
-CARPETA_ROBUSTEZ     <- file.path("4. RESULTADOS", "Robustez")
+CARPETA_DESCRIPTIVOS <- file.path("4. RESULTADOS", "01_descriptivos_y_contexto", "Descriptivos")
+CARPETA_PRINCIPAL    <- file.path("4. RESULTADOS", "01_descriptivos_y_contexto", "Principal")
+CARPETA_ESTIMACION   <- file.path("4. RESULTADOS", "01_descriptivos_y_contexto", "Estimacion")
+CARPETA_VALIDACIONES <- file.path("4. RESULTADOS", "01_descriptivos_y_contexto", "Validaciones")
+CARPETA_ROBUSTEZ     <- file.path("4. RESULTADOS", "01_descriptivos_y_contexto", "Robustez")
 
 for (carpeta in c(CARPETA_DESCRIPTIVOS, CARPETA_PRINCIPAL, CARPETA_ESTIMACION,
                   CARPETA_VALIDACIONES, CARPETA_ROBUSTEZ)) {

@@ -52,7 +52,7 @@
 # deja escrito qué lectura corresponde a cada resultado posible.
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
-# Salidas:  4. RESULTADOS/Diagnostico_reversion/
+# Salidas:  4. RESULTADOS/ARCHIVADO_commit_89b959e/descartado/Diagnostico_reversion/
 # ==============================================================================
 
 
@@ -69,7 +69,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "descartado", "Diagnostico_reversion")
+CARPETA <- file.path("4. RESULTADOS", "ARCHIVADO_commit_89b959e", "descartado", "Diagnostico_reversion")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

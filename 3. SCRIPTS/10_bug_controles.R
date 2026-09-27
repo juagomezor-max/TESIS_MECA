@@ -36,7 +36,7 @@
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds,
 #           1. DATOS/exposicion_alternativa_2022.rds,
 #           1. DATOS/panel_analitico_firma_eam.rds
-# Salidas:  4. RESULTADOS/Descomposicion_bug/
+# Salidas:  4. RESULTADOS/10_bug_controles/
 # ==============================================================================
 
 rm(list = ls())
@@ -48,7 +48,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Descomposicion_bug")
+CARPETA <- file.path("4. RESULTADOS", "10_bug_controles")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) cat("\n", strrep("=", 78), "\n", texto, "\n", strrep("=", 78), "\n", sep = "")

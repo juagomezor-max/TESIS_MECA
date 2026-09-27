@@ -20,7 +20,7 @@
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
 #           1. DATOS/panel_analitico_firma_eam.rds
-# Salidas:  4. RESULTADOS/Mecanismos_por_grupo/
+# Salidas:  4. RESULTADOS/06_mecanismos_por_grupo/
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Mecanismos_por_grupo")
+CARPETA <- file.path("4. RESULTADOS", "06_mecanismos_por_grupo")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

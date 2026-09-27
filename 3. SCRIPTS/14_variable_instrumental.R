@@ -1,5 +1,5 @@
 # ==============================================================================
-# 17_variable_instrumental.R
+# 14_variable_instrumental.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -11,7 +11,7 @@
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
 #           1. DATOS/panel_analitico_firma_eam.rds (opcional, solo para
 #              verificar que la réplica de Bite coincide con la original)
-# Salidas:  4. RESULTADOS/Variable_instrumental/
+# Salidas:  4. RESULTADOS/14_variable_instrumental/
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ suppressPackageStartupMessages({
   library(flextable)
 })
 
-CARPETA <- file.path("4. RESULTADOS", "Variable_instrumental")
+CARPETA <- file.path("4. RESULTADOS", "14_variable_instrumental")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {
