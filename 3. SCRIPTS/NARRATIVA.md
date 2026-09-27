@@ -35,6 +35,13 @@ es el caso más claro: C1-C6 al capítulo 4, C7-C8 al capítulo 6).
 **`xx_script_base_historico.R`**: histórico, superado por `01_descriptivos_y_contexto.R`, no
 se corre.
 
+**`09_validez_exposicion.R` y `10_bug_controles.R`**: no alimentan ningún
+capítulo directamente — auditan desde afuera si la medida elegida en
+`04_decision_medida.R` mide lo que dice medir. Su evidencia respalda o
+matiza varias de las amenazas del capítulo 6 (ver la sección 5 de este
+documento) y no se corren como parte del pipeline. Las versiones superadas de
+estas pruebas están en `descartado/`.
+
 ---
 
 ## 2. Glosario de cifras
@@ -159,3 +166,40 @@ script correspondiente con una nota, **sin resolverlas por cuenta propia**:
    ya intentadas (identidad contra R4CSAP, correlación con conteos de
    aprendices por categoría) no la resuelven. Documentado en el diccionario
    del panel ampliado, no en estos 9 scripts.
+
+---
+
+## 5. Diagnóstico de validez de la medida de exposición (09-10)
+
+Ronda de auditoría aparte del pipeline `01`-`08`, hecha para responder una
+pregunta que el glosario de la sección 2 no resuelve por sí solo: ¿el primer
+eslabón (cualquiera de las cinco cifras de esa tabla) refleja el choque del
+salario mínimo, o el traslape aritmético entre el denominador de Bite
+(salario del obrero en 2022) y la base del outcome (costo laboral de 2022)?
+
+- **`09_validez_exposicion.R`** corre cuatro pruebas: placebo rodante con
+  aumentos REALES del mínimo (no nominales -- ordenar por nominal invierte
+  qué años parecen "el choque"), celda limpia (exposición medida varios años
+  antes del outcome, con la indexación del rezago corregida), sensibilidad
+  del outcome de 2023 a si arrastra el aumento de 2022 en su año base, y una
+  auditoría adversarial de cinco afirmaciones activamente buscando dónde el
+  diagnóstico se equivoca. Su síntesis (sección 5 del script): el traslape
+  algebraico resiste, la caída del coeficiente es mayor que la atenuación
+  clásica por sí sola, y el patrón de "ventanas largas = coeficiente grande"
+  aparece también en años sin choque real (tres afirmaciones que RESISTEN);
+  pero el diferencial no escala de forma robusta con el tamaño real del
+  aumento, y Bite no es una celda limpia inmune a falsos positivos en otros
+  años (dos afirmaciones FALSADAS). Queda pendiente reestimar el efecto de
+  empleo (-1,75% con exposición 2022) con la exposición de celda limpia
+  (2019).
+- **`10_bug_controles.R`** separa si la mejora de corregir los controles
+  fijos en 2022 (sección "Diagnóstico de validez" del `README.md`) viene de
+  los controles o de la restricción de muestra que trae esa corrección:
+  100% controles, 0% muestra.
+- Detalle completo y cronología: `4. RESULTADOS/AUDITORIA_CADENA.md` y
+  `4. RESULTADOS/CRONOLOGIA_DECISIONES.md`.
+
+**Esto NO reemplaza el glosario de la sección 2** ni resuelve por sí solo
+cuál de las cinco cifras del primer eslabón es "la correcta" -- añade
+evidencia de robustez sobre la medida de exposición, con matices a favor y en
+contra, que hay que sopesar junto con esa tabla al escribir el capítulo 6.

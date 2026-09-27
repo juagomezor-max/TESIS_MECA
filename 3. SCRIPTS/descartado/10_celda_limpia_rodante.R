@@ -50,6 +50,29 @@
 #   - La regla de decisión de NOTA_DECISIONES.md no es la que aplica
 #     04_decision_medida.R, y no hay registro de cuándo cambió.
 #
+# ---------------------------------------------------------------------------
+# SUPERADO -- movido a descartado/. Ver descartado/README.md para el detalle
+# completo; en resumen:
+#
+# BUG DE INDEXACIÓN DEL REZAGO (encontrado después, nunca corregido en este
+# script): más abajo, el rezago se cuenta desde el AÑO BASE del outcome, no
+# desde el año del choque --
+#
+#     anio_base <- a - 1
+#     anio_exp  <- anio_base - REZAGO
+#
+# Para el choque de 2023 (a = 2023) eso da anio_base = 2022 y, con REZAGO=4,
+# anio_exp = 2018 -- NO 2019, que es la celda limpia real de la tesis
+# (04_decision_medida.R: exposición 2019 contra crecimiento 2022-2023). El
+# efecto medido con esa fila mal indexada (Bite ~0,14%, no significativo) no
+# es la celda limpia de la tesis; la fila que en verdad la reproduce es la de
+# REZAGO=3 con esta indexación vieja (~0,81%, significativo al 5%). La
+# indexación correcta -anio_exp <- anio_choque - REZAGO, contada desde el año
+# del choque- se aplicó primero en 12_celda_limpia_real.R (que la heredó de
+# aquí SIN corregirla) y se corrigió finalmente en 13_celda_limpia_corregida.R.
+# La versión vigente de esta prueba es la sección 2 de 09_validez_exposicion.R.
+# ---------------------------------------------------------------------------
+#
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds
 # Salidas:  4. RESULTADOS/Celda_limpia_rodante/
 # ==============================================================================

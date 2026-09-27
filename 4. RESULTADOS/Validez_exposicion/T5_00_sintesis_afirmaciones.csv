@@ -1,0 +1,7 @@
+afirmacion,veredicto
+A1. Traslape algebraico entre w_obrero y c,RESISTE
+A2. La caída del coeficiente es MÁS que atenuación clásica,RESISTE
+A3. Las ventanas largas producen efecto también en años sin choque real (independiente del choque),RESISTE
+A4. El diferencial escala con el tamaño real del aumento del mínimo,FALSADO
+"A5. Bite (ventana 1 año, exposición 4 años antes) es la única celda limpia sin falsos positivos",FALSADO
+"Efecto de empleo estimado (-1,75%) con exposición 2022",PENDIENTE

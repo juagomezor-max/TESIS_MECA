@@ -1,14 +1,16 @@
 # ==============================================================================
-# 16_descomposicion_bug.R
+# 10_bug_controles.R (antes 16_descomposicion_bug.R)
 #
 # ¿LA MEJORA EN 05_resultados_y_mecanismos.R VIENE DE LOS CONTROLES O DE LA
 # MUESTRA?
 #
-# La corrección del bug de controles (16_..., sesión anterior) cambió DOS
-# cosas a la vez: (1) los controles pasaron de contemporáneos a fijos en 2022,
-# y (2) la muestra se restringió a firmas con clasificación de 2022 (47% del
-# panel no la tiene). Este script separa los dos canales estimando tres
-# celdas de la misma especificación:
+# La corrección del bug de controles (sector_2022/depto_2022/tamano_2022
+# recalculados por fila en vez de fijados en 2022 -- ver 09_validez_
+# exposicion.R, transición a la sección 3, y su sección 4.1) cambió DOS cosas
+# a la vez: (1) los controles pasaron de contemporáneos a fijos en 2022, y (2)
+# la muestra se restringió a firmas con clasificación de 2022 (47% del panel
+# no la tiene). Este script separa los dos canales estimando tres celdas de la
+# misma especificación:
 #
 #   (A) controles viejos (contemporáneos) + muestra completa   = el original
 #   (B) controles viejos (contemporáneos) + muestra restringida = aísla muestra
@@ -16,6 +18,20 @@
 #
 # La celda "controles nuevos + muestra completa" no existe: sin clasificación
 # de 2022 no hay control fijo que aplicar.
+#
+# RESULTADO: A y B salen BYTE-IDÉNTICOS en las dos pruebas que corre este
+# script -- empleo (-0,2678268341325101%, n=44.612 en las dos celdas) y
+# heterogeneidad medianas (1,4167952702271749%, n=13.947 en las dos celdas).
+# Es decir, restringir la muestra a las firmas con clasificación de 2022 (el
+# paso A->B) no cambia el resultado ni un decimal; todo el cambio observado
+# entre la especificación original (A) y la corregida (D) ocurre en el paso
+# B->D, cuando se fijan los controles en 2022. Atribución: 100% controles, 0%
+# muestra. La sección 5 (quiénes son las firmas que se van) y la sección 6
+# (conteo de NA) caracterizan esa muestra perdida y descartan la hipótesis de
+# que un patrón de NA distinto por año explique el cambio en el número de
+# firmas de 07_reconciliacion.R -- esa hipótesis no se sostuvo (cero NA en los
+# años relevantes 2014-2024); la causa exacta de ese cambio en particular
+# queda sin identificar.
 #
 # Entradas: 1. DATOS/panel_firma_eam_expalt_completo.rds,
 #           1. DATOS/exposicion_alternativa_2022.rds,
