@@ -244,11 +244,45 @@ base <- base %>%
     
     # --- Identificadores y factores ---
     ANIO_F = factor(ANIO),
-    post = as.integer(ANIO >= 2023),
+    post = as.integer(ANIO >= 2023)
+  )
+
+# CORRECCIÓN DE BUG (encontrada en la auditoría adversarial, 2026-09-26):
+# sector_2022/depto_2022/tamano_2022 se construían con factor(CIIU4) etc.
+# directamente sobre el panel completo (sin filtrar a 2022 primero), así que
+# el valor no era el de 2022 sino el del año propio de cada fila. Entre 7% y
+# 39% de las firmas-año tenían al menos una de las tres clasificaciones
+# distinta a la de 2022 -- el tamaño contemporáneo es justo el "bad control"
+# que esta variable se creó para evitar. Se corrige fijando de verdad la
+# clasificación en 2022, con un join, igual que ya hacen
+# 01_descriptivos_y_contexto.R y 08_tratamiento_continuo.R.
+clasificacion_2022 <- panel %>%
+  filter(ANIO == 2022) %>%
+  transmute(
+    NORDEMP,
     sector_2022 = factor(CIIU4),
-    depto_2022 = factor(DPTO),
+    depto_2022  = factor(DPTO),
     tamano_2022 = factor(tamano_empresa, levels = c("Pequena", "Mediana", "Grande"))
   )
+
+n_antes_join <- n_distinct(base$NORDEMP)
+base <- base %>%
+  select(-any_of(c("sector_2022", "depto_2022", "tamano_2022"))) %>%
+  left_join(clasificacion_2022, by = "NORDEMP")
+
+cat("\nCORRECCIÓN DE CONTROLES FIJOS EN 2022:\n")
+cat("  Firmas en el panel:", n_antes_join, "\n")
+cat("  Firmas con clasificación de 2022 (no quedan NA en los controles):",
+    nrow(clasificacion_2022), "\n")
+cat("  Firmas SIN clasificación de 2022 (año NORDEMP no observado en 2022):",
+    n_antes_join - nrow(clasificacion_2022), "\n")
+
+cat("\n  Filas firma-año que quedan con NA en sector_2022 (se caen de cualquier\n",
+    "  regresión con esos controles), por año:\n")
+base %>% group_by(ANIO) %>%
+  summarise(filas = n(), filas_sin_control_2022 = sum(is.na(sector_2022)),
+            pct = round(100*mean(is.na(sector_2022)), 2), .groups = "drop") %>%
+  print(n = 20)
 
 # Logaritmos. Los ceros y negativos pasan a NA antes de tomar log, así que las
 # variables con muchos ceros (inversión, outsourcing) pierden observaciones. Eso

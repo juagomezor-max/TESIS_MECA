@@ -208,11 +208,37 @@ base <- panel %>%
     usa_agencias = as.integer(!is.na(empleo_temporal_agencias) & empleo_temporal_agencias > 0),
     hace_outsourcing = as.integer(!is.na(outsourcing_total_c3r41c3) & outsourcing_total_c3r41c3 > 0),
     
-    ANIO_F = factor(ANIO),
+    ANIO_F = factor(ANIO)
+  )
+
+# CORRECCIÓN DE BUG (encontrada en la auditoría adversarial, 2026-09-26): ver
+# la nota completa en 05_resultados_y_mecanismos.R. sector_2022/
+# depto_2022/tamano_2022 se recalculaban por fila con el año propio, no con el
+# de 2022. Se corrige con un join a la clasificación de 2022, como ya hacen
+# 01_descriptivos_y_contexto.R y 08_tratamiento_continuo.R.
+clasificacion_2022 <- panel %>%
+  filter(ANIO == 2022) %>%
+  transmute(
+    NORDEMP,
     sector_2022 = factor(CIIU4),
-    depto_2022 = factor(DPTO),
+    depto_2022  = factor(DPTO),
     tamano_2022 = factor(tamano_empresa, levels = c("Pequena", "Mediana", "Grande"))
   )
+
+n_antes_join <- n_distinct(base$NORDEMP)
+base <- base %>%
+  select(-any_of(c("sector_2022", "depto_2022", "tamano_2022"))) %>%
+  left_join(clasificacion_2022, by = "NORDEMP")
+
+cat("\nCORRECCIÓN DE CONTROLES FIJOS EN 2022:\n")
+cat("  Firmas en el panel:", n_antes_join, "\n")
+cat("  Firmas con clasificación de 2022:", nrow(clasificacion_2022), "\n")
+cat("  Firmas SIN clasificación de 2022:", n_antes_join - nrow(clasificacion_2022), "\n")
+cat("\n  Filas firma-año con NA en sector_2022 tras la corrección, por año:\n")
+base %>% group_by(ANIO) %>%
+  summarise(filas = n(), filas_sin_control_2022 = sum(is.na(sector_2022)),
+            pct = round(100*mean(is.na(sector_2022)), 2), .groups = "drop") %>%
+  print(n = 20)
 
 winsorizar <- function(x) {
   lim <- quantile(x, probs = c(0.01, 0.99), na.rm = TRUE)
