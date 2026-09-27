@@ -1,0 +1,4 @@
+celda,efecto_pct,p_valor,significancia,n
+"A. Controles viejos, muestra completa",1.4167952702271749,0.020502935069836973,**,13947
+"B. Controles viejos, muestra restringida",1.4167952702271749,0.020502935069836973,**,13947
+"D. Controles nuevos, muestra restringida",-0.4819199901283051,0.60173871030505,,14297
