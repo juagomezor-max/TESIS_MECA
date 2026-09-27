@@ -1,0 +1,6 @@
+medida,clave,coef_2019,rango_pre_min,rango_pre_max,es_el_maximo_en_magnitud,posicion_en_magnitud
+Bite (Kaitz de obreros),bite,-4.373886580226248,-4.373886580226248,-1.4143984634147688,TRUE,1
+Exposure (% obreros),exposure,-0.5275416687703036,-3.1378648426393387,0.3505217070929246,FALSE,5
+Golpe A (ponderada),golpe_a,-4.648186946968637,-5.386503585282218,-1.5686414456593967,FALSE,3
+Golpe C (3 categorías),golpe_c,-5.682121847999996,-5.682121847999996,-1.6851220795351336,TRUE,1
+Golpe costo,golpe_costo,-3.861825807405222,-5.732870138536379,-1.9569253055020872,FALSE,5
