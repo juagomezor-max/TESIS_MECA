@@ -24,7 +24,7 @@ load_project_packages(required_packages)
 paths <- ensure_project_structure()
 raiz <- ".."
 datos_raiz <- file.path(raiz, "1. DATOS")
-resultados_raiz <- file.path(raiz, "4. RESULTADOS", "Exposicion_alternativa")
+resultados_raiz <- file.path(raiz, "4. RESULTADOS", "Construccion_panel")
 carpeta_figuras <- file.path(resultados_raiz, "figuras")
 dir.create(carpeta_figuras, recursive = TRUE, showWarnings = FALSE)
 
