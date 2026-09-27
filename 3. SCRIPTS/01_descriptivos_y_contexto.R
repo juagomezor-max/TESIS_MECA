@@ -398,7 +398,7 @@ cat("Filas con ventas negativas:", sum(datos$VALORVEN < 0, na.rm = TRUE), "\n")
 
 # Guardamos en una variable los efectos fijos que usamos en todas las
 # regresiones: firma, año, y sector, tamaño y departamento por año
-EFECTOS_FIJOS <- "NORDEMP + ANIO_F + sector_2022^ANIO_F + tamano_2022^ANIO_F + depto_2022^ANIO_F"
+EFECTOS_FIJOS <- "NORDEMP + ANIO_F + sector_2022^ANIO_F + depto_2022^ANIO_F"
 cat("Efectos fijos:", EFECTOS_FIJOS, "\n")
 
 
@@ -412,11 +412,25 @@ titulo("3. ESTADÍSTICAS DESCRIPTIVAS")
 # y calculamos el aumento porcentual frente al año anterior.
 # Pendiente para validaciones: agregar la inflación del DANE para ver el
 # aumento real.
+
+# Salario mínimo mensual (decretos) e inflación anual (IPC, diciembre a
+# diciembre, DANE). Incluimos 2014 solo para calcular los aumentos de 2015.
 salario_minimo <- tibble(
-  anio  = 2015:2024,
-  valor = c(644350, 689455, 737717, 781242, 828116, 877803, 908526, 1000000, 1160000, 1300000)
+  anio      = 2014:2024,
+  valor     = c(616000, 644350, 689455, 737717, 781242, 828116,
+                877803, 908526, 1000000, 1160000, 1300000),
+  inflacion = c(3.66, 6.77, 5.75, 4.09, 3.18, 3.80,
+                1.61, 5.62, 13.12, 9.28, 5.20)
 ) %>%
-  mutate(aumento_porcentual = round(100 * (valor / lag(valor) - 1), 2))
+  mutate(
+    aumento_porcentual = 100 * (valor / lag(valor) - 1),
+    # Real con la inflación del mismo año: poder de compra durante la vigencia
+    aumento_real = 100 * ((1 + aumento_porcentual / 100) / (1 + inflacion / 100) - 1),
+    # Real con la inflación del año anterior: la referencia al decretarlo
+    aumento_real_decreto = 100 * ((1 + aumento_porcentual / 100) / (1 + lag(inflacion) / 100) - 1)
+  ) %>%
+  filter(anio >= 2015) %>%
+  mutate(across(starts_with("aumento"), ~ round(.x, 2)))
 
 ver(salario_minimo)
 guardar_tabla(salario_minimo, "T01_salario_minimo", carpeta = CARPETA_DESCRIPTIVOS,
@@ -642,7 +656,8 @@ datos_demostracion <- datos %>%
 # Vemos cómo quedan las dummies por año
 ver(datos_demostracion %>% count(ANIO, pandemia, subsidios))
 
-modelo_demostracion <- feols(log_empleo ~ post:kaitz_de + pandemia + subsidios | NORDEMP + ANIO_F,
+modelo_demostracion <- feols(log_empleo ~ post:kaitz_de + pandemia + subsidios |
+                               NORDEMP + ANIO_F + sector_2022^ANIO_F,
                              data = datos_demostracion, cluster = ~NORDEMP)
 
 # Mostramos qué variables quedaron en el modelo y cuáles eliminó R
@@ -651,8 +666,9 @@ print(coeftable(modelo_demostracion))
 cat("\nEliminadas por colinealidad:",
     paste(modelo_demostracion$collin.var, collapse = ", "), "\n")
 cat("LECTURA: 'pandemia' y 'subsidios' no aparecen porque el efecto fijo de año",
-    "\nya contiene esa información. Los controles de pandemia y subsidios están",
-    "\nincluidos en todas las estimaciones a través de los efectos fijos.\n")
+    "\nya contiene esa información: son iguales para todas las firmas de un mismo",
+    "\naño. El efecto fijo de sector por año absorbe además lo que la pandemia y",
+    "\nlos subsidios hicieron distinto en cada sector.\n")
 
 
 # ==============================================================================
@@ -782,8 +798,10 @@ lectura_b <- contraste(evento_salario$modelo, c(`2023` = 1, `2016` = 1/3, `2019`
 lectura_c <- estimar_did("log_salario", etiqueta = "Salario promedio (log)") %>%
   transmute(medida = "C. Promedio después menos promedio antes (DiD simple)",
             coeficiente, error_estandar, p_valor, significancia, ic95_inferior, ic95_superior)
+lectura_d <- contraste(evento_salario$modelo, c(`2023` = 1, `2021` = -1),
+                       "D. 2023 frente a 2021 (sin el año base)")
 
-primer_eslabon <- bind_rows(lectura_a, lectura_b, lectura_c) %>%
+primer_eslabon <- bind_rows(lectura_a, lectura_b, lectura_c, lectura_d) %>%
   mutate(efecto_porcentual = 100 * coeficiente)
 
 ver(primer_eslabon)
@@ -1000,14 +1018,22 @@ guardar_tabla(heterogeneidad, "T14_heterogeneidad_tamano", carpeta = CARPETA_EST
               "Tabla 14. Efecto por tamaño de firma (salario y empleo, log)", decimales = 4)
 
 # Gráfico con el efecto en % y su intervalo de confianza para cada tamaño
-grafico_tamano <- ggplot(heterogeneidad, aes(x = tamano, y = 100 * coeficiente, color = resultado)) +
+grafico_tamano <- heterogeneidad %>%
+  mutate(resultado = recode(resultado,
+                            "Salario promedio (log)" = "Costo laboral por trabajador (log)")) %>%
+  ggplot(aes(x = tamano, y = 100 * coeficiente, color = resultado)) +
   geom_hline(yintercept = 0, color = "grey60") +
   geom_pointrange(aes(ymin = 100 * ic95_inferior, ymax = 100 * ic95_superior),
                   position = position_dodge(width = 0.4)) +
-  scale_color_manual(values = c(`Salario promedio (log)` = COLOR_BAJA, `Empleo total (log)` = COLOR_ALTA)) +
-  labs(title = "Efecto del aumento de 2023 según tamaño de la firma",
-       subtitle = "Cambio % por una desviación estándar más de Kaitz",
-       x = "Tamaño de la firma (2022)", y = "Efecto (%)", color = NULL, caption = NOTA_MODELO) +
+  scale_x_discrete(labels = c(Pequena = "Pequeña", Mediana = "Mediana", Grande = "Grande")) +
+  scale_color_manual(values = c(`Costo laboral por trabajador (log)` = COLOR_BAJA,
+                                `Empleo total (log)` = COLOR_ALTA)) +
+  labs(title = "Diferencia antes y después de 2023 según tamaño de la firma",
+       subtitle = "Cambio % por una desviación estándar más de Kaitz\n2023-2024 frente a 2015-2022",,
+       x = "Tamaño de la firma (2022)", y = "Diferencia (%)", color = NULL,
+       caption = paste("Estimado por separado para cada tamaño. Controles: firma, año, sector x año",
+                       "y departamento x año (fijados en 2022).",
+                       "\nIntervalos de confianza al 95%, errores agrupados por firma.")) +
   tema_tesis
 guardar_grafico(grafico_tamano, "G08_heterogeneidad_tamano", carpeta = CARPETA_ESTIMACION)
 
@@ -1032,9 +1058,9 @@ supuestos <- tibble(
     "7. Compresión salarial (exploratorio)"
   ),
   que_significa = c(
-    "Sin el aumento de 2023, el empleo de firmas con alta y baja exposición habría evolucionado de forma parecida (dentro del mismo sector, tamaño y departamento).",
+    "Sin el aumento de 2023, el empleo de firmas con alta y baja exposición habría evolucionado de forma parecida (dentro del mismo sector y departamento).",
     "Las firmas con Kaitz más alto enfrentaron un aumento mayor de su costo laboral en 2023.",
-    "Pandemia, inflación, ciclo económico y subsidios afectaron por igual a las firmas de un mismo año, sector, tamaño y departamento.",
+    "Pandemia, inflación, ciclo económico y subsidios afectaron por igual a las firmas de un mismo año, sector y departamento.",
     "Las firmas no ajustaron su empleo antes de conocer el aumento (decretado en diciembre de 2022).",
     "El Kaitz de 2022 no está afectado por el aumento de 2023.",
     "Composición del empleo y ventas se reportan como asociaciones, no como efectos causales.",
@@ -1042,24 +1068,22 @@ supuestos <- tibble(
   ),
   evidencia_en_este_script = c(
     "Gráficos G06 y G07: coeficientes de los años previos a 2023.",
-    "Tabla 8 y gráfico G05 (primer eslabón).",
-    "Sección 5: dummies de pandemia y subsidios absorbidas por el efecto fijo de año.",
-    "Coeficientes de 2021 y 2022 en los estudios de evento.",
+    "Tabla 8 (lecturas A a D) y gráfico G05.",
+    "Sección 5: dummies de pandemia y subsidios absorbidas por los efectos fijos.",
+    "Coeficientes de 2021 en los estudios de evento.",
     "Kaitz construido con datos de 2022.",
     "Tabla 13.",
     "Tabla 13b, gráfico G08b y tabla 13c."
   ),
-  pendiente_en_validaciones = c(
-    "Sensibilidad al período de comparación (2022 fue un año de alto empleo) y magnitud tolerable de desviaciones (Honest DiD).",
-    "El salario relativo de las firmas expuestas venía cayendo hasta 2022 (prueba de años previos del salario). Separar el salto de 2023 de una recuperación de salarios bajos del año base.",
-    "PAEF e incentivo a nuevos empleos pagaban un monto fijo por trabajador, con más peso en firmas de salarios bajos; 2024 como año sin subsidios.",
-    "Revisar si hubo ajustes a finales de 2022.",
-    "Sensibilidad a medir Kaitz en otros años.",
-    "Patrón de las tendencias previas en composición del empleo.",
-    "Separar compresión de cambios de composición; repetir con Kaitz medido en otro año."
+  estado_segun_resultados = c(
+    "No se cumple: el empleo de las firmas expuestas cae frente al de las demás desde 2015, y la trayectoria no cambia en 2023.",
+    "No se verifica: frente a 2021 el costo no sube más en las expuestas (-0,2%, p = 0,78); el +3,3% frente a 2022 es el rebote del año base. El placebo rodante y la variable instrumental (09 y 14, estimados con control de tamaño) tampoco distinguen 2023 de un año normal.",    "Parcial: los efectos fijos absorben lo común a cada año, sector y departamento, pero no un efecto distinto del PAEF o del incentivo al empleo en firmas de salarios bajos.",
+    "No evaluable por separado: la tendencia previa impide distinguir anticipación de trayectoria.",
+    "Parcial: el Kaitz es previo al alza de 2023, pero se mide después del alza de 2022 (la mayor en términos reales según el decreto) y comparte el ruido del año base con los resultados.",
+    "Se mantienen como asociaciones: reflejan la menor dinámica de las firmas expuestas.",
+    "No verificable con la EAM: el salario de obreros entra en la brecha y en el Kaitz, solo hay promedios por categoría y la medición del salario integral cambió en 2020."
   )
 )
-
 ver(supuestos)
 guardar_tabla(supuestos, "T15_supuestos_del_modelo", carpeta = CARPETA_VALIDACIONES,
               "Tabla 15. Supuestos del modelo y validaciones pendientes")
@@ -1083,6 +1107,7 @@ cat("\nPRIMER ESLABÓN - salario promedio (log):")
 cat("\n  A. Cambio 2022 -> 2023:", leer_efecto(primer_eslabon, 1))
 cat("\n  B. Salto 2023 frente al cambio típico 2016-2019:", leer_efecto(primer_eslabon, 2))
 cat("\n  C. Promedio después menos antes:", leer_efecto(primer_eslabon, 3))
+cat("\n  D. 2023 frente a 2021 (sin el año base):", leer_efecto(primer_eslabon, 4))
 cat("\n  -> Entre 2022 y 2023, el salario de una firma una desviación estándar más expuesta cambió",
     round(primer_eslabon$efecto_porcentual[1], 2), "% frente a las demás (lectura A).\n")
 
