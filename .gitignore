@@ -36,6 +36,9 @@ descartado/2012_reforma_tributaria/base_reducida_exposicion_2012_eam.csv
 .Ruserdata
 .Rproj.user/
 
+# Device de graficos por defecto que R crea si algun plot no usa ggsave/pdf()
+Rplots.pdf
+
 # Temporales comunes de sistema y editores
 *.tmp
 *.temp
