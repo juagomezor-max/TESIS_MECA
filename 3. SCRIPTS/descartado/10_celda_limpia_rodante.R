@@ -91,7 +91,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Celda_limpia_rodante")
+CARPETA <- file.path("4. RESULTADOS", "descartado", "Celda_limpia_rodante")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

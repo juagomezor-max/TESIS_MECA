@@ -69,7 +69,7 @@ library(fixest)
 library(ggplot2)
 library(flextable)
 
-CARPETA <- file.path("4. RESULTADOS", "Diagnostico_reversion")
+CARPETA <- file.path("4. RESULTADOS", "descartado", "Diagnostico_reversion")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 titulo <- function(texto) {

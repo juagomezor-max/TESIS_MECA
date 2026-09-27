@@ -15,7 +15,7 @@ existentes y que **no están en esta rama**:
 1. **`09_diagnostico_reversion.R` no existe como script**, ni en `3. SCRIPTS/`,
    ni en ninguna rama, ni en el historial de git (`git log --all` no encuentra
    ningún commit que lo haya agregado). Lo que sí existe es su *salida*:
-   `4. RESULTADOS/Diagnostico_reversion/` (6 tablas + 4 figuras), **no
+   `4. RESULTADOS/descartado/Diagnostico_reversion/` (6 tablas + 4 figuras), **no
    rastreada por git** (`git status` la marca `??`), con fecha de modificación
    2026-09-24 23:33 — la misma tarde de la reorganización de scripts de esta
    sesión. No pude leer el código que la generó; lo que reporto de esas tablas
@@ -109,7 +109,7 @@ aumento del mínimo de 2024. No prueba que lo que sobrevive sea el efecto
 causal del mínimo; solo prueba que no es *puramente* el sesgo de división del
 año compartido.
 
-### Evidencia complementaria (de `Diagnostico_reversion/`, script no auditable — ver sección 0)
+### Evidencia complementaria (de `descartado/Diagnostico_reversion/`, script no auditable — ver sección 0)
 
 Tres tablas de esa carpeta, leídas directamente, apuntan en la misma
 dirección y la refuerzan:
@@ -237,7 +237,7 @@ posterior, no solo del anterior.
 | Elección de Bite como medida principal | Sí, la elección se basó en parte en que Bite "gana" la primera etapa | **Debilitada**: Bite es la segunda medida más contaminada del grupo de cuatro (sección 2); golpe_c y golpe_a sobreviven proporcionalmente mejor a la prueba de la ventana limpia |
 | Segundo eslabón (empleo) | Indirectamente — la interpretación de "el choque redujo/no redujo empleo" asume que la exposición mide el choque de 2023, no una "mala racha" genérica de 2022 | **En duda por una vía distinta**: `NOTA_DECISIONES.md` ya documentó que Kaitz 2022 alto identifica firmas con un 2022 atípicamente malo en salario, ventas Y brecha salarial simultáneamente (forma de "V"). Si el empleo de esas firmas también tiene una dinámica propia alrededor de 2022 no relacionada con el mínimo, el resultado de empleo hereda el mismo problema por una ruta distinta a la del costo laboral |
 | Heterogeneidad por tamaño, mecanismos (compresión salarial 0,22 DE) | Sí, usa Bite2022 y la misma referencia 2022 | **No probado, ni a favor ni en contra.** La lectura B (salto contra la tendencia propia) es una defensa metodológicamente razonable contra la versión de este problema que `NOTA_DECISIONES.md` había detectado en la brecha salarial cruda ("salta a 0 exactamente en 2022"). Pero nadie corrió el equivalente de la prueba de la sección 2 (outcome que no toca 2022) sobre los mecanismos. No se puede afirmar que sobrevive ni que no sobrevive |
-| Placebo 2018-2019 del primer eslabón (ya declarado no informativo) | Es la misma familia de problema, ya reconocida y correctamente excluida de la decisión | **Consistente con el resto de esta auditoría** — el placebo rodante de `Diagnostico_reversion` (T01) generaliza esta misma observación a los ocho años de la serie, no solo a 2018-2019 |
+| Placebo 2018-2019 del primer eslabón (ya declarado no informativo) | Es la misma familia de problema, ya reconocida y correctamente excluida de la decisión | **Consistente con el resto de esta auditoría** — el placebo rodante de `descartado/Diagnostico_reversion` (T01) generaliza esta misma observación a los ocho años de la serie, no solo a 2018-2019 |
 
 ---
 
