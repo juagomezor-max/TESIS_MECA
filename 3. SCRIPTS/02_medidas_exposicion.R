@@ -552,12 +552,19 @@ exposicion_2019 <- construir_medidas(panel, 2019) %>%
 
 exposicion <- left_join(exposicion, exposicion_2019, by = "NORDEMP")
 
+# Pearson se deja arrastrar por unas pocas firmas con valores extremos (sin
+# winsorizar) y da cerca de cero para golpe_c y golpe_a. Spearman usa rangos y
+# muestra la estabilidad real de las medidas (0,72-0,75).
+
 estabilidad <- exposicion %>%
   summarise(
     firmas_con_ambos_anios = sum(!is.na(golpe_c) & !is.na(golpe_c_2019)),
-    cor_golpe_c_2022_2019 = cor(golpe_c, golpe_c_2019, use = "complete.obs"),
-    cor_golpe_a_2022_2019 = cor(golpe_a, golpe_a_2019, use = "complete.obs"),
-    cor_golpe_costo_2022_2019 = cor(golpe_costo, golpe_costo_2019, use = "complete.obs")
+    pearson_golpe_c_2022_2019      = cor(golpe_c, golpe_c_2019, use = "complete.obs"),
+    spearman_golpe_c_2022_2019     = cor(golpe_c, golpe_c_2019, use = "complete.obs", method = "spearman"),
+    pearson_golpe_a_2022_2019      = cor(golpe_a, golpe_a_2019, use = "complete.obs"),
+    spearman_golpe_a_2022_2019     = cor(golpe_a, golpe_a_2019, use = "complete.obs", method = "spearman"),
+    pearson_golpe_costo_2022_2019  = cor(golpe_costo, golpe_costo_2019, use = "complete.obs"),
+    spearman_golpe_costo_2022_2019 = cor(golpe_costo, golpe_costo_2019, use = "complete.obs", method = "spearman")
   ) %>%
   pivot_longer(everything(), names_to = "concepto", values_to = "valor")
 
@@ -660,6 +667,9 @@ titulo("8. GRÁFICOS")
 para_graficar <- exposicion %>%
   select(golpe_c, golpe_a, golpe_costo) %>%
   pivot_longer(everything(), names_to = "medida", values_to = "valor") %>%
+  group_by(medida) %>%
+  mutate(valor = winsorizar(valor)) %>%
+  ungroup() %>%
   filter(!is.na(valor))
 
 grafico_distribuciones <- ggplot(para_graficar, aes(x = valor)) +
@@ -668,7 +678,7 @@ grafico_distribuciones <- ggplot(para_graficar, aes(x = valor)) +
   labs(title = "Distribución de las medidas de exposición (2022)",
        subtitle = "Un valor más alto indica una firma más expuesta al aumento del mínimo",
        x = "Valor de la medida", y = "Número de firmas",
-       caption = "Valores recortados al 1% y 99%.") +
+       caption = "Valores recortados al 1% y 99%; las barras de los extremos acumulan las firmas recortadas.") +
   tema_tesis
 guardar_grafico(grafico_distribuciones, "G01_distribucion_medidas")
 
@@ -687,7 +697,7 @@ grafico_categorias <- ggplot(salarios_categoria, aes(x = veces_el_minimo, fill =
   labs(title = "Salario promedio por categoría ocupacional (2022)",
        subtitle = "En veces el salario mínimo anual. La línea roja marca el mínimo",
        x = "Veces el salario mínimo", y = "Densidad", fill = NULL,
-       caption = "Si las distribuciones se traslapan, la categoría ocupacional no informa por sí sola sobre cercanía al mínimo.") +
+       caption = "Si las distribuciones se traslapan, la categoría ocupacional no informa\npor sí sola sobre cercanía al mínimo.") +
   tema_tesis
 guardar_grafico(grafico_categorias, "G02_salarios_por_categoria")
 
@@ -723,17 +733,22 @@ cat("\nLECTURA: si el porcentaje de firmas con administrativos por debajo de 1,5
 if (exists("comparacion") && "Bite2022_obreros" %in% names(comparacion)) {
   grafico_scatter <- comparacion %>%
     filter(!is.na(golpe_c), !is.na(Bite2022_obreros)) %>%
-    ggplot(aes(x = Bite2022_obreros, y = golpe_c)) +
+    mutate(kaitz_w = winsorizar(Bite2022_obreros),
+           golpe_c_w = winsorizar(golpe_c)) %>%
+    ggplot(aes(x = kaitz_w, y = golpe_c_w)) +
     geom_point(alpha = 0.25, color = COLOR_BAJA) +
-    geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = COLOR_ALTA) +
-    labs(title = "golpe_c frente al Kaitz de obreros",
-         subtitle = "Cada punto es una firma. La línea punteada es la igualdad",
-         x = "Bite2022_obreros (solo obreros)", y = "golpe_c (tres categorías)",
-         caption = "Los puntos alejados de la línea son firmas que cambian de nivel de exposición al usar las tres categorías.") +
+    geom_smooth(method = "lm", se = FALSE, color = COLOR_ALTA, linewidth = 0.8) +
+    geom_vline(xintercept = 1.16, linetype = "dotted", color = "grey40") +
+    annotate("text", x = 1.16, y = Inf, vjust = 1.5, hjust = 1.05, size = 3.2,
+             color = "grey30", label = "Salario de obreros = mínimo de 2022") +
+    labs(title = "Medida de tres categorías frente al Kaitz de obreros",
+         subtitle = "Cada punto es una firma (2022). La línea roja muestra la relación promedio",
+         x = "Kaitz de obreros", y = "golpe_c (promedio de las tres categorías)",
+         caption = paste("Valores recortados al 1% y 99%. Los puntos alejados de la línea roja son firmas",
+                         "\ncuya exposición cambia al incluir las tres categorías.")) +
     tema_tesis
   guardar_grafico(grafico_scatter, "G03_golpe_c_vs_kaitz")
 }
-
 
 # ==============================================================================
 # 9. GUARDAR
