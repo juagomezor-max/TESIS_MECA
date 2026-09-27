@@ -1,0 +1,7 @@
+resultado,forma,aic,observaciones,prueba_de_no_linealidad
+Salario promedio (log),Lineal (modelo principal),-2872.104619049671,44614,NA
+Salario promedio (log),Cuadrática,-2870.6942508128996,44614,0.5913117109421375
+Salario promedio (log),Por tramos (quintiles),-2881.875357420824,44614,0.0017784027092650168
+Empleo total (log),Lineal (modelo principal),42748.705199534576,44615,NA
+Empleo total (log),Cuadrática,42740.930992927584,44615,0.07035681932200367
+Empleo total (log),Por tramos (quintiles),42749.201907641786,44615,0.3968813076406378

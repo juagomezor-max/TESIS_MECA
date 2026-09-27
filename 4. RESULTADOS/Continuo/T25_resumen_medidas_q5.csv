@@ -1,0 +1,7 @@
+resultado,medida,efecto_porcentual_Placebo (año sin choque: 2019),efecto_porcentual_Real (choque de 2023),significancia_Placebo (año sin choque: 2019),significancia_Real (choque de 2023)
+Empleo total (log),A. Salario de la firma en 2022,3.461787959907626,-3.7153204571342844,*,**
+Empleo total (log),B. Salario promediado 2019-2022,1.8857953067271647,-5.2853997333891325,,***
+Empleo total (log),C. Salario de firmas parecidas,2.4011918315926843,-3.9498320828349422,,
+Salario promedio (log),A. Salario de la firma en 2022,9.405310086792994,10.085374242897686,***,***
+Salario promedio (log),B. Salario promediado 2019-2022,6.11977142841666,7.601111045415513,***,***
+Salario promedio (log),C. Salario de firmas parecidas,-0.4267508375347551,-0.5654475009271367,,
