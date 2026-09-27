@@ -1,0 +1,6 @@
+medida,clave,promedio_previo_pct,coef_2023_pct,mismo_signo,pct_2023_de_la_previa,c2023_MENOR_que_la_previa
+Bite (Kaitz de obreros),bite,-3.637949726143247,-1.601999979147039,TRUE,44,TRUE
+Golpe C (3 categorías),golpe_c,-4.464195704229167,-1.340980490042233,TRUE,30,TRUE
+Golpe A (ponderada),golpe_a,-4.228111065314453,-1.6240407906379484,TRUE,38.4,TRUE
+Golpe costo,golpe_costo,-4.334125160143416,-2.239408005231027,TRUE,51.7,TRUE
+Exposure (% obreros),exposure,-1.5772963414809928,-0.5559257569526951,TRUE,35.2,TRUE

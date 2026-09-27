@@ -1,0 +1,10 @@
+criterio,valor
+"Bite, celda limpia (2019): signo",Negativo
+"Bite, celda limpia (2019): significativo al 5%",Sí
+"Bite, rezago 4-5: se mantiene negativo y significativo",Sí
+"Bite, tendencias previas (exposición 2019): p-valor conjunto",0.00046
+Bite: ¿el coef. de 2023 es MENOR que el promedio de los previos?,Sí
+Medidas (de 5) negativas en la celda limpia,5
+Medidas (de 5) negativas Y significativas al 5% en la celda limpia,4
+"Medidas (de 5) que NO rechazan tendencias previas (p >= 0,10)",0
+Medidas (de 5) donde 2023 es MENOR que el promedio previo,5

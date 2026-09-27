@@ -1,0 +1,6 @@
+medida,clave,n_anios,correlacion_aumento_real
+Exposure (% obreros),exposure,8,-0.14514783324153782
+Bite (Kaitz de obreros),bite,8,-0.6174566363472075
+Golpe A (ponderada),golpe_a,8,-0.6544111135485878
+Golpe C (3 categorías),golpe_c,8,-0.6821965717376846
+Golpe costo,golpe_costo,8,-0.8402173877413284
