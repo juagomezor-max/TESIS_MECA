@@ -1,0 +1,5 @@
+categoria,n,mediana_pct,p10_pct,p25_pct,p75_pct,p90_pct,pct_supera_5pct,pct_supera_20pct
+administrativos,123598,0,0,0,0.829,3.124,6.68,0.61
+obreros,126430,0,0,0,0.254,2.592,6.6,0.43
+profesional_tecnico,77507,0,0,0,2.28,9.794,16.31,4.44
+total,130369,0.209,0,0,1.029,2.402,6.01,0.38

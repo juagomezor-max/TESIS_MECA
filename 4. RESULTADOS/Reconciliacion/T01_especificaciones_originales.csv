@@ -1,0 +1,3 @@
+especificacion,coeficiente,error_estandar,p_valor,efecto_pct,observaciones,firmas,significancia
+"A. Panel, outcome con propietarios, winsorizado",-0.00892067538378633,0.004029494917859802,0.026883577991543724,-0.8920675383786331,44614,5098,**
+"B. Corte, outcome sin propietarios, filtrado",0.029791477020782827,0.005132106637226172,6.860453335223078e-9,2.979147702078283,4863,4863,***
