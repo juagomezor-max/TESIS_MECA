@@ -1,0 +1,22 @@
+tamano,canal,mecanismos,efecto_promedio,efecto_max,mecanismo_dominante,n_significativos
+Pequena,Compresión salarial,1,0.21848279260246448,0.21848279260246448,Brecha salarial obrero/admin,1
+Pequena,Tercerización,4,0.005481072061248218,-0.1354513341887901,Pago a agencias / producción,0
+Pequena,Temporalidad,4,0.026070636877971346,-0.06515364905442995,Participación de permanentes,4
+Pequena,Empleo,3,-0.01804629992444866,-0.03161435792546997,Empleo permanente,2
+Pequena,Productividad,1,0.022541658337016487,0.022541658337016487,Productividad (VA/trabajador),0
+Pequena,Escala,3,0.012081327294466948,0.016637384312153537,Ventas,2
+Pequena,Capital,1,-0.002123351741394296,-0.002123351741394296,Inversión bruta,0
+Mediana,Compresión salarial,1,0.21155558968405092,0.21155558968405092,Brecha salarial obrero/admin,1
+Mediana,Tercerización,4,0.03908803122641437,0.11454311876362348,Hace outsourcing (sí/no),1
+Mediana,Temporalidad,4,0.01971591912250962,-0.053624777740972136,Participación de permanentes,4
+Mediana,Empleo,3,0.023368127037016052,0.05355053367181055,Empleo temporal,2
+Mediana,Capital,1,0.03161558019019111,0.03161558019019111,Inversión bruta,0
+Mediana,Escala,3,0.01934472372862755,0.021547383455987744,Ventas,2
+Mediana,Productividad,1,0.013541915903543178,0.013541915903543178,Productividad (VA/trabajador),0
+Grande,Compresión salarial,1,0.17871882891903013,0.17871882891903013,Brecha salarial obrero/admin,1
+Grande,Productividad,1,0.04973339298026125,0.04973339298026125,Productividad (VA/trabajador),1
+Grande,Empleo,3,0.008064602191722125,0.04750405115693086,Empleo temporal,0
+Grande,Temporalidad,4,0.018319616973002023,0.04051770286853643,Participación de agencias,2
+Grande,Escala,3,0.027731020157212734,0.03130845148544385,Producción bruta,2
+Grande,Capital,1,-0.028859059918248664,-0.028859059918248664,Inversión bruta,0
+Grande,Tercerización,4,0.008731219028230021,0.02848479699837512,Pago a agencias / producción,0

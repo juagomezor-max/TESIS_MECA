@@ -1,0 +1,31 @@
+medida,especificacion,efecto_pct,p_valor,significancia,observaciones,problema
+Bite,Exp 2019 / Crec 2019-23,6.581205287183097,3.277798750952423e-25,***,3881,Sesgo de división al revés: 2019 en los dos lados
+Bite,Exp 2019 / Crec 2021-23,2.7191881054584264,5.597010369002472e-6,***,3876,Limpia pero el outcome mezcla dos aumentos del mínimo
+Bite,Exp 2019 / Crec 2022-23 (LIMPIA),1.145473923124766,0.008427667735185676,***,3880,"Solo atenuación: sesga hacia cero, es cota inferior"
+Bite,Exp 2022 / Crec 2019-23,-1.7487190558143961,0.0037030011162034753,***,4782,Post-tratamiento + pandemia dentro del outcome
+Bite,Exp 2022 / Crec 2021-23,0.46173983037304506,0.4602761041874541,,4828,Exposición post-tratamiento: el outcome incluye el aumento de 2022
+Bite,Exp 2022 / Crec 2022-23,2.983158961147445,6.860453335223078e-9,***,4863,Sesgo de división: 2022 en los dos lados
+Exposure,Exp 2019 / Crec 2019-23,2.065068485404434,1.6261163747294756e-4,***,5916,Sesgo de división al revés: 2019 en los dos lados
+Exposure,Exp 2019 / Crec 2021-23,1.4123985005375352,0.020249207678766222,**,5900,Limpia pero el outcome mezcla dos aumentos del mínimo
+Exposure,Exp 2019 / Crec 2022-23 (LIMPIA),0.4574709497370809,0.3235841735698807,,5912,"Solo atenuación: sesga hacia cero, es cota inferior"
+Exposure,Exp 2022 / Crec 2019-23,-0.09541438227542547,0.8662189488071695,,5917,Post-tratamiento + pandemia dentro del outcome
+Exposure,Exp 2022 / Crec 2021-23,0.7112928304869006,0.2800659486752191,,5971,Exposición post-tratamiento: el outcome incluye el aumento de 2022
+Exposure,Exp 2022 / Crec 2022-23,0.1934349597566974,0.703330782745696,,6017,Sesgo de división: 2022 en los dos lados
+Golpe A,Exp 2019 / Crec 2019-23,7.611516478118451,2.195035850296348e-43,***,5419,Sesgo de división al revés: 2019 en los dos lados
+Golpe A,Exp 2019 / Crec 2021-23,2.9772276296219973,6.020808282631853e-8,***,5411,Limpia pero el outcome mezcla dos aumentos del mínimo
+Golpe A,Exp 2019 / Crec 2022-23 (LIMPIA),0.8719866377528452,0.029171992457664914,**,5417,"Solo atenuación: sesga hacia cero, es cota inferior"
+Golpe A,Exp 2022 / Crec 2019-23,-2.6482315560722944,1.6774716267104078e-6,***,5476,Post-tratamiento + pandemia dentro del outcome
+Golpe A,Exp 2022 / Crec 2021-23,-0.1224798173052477,0.8517269570715228,,5531,Exposición post-tratamiento: el outcome incluye el aumento de 2022
+Golpe A,Exp 2022 / Crec 2022-23,3.4585184272397025,2.299009600547686e-11,***,5572,Sesgo de división: 2022 en los dos lados
+Golpe C,Exp 2019 / Crec 2019-23,7.729601287294281,9.446118125231663e-44,***,5441,Sesgo de división al revés: 2019 en los dos lados
+Golpe C,Exp 2019 / Crec 2021-23,2.8105951659490045,2.887752435629195e-7,***,5432,Limpia pero el outcome mezcla dos aumentos del mínimo
+Golpe C,Exp 2019 / Crec 2022-23 (LIMPIA),0.7578679499903986,0.09601363206335409,*,5439,"Solo atenuación: sesga hacia cero, es cota inferior"
+Golpe C,Exp 2022 / Crec 2019-23,-3.600112383584918,4.3165418829518286e-11,***,5481,Post-tratamiento + pandemia dentro del outcome
+Golpe C,Exp 2022 / Crec 2021-23,-0.4388593592680879,0.5186101351383798,,5536,Exposición post-tratamiento: el outcome incluye el aumento de 2022
+Golpe C,Exp 2022 / Crec 2022-23,3.5639550069576966,2.6811530809914145e-12,***,5577,Sesgo de división: 2022 en los dos lados
+Golpe costo,Exp 2019 / Crec 2019-23,12.94431715581441,1.7580924417748027e-101,***,5489,Sesgo de división al revés: 2019 en los dos lados
+Golpe costo,Exp 2019 / Crec 2021-23,3.3009860114485186,9.816887009323156e-8,***,5476,Limpia pero el outcome mezcla dos aumentos del mínimo
+Golpe costo,Exp 2019 / Crec 2022-23 (LIMPIA),1.0174640621102384,0.029722123404113194,**,5486,"Solo atenuación: sesga hacia cero, es cota inferior"
+Golpe costo,Exp 2022 / Crec 2019-23,-4.744915685500928,6.574095216134304e-16,***,5843,Post-tratamiento + pandemia dentro del outcome
+Golpe costo,Exp 2022 / Crec 2021-23,0.5834287273920354,0.43478014307410584,,5896,Exposición post-tratamiento: el outcome incluye el aumento de 2022
+Golpe costo,Exp 2022 / Crec 2022-23,9.597424752300189,3.558397472294667e-36,***,5942,Sesgo de división: 2022 en los dos lados

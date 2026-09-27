@@ -1,0 +1,4 @@
+tamano,efecto_A_pct_Costo laboral por trabajador,efecto_A_pct_Empleo total,sig_A_Costo laboral por trabajador,sig_A_Empleo total,canal_principal,efecto_canal,canales_significativos
+Pequena,4.921164263744352,-2.4158175296864948,***,***,Brecha salarial obrero/admin,0.21848279260246448,9
+Mediana,3.0181420069712828,1.4167952702271749,***,**,Brecha salarial obrero/admin,0.21155558968405092,10
+Grande,1.9659576668824217,0.18780635939683538,,,Brecha salarial obrero/admin,0.17871882891903013,6
