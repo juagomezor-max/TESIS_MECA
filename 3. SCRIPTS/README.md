@@ -138,12 +138,23 @@ correr el pipeline `01`-`08`, y sus cifras no reemplazan a las del glosario de
   mejora observada al corregir el bug de controles fijos en 2022 (ver más
   abajo) viene de los controles o de la restricción de muestra que trae esa
   corrección. Resultado: 100% controles, 0% muestra.
-- **`descartado/`** guarda las versiones superadas de estas pruebas
-  (`09_diagnostico_reversion.R`, `10_celda_limpia_rodante.R`,
-  `12_celda_limpia_real.R`) con su historial de git intacto — no se corren;
-  `descartado/README.md` explica qué probaba cada una y por qué quedó
-  superada (orden por aumento nominal en vez de real, bug de indexación del
-  rezago).
+- **`descartado/`** guarda los siete scripts que preceden a `09` y `10`, con
+  su historial de git intacto — no se corren. `descartado/README.md` los
+  separa por motivo, que no es el mismo para todos:
+  - **Superados por error** (`09_diagnostico_reversion.R`,
+    `10_celda_limpia_rodante.R`, `12_celda_limpia_real.R`): ordenaban por
+    aumento nominal en vez de real, y/o tenían el bug de indexación del
+    rezago. Sus cifras no deben citarse.
+  - **Consolidados, sin error propio** (`11_placebo_rodante_real.R`,
+    `13_celda_limpia_corregida.R`, `14_outcome_alternativo.R`,
+    `15_auditoria_adversarial.R`): su lógica era correcta; se archivaron
+    porque `09_validez_exposicion.R` reproduce sus cifras de forma
+    verificada (7 cifras citadas, comprobadas antes de archivar) y no tiene
+    sentido mantener dos rutas al mismo resultado.
+  - Las cuatro carpetas de salida que duplicaban a `Validez_exposicion/`
+    (`Placebo_rodante_real`, `Celda_limpia_real`, `Outcome_alternativo`,
+    `Auditoria_adversarial`) se movieron, por el mismo motivo, a
+    `4. RESULTADOS/descartado/`.
 
 **Bug de controles fijos en 2022** (encontrado en esta ronda de diagnóstico,
 ya corregido en `05_resultados_y_mecanismos.R`, `06_mecanismos_por_grupo.R` y
