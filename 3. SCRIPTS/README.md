@@ -47,6 +47,7 @@ permanece en `xx` en adelante si llega a acumularse más de uno.
 | `08_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `Continuo` |
 | `09_validez_exposicion.R` | — | Diagnóstico: validez de la medida de exposición (Bite) | `panel_firma_eam_expalt_completo.rds` | — | `Validez_exposicion` |
 | `10_bug_controles.R` | 328 | Diagnóstico: descomposición del bug de controles fijos en 2022 (controles vs. muestra) | `panel_firma_eam_expalt_completo.rds`, `exposicion_alternativa_2022.rds`, `panel_analitico_firma_eam.rds` | — | `Descomposicion_bug` |
+| `17_variable_instrumental.R` | 628 | Diagnóstico: variable instrumental para el sesgo de división del Kaitz (replica la especificación de `05_resultados_y_mecanismos.R`) | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (verificación de la réplica de Bite — si el archivo no existe, se omite; mismo patrón de lectura que `02_medidas_exposicion.R`) | — | `Variable_instrumental` |
 | `xx_script_base_historico.R` | 829 | Histórico, **NO correr** | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones` |
 
 "Los tres paneles" = `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds`, `1. DATOS/exposicion_alternativa_2022.rds`.
