@@ -1,0 +1,11 @@
+exposicion,medida,clave,anios_incluidos,n_anios,estadistico_F,df1,df2,p_valor,clustering,n_obs
+2019 (celda limpia),Bite (Kaitz de obreros),bite,"2015, 2016, 2017, 2018, 2019, 2021",6,4.054894828584158,6,5055,4.636839977380287e-4,Clustered (NORDEMP),44621
+2019 (celda limpia),Golpe C (3 categorías),golpe_c,"2015, 2016, 2017, 2018, 2019, 2021",6,6.371758565775514,6,5604,1.067005488019995e-6,Clustered (NORDEMP),49435
+2019 (celda limpia),Golpe A (ponderada),golpe_a,"2015, 2016, 2017, 2018, 2019, 2021",6,5.0894702890123895,6,5604,3.206535198950902e-5,Clustered (NORDEMP),49435
+2019 (celda limpia),Golpe costo,golpe_costo,"2015, 2016, 2017, 2018, 2019, 2021",6,5.3589852366404545,6,6073,1.5753853201098727e-5,Clustered (NORDEMP),53517
+2019 (celda limpia),Exposure (% obreros),exposure,"2015, 2016, 2017, 2018, 2019, 2021",6,2.396166532309521,6,6073,0.02581689560878501,Clustered (NORDEMP),53517
+"2022 (estándar, contaminada)",Bite (Kaitz de obreros),bite,"2015, 2016, 2017, 2018, 2019, 2021",6,0.9546715669849485,6,5097,0.45444895040264477,Clustered (NORDEMP),44615
+"2022 (estándar, contaminada)",Golpe C (3 categorías),golpe_c,"2015, 2016, 2017, 2018, 2019, 2021",6,0.4667022184728837,6,5740,0.833436618296832,Clustered (NORDEMP),50185
+"2022 (estándar, contaminada)",Golpe A (ponderada),golpe_a,"2015, 2016, 2017, 2018, 2019, 2021",6,1.1301661840840453,6,5740,0.3417352385215972,Clustered (NORDEMP),50185
+"2022 (estándar, contaminada)",Golpe costo,golpe_costo,"2015, 2016, 2017, 2018, 2019, 2021",6,3.1165327812055175,6,6176,0.004745392626463655,Clustered (NORDEMP),53975
+"2022 (estándar, contaminada)",Exposure (% obreros),exposure,"2015, 2016, 2017, 2018, 2019, 2021",6,4.363777188064377,6,6178,2.100400478622933e-4,Clustered (NORDEMP),53991

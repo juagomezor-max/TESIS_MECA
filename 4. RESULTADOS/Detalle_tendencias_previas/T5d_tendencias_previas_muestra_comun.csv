@@ -1,0 +1,6 @@
+medida,clave,n_firmas_comunes,n_obs_muestra_comun,estadistico_F,df1,df2,p_valor,rechaza_al_5pct
+Bite (Kaitz de obreros),bite,4744,41895,4.094468642318321,6,4743,4.199776969671724e-4,TRUE
+Golpe C (3 categorías),golpe_c,5485,48388,5.353867883587449,6,5484,1.6023779058337673e-5,TRUE
+Golpe A (ponderada),golpe_a,5485,48388,4.245957979316777,6,5484,2.8467448548105873e-4,TRUE
+Golpe costo,golpe_costo,6068,53475,5.471295938564058,6,6067,1.1713068112131344e-5,TRUE
+Exposure (% obreros),exposure,6070,53491,2.479980556356348,6,6069,0.021320293559592005,TRUE

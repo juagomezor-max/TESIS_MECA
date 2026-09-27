@@ -1,0 +1,6 @@
+medida,clave,p_valor_muestra_completa,n_obs_completa,p_valor_muestra_comun,n_obs_muestra_comun,rechaza_al_5pct
+Bite (Kaitz de obreros),bite,4.636839977380287e-4,44621,4.199776969671724e-4,41895,TRUE
+Golpe C (3 categorías),golpe_c,1.067005488019995e-6,49435,1.6023779058337673e-5,48388,TRUE
+Golpe A (ponderada),golpe_a,3.206535198950902e-5,49435,2.8467448548105873e-4,48388,TRUE
+Golpe costo,golpe_costo,1.5753853201098727e-5,53517,1.1713068112131344e-5,53475,TRUE
+Exposure (% obreros),exposure,0.02581689560878501,53517,0.021320293559592005,53491,TRUE
