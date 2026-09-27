@@ -19,6 +19,7 @@ DATOS/
 2. PROCESAMIENTO/_tmp_unzip/
 2. PROCESAMIENTO/_tmp_macro_base_eam/
 2. PROCESAMIENTO/_tmp_*/
+2. PROCESAMIENTO/_tmp_log_*.txt
 
 # Macrobase pesada como artefacto derivado de datos
 4. RESULTADOS/macro_base_eam.rds
