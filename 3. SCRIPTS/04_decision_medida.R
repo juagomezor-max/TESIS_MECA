@@ -20,20 +20,24 @@
 # Capítulos:    2 (Medición) y 6 (Validaciones adicionales y amenazas)
 # Pregunta:     ¿Qué medida de exposición usa la tesis, y con qué evidencia se
 #               eligió?
-# Cifra clave:  Bite gana la celda limpia con +1,15% por DE (p=0,008) --
-#               sección 3, tabla T01_celda_limpia.
+# Cifra clave:  el Kaitz de obreros gana la celda limpia con +0,82% por DE
+#               (p=0,023) -- sección 3, tabla T01_celda_limpia. Con la
+#               especificación anterior (con control de tamaño y exclusión de
+#               valores > 1,3) daba +1,15% (p=0,008).
 # Depende de:   02_medidas_exposicion.R,
 #               03_primer_eslabon_medidas.R (mismo problema de
 #               sesgo de división, misma solución de celda limpia)
 #
-# CAPÍTULO 6 -- NO SUAVIZAR: la sensibilidad al año base de exposición es una
-# amenaza reconocida, no un detalle técnico. Con exposición 2022 el
-# coeficiente estándar da +4,03% por DE; con exposición 2019 (celda limpia)
-# da -1,95% contra el outcome que arrastra base 2019 (sección 4, fila "Exp
-# 2022 / Crec 2019-23" de la matriz, y comparación de secciones 3 vs. 7). Un
-# coeficiente que cambia de signo según el año en que se mide la exposición
-# es exactamente el tipo de resultado que va al capítulo 6, declarado como
-# tal, no minimizado en el texto.
+# ESPECIFICACIÓN: por decisión de los autores, controles de sector y
+# departamento fijados en 2022, SIN tamaño (igual que 01 y 03). Valores
+# extremos winsorizados al 1% y 99% (antes se excluían los > 1,3).
+#
+# CAPÍTULO 6 -- NO SUAVIZAR: la sensibilidad a los años usados es una amenaza
+# reconocida, no un detalle técnico. Con exposición y outcome que comparten
+# 2022, el Kaitz da +2,87% por DE; en la celda limpia, +0,82%; con exposición
+# 2022 contra el crecimiento 2019-2023, -1,36% (sección 4, matriz). Un
+# coeficiente que cambia de magnitud y de signo según los años es exactamente
+# el tipo de resultado que va al capítulo 6, declarado como tal.
 #
 # YA VERIFICADO EN ESTE SCRIPT (no requirió corrección): la "prueba del
 # outcome rebasado" que una versión intermedia proponía como decisiva está
@@ -88,13 +92,13 @@
 # firmas. Por eso el coeficiente de la celda limpia es una COTA INFERIOR del
 # efecto verdadero, no una medición exacta.
 #
-# ADVERTENCIA SOBRE EL PLACEBO 2018-2019 DEL SCRIPT 03: daba coeficiente
-# negativo y significativo en las CINCO medidas, incluida Exposure, que no usa
-# salarios. Un placebo que da lo mismo para todas no está midiendo propiedades
-# de las medidas. La razón es aritmética: exposición alta significa costo 2022
-# bajo, que por persistencia implica costo 2019 bajo, que dado 2018 implica
-# crecimiento 2018-2019 bajo. El signo negativo está casi garantizado por
-# construcción. Ese placebo NO es informativo y no debe citarse como evidencia.
+# ADVERTENCIA SOBRE EL PLACEBO 2018-2019 DEL SCRIPT 03: da negativo en las
+# cinco medidas y significativo en las cuatro basadas en salarios (la
+# proporción de obreros no es significativa con la especificación sin
+# tamaño). El signo refleja la menor dinámica de costos de las firmas de
+# salarios bajos en años normales, la misma tendencia que muestra el estudio
+# de evento de 01. Ese placebo NO valida ni invalida el diseño y no debe
+# citarse como evidencia en ninguna dirección.
 # ==============================================================================
 
 
@@ -162,7 +166,6 @@ COLOR_BAJA <- "#1F4E79"
 COLOR_GRIS <- "#808080"
 
 SMLV_2023_ANUAL_MILES <- 1160000 * 12 / 1000
-LIMITE_GOLPE <- 1.3
 
 
 # ==============================================================================
@@ -267,11 +270,13 @@ datos <- alternativas %>%
   left_join(base_2019, by = "NORDEMP") %>%
   left_join(outcomes, by = "NORDEMP")
 
-# Filtro de plausibilidad: ningún trabajador formal de tiempo completo puede
-# costar menos del mínimo, así que un golpe por encima de 1,3 es error de
-# reporte. Se vuelven NA, no se recortan.
-plausible <- function(x, limite = LIMITE_GOLPE) {
-  ifelse(!is.na(x) & x > 0 & x <= limite, x, NA_real_)
+# Valores extremos: se winsoriza al 1% y 99%, igual que en 01, 03, 05 y 14,
+# para usar una sola regla en todo el pipeline. Versiones anteriores
+# excluían las firmas con medida > 1,3.
+plausible <- function(x) {
+  x <- ifelse(!is.na(x) & x > 0, x, NA_real_)
+  lim <- quantile(x, c(0.01, 0.99), na.rm = TRUE)
+  pmin(pmax(x, lim[1]), lim[2])
 }
 
 datos <- datos %>%
@@ -288,8 +293,8 @@ estandarizar <- function(x) x / sd(x, na.rm = TRUE)
 
 PAREJAS <- tribble(
   ~nombre,        ~var_2022,              ~var_2019,
-  "Bite",         "Bite2022_obreros",     "bite_2019",
-  "Exposure",     "Exposure2022_obreros", "exposure_2019",
+  "Kaitz de obreros",      "Bite2022_obreros",     "bite_2019",
+  "Proporción de obreros", "Exposure2022_obreros", "exposure_2019",
   "Golpe C",      "golpe_c",              "golpe_c_2019",
   "Golpe A",      "golpe_a",              "golpe_a_2019",
   "Golpe costo",  "golpe_costo",          "golpe_costo_2019"
@@ -308,7 +313,8 @@ datos <- datos %>%
 cat("Firmas en la base:", nrow(datos), "\n")
 cat("Con outcome 2022->2023:", sum(!is.na(datos$crecimiento_23_22)), "\n")
 
-CONTROLES <- "sector_2022 + depto_2022 + tamano_2022"
+# Por decisión de los autores no se controla por tamaño (igual que 01 y 03)
+CONTROLES <- "sector_2022 + depto_2022"
 
 estimar <- function(variable, outcome = "crecimiento_23_22", base = datos) {
   v <- paste0(variable, "_de")
@@ -391,7 +397,7 @@ grafico_limpia <- ggplot(celda_limpia,
   labs(title = "Primer eslabón sin contaminación aritmética",
        subtitle = "Exposición medida en 2019, crecimiento del costo laboral 2022-2023",
        x = NULL, y = "Efecto por DE de exposición (%)",
-       caption = "Controles: sector (CIIU4), departamento y tamaño, fijados en 2022. Errores robustos. IC al 95%.") +
+       caption = "Controles: sector (CIIU4) y departamento, fijados en 2022. Errores robustos. IC al 95%.") +
   tema_tesis
 guardar_grafico(grafico_limpia, "G01_celda_limpia")
 
@@ -410,7 +416,7 @@ COMBINACIONES <- tribble(
   "2022",           "crecimiento_23_21",  "Exp 2022 / Crec 2021-23",          "Exposición post-tratamiento: el outcome incluye el aumento de 2022",
   "2022",           "crecimiento_23_19",  "Exp 2022 / Crec 2019-23",          "Post-tratamiento + pandemia dentro del outcome",
   "2019",           "crecimiento_23_22",  "Exp 2019 / Crec 2022-23 (LIMPIA)", "Solo atenuación: sesga hacia cero, es cota inferior",
-  "2019",           "crecimiento_23_21",  "Exp 2019 / Crec 2021-23",          "Limpia pero el outcome mezcla dos aumentos del mínimo",
+  "2019",           "crecimiento_23_21",  "Exp 2019 / Crec 2021-23",          "Sin traslape, pero mezcla dos aumentos del mínimo y parte de 2021 (pospandemia)",
   "2019",           "crecimiento_23_19",  "Exp 2019 / Crec 2019-23",          "Sesgo de división al revés: 2019 en los dos lados"
 )
 
@@ -519,11 +525,10 @@ cat("\nLECTURA: una estabilidad baja indica más atenuación en la celda limpia,
 # ==============================================================================
 titulo("6. EFECTO POR TRAMOS DE EXPOSICIÓN")
 
-# 03_primer_eslabon_medidas.R sugirió, con medianas SIN controles,
-# que el efecto estaba concentrado en el quintil más expuesto. Con controles
-# esa lectura no se sostiene: la relación resulta monotónica creciente. Lo
-# dejamos aquí para documentar la corrección, con la exposición de 2019
-# (celda limpia) además de la de 2022.
+# Efecto por quintiles, con controles, con la exposición de 2022 y la de 2019
+# (celda limpia). Con la especificación sin tamaño la relación NO es
+# monotónica: con exposición 2022 crece con un tropiezo en el quintil 4; con
+# exposición 2019 tiene forma de joroba y cae en el quintil 5, el más expuesto.
 
 estimar_tramos <- function(variable, etiqueta, outcome = "crecimiento_23_22") {
   if (!variable %in% names(datos)) return(NULL)
@@ -550,9 +555,9 @@ estimar_tramos <- function(variable, etiqueta, outcome = "crecimiento_23_22") {
 }
 
 tramos <- bind_rows(
-  estimar_tramos("Bite2022_obreros", "Bite (exp. 2022)"),
+  estimar_tramos("Bite2022_obreros", "Kaitz de obreros (exp. 2022)"),
   estimar_tramos("golpe_c", "Golpe C (exp. 2022)"),
-  estimar_tramos("bite_2019", "Bite (exp. 2019, limpia)"),
+  estimar_tramos("bite_2019", "Kaitz de obreros (exp. 2019, limpia)"),
   estimar_tramos("golpe_c_2019", "Golpe C (exp. 2019, limpia)")
 )
 
@@ -560,8 +565,11 @@ ver(tramos, filas = 25)
 guardar_tabla(tramos, "T04_efecto_por_tramos",
               "Tabla 4. Efecto por quintil de exposición, frente al quintil 1")
 
-grafico_tramos <- ggplot(tramos, aes(x = quintil, y = 100 * coeficiente,
-                                     color = medida, group = medida)) +
+grafico_tramos <- tramos %>%
+  mutate(base = ifelse(grepl("2019", medida), "Exposición 2019 (limpia)", "Exposición 2022"),
+         base = factor(base, levels = c("Exposición 2022", "Exposición 2019 (limpia)")),
+         serie = sub(" \\(exp\\..*", "", medida)) %>%
+  ggplot(aes(x = quintil, y = 100 * coeficiente, color = serie, group = serie)) +
   geom_hline(yintercept = 0, color = "grey60") +
   geom_line(linewidth = 0.8) +
   geom_pointrange(aes(ymin = 100 * (coeficiente - 1.96 * error_estandar),
@@ -571,9 +579,11 @@ grafico_tramos <- ggplot(tramos, aes(x = quintil, y = 100 * coeficiente,
        subtitle = "Diferencia frente al quintil menos expuesto, con controles",
        x = "Quintil de exposición (1 = menos expuesta)",
        y = "Diferencia en el crecimiento (%)", color = NULL,
-       caption = "Con controles la relación es monotónica. Las medianas crudas de 03_primer_eslabon_medidas.R sugerían lo contrario.") +
+       caption = paste("Con controles, el efecto crece con la exposición de 2022 pero no de forma monotónica;",
+                       "\ncon exposición de 2019 se concentra en los quintiles intermedios.")) +
+  facet_wrap(~ base) +
   tema_tesis
-guardar_grafico(grafico_tramos, "G03_efecto_por_tramos")
+guardar_grafico(grafico_tramos, "G03_efecto_por_tramos", ancho = 11)
 
 
 # ==============================================================================
@@ -668,10 +678,12 @@ QUÉ ESCRIBIR EN LA TESIS:
      valida con evidencia la decisión pre-comiteada de descartarla y muestra que
      la composición ocupacional por sí sola no mide exposición al mínimo.
 
-  3. LA RELACIÓN ES MONOTÓNICA con controles. Las medianas crudas de
-     03_primer_eslabon_medidas.R sugerían concentración en el
-     quintil 5; con controles no se sostiene.
-     Corregir esa afirmación donde aparezca.
+  3. LA RELACIÓN POR QUINTILES NO ES MONOTÓNICA. Con exposición 2022 crece
+     con la exposición pero con un tropiezo en el quintil 4; con exposición
+     2019 (limpia) tiene forma de joroba: se concentra en los quintiles 3 y 4
+     y cae en el 5, el más expuesto. Reportarlo como un patrón a explicar,
+     no como evidencia de que el efecto se concentra donde más muerde el
+     mínimo.
 
   4. EL PLACEBO 2018-2019 NO ES INFORMATIVO. Ver el encabezado de este script.
      No citarlo como evidencia en ninguna dirección.
@@ -681,7 +693,7 @@ QUÉ ESCRIBIR EN LA TESIS:
      mucho más ancho. Recalcularla y no presentar el nulo como evidencia de
      ausencia de efecto: es falta de precisión, no precisión sobre el cero.
 
-  6. LIMITACIÓN DE LA MEDIDA GANADORA. Si es Bite, declarar que es la menos
+  6. LIMITACIÓN DE LA MEDIDA GANADORA. Si es el Kaitz de obreros, declarar que es la menos
      estable entre años base (ver tabla 3) y la de menor cobertura en la celda
      limpia. Que gane pese a eso es informativo, pero la limitación va escrita.
 ")
@@ -693,4 +705,3 @@ cat("\nGráficos disponibles:\n")
 cat(paste(" -", names(graficos)), sep = "\n")
 
 titulo("FIN DEL SCRIPT")
-
