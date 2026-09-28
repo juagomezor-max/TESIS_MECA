@@ -44,8 +44,10 @@
 #     tendencia previa de las firmas de salarios bajos. Ver la nota en esa
 #     sección. La estimación se conserva; su lectura cambia.
 #   - La concentración en el quintil 5 de la sección 8.3 es un hallazgo de
-#     medianas SIN controles. Con controles la relación es monotónica
-#     (04_decision_medida.R, sección 6).
+#     medianas SIN controles. Con controles la relación no es monotónica
+#     (04_decision_medida.R, sección 6): con exposición 2022 crece con un
+#     tropiezo en el quintil 4, y con exposición 2019 se concentra en los
+#     quintiles intermedios.
 # ------------------------------------------------------------------------------
 
 
@@ -73,9 +75,14 @@
 # económico. Eso genera una correlación positiva puramente mecánica.
 #
 # Por eso se hacen dos pruebas:
+#   - Sección 6: la exposición medida en 2019 en lugar de 2022. Es la prueba
+#     principal (la "celda limpia", que 04_decision_medida.R desarrolla).
 #   - Sección 5b: el mismo primer eslabón con outcomes que NO usan 2022
-#     (2021->2023 y 2023 frente al promedio de 2019 y 2021).
-#   - Sección 6: la exposición medida en 2019 en lugar de 2022.
+#     (2021->2023 y 2023 frente al promedio de 2019 y 2021). Es complementaria:
+#     con exposición 2022, estos outcomes incluyen el aumento del mínimo de
+#     2022, anterior al año en que se mide la exposición, así que el
+#     coeficiente queda sesgado hacia abajo (ver 04, "EL PROBLEMA Y CÓMO SE
+#     RESUELVE"). Sirve como cota inferior, no como prueba definitiva.
 # Si el coeficiente sobrevive, es economía. Si solo aparece con 2022 en los dos
 # lados, es aritmética.
 #
@@ -467,11 +474,18 @@ guardar_grafico(grafico_comparacion, "G01_primer_eslabon_comparacion")
 titulo("5b. PRIMER ESLABÓN SIN EL AÑO BASE")
 
 # El outcome original parte de 2022, el mismo año del Kaitz. Estos dos lo
-# evitan: 2021->2023 y 2023 frente al promedio de 2019 y 2021. Si el efecto de
-# la sección 5 era sesgo de división, aquí debería desaparecer.
-# OJO: estos outcomes abarcan dos o más años (y dos alzas del mínimo), así que
-# su magnitud no es comparable uno a uno con el crecimiento de un solo año. Lo
-# que importa es si el efecto sigue siendo positivo y significativo.
+# evitan: 2021->2023 y 2023 frente al promedio de 2019 y 2021.
+# OJO, DOS CAUTELAS:
+#   1. Estos outcomes abarcan dos o más años (y dos alzas del mínimo), así que
+#      su magnitud no es comparable uno a uno con el crecimiento de un año.
+#   2. SESGO HACIA ABAJO: la exposición se mide en 2022, después del aumento
+#      del mínimo de 2022 que estos outcomes incluyen. Una firma a la que el
+#      aumento de 2022 le subió el salario aparece en 2022 con salario más alto,
+#      es decir con menos exposición. Eso empuja el coeficiente hacia abajo
+#      (ver 04_decision_medida.R). Por eso esta sección es complementaria: la
+#      prueba principal sin traslape es la celda limpia (exposición 2019 y
+#      crecimiento 2022-2023), en la sección 6 y en 04. Con esa prueba, el
+#      Kaitz de obreros conserva un efecto pequeño y significativo (+0,82%).
 
 OUTCOMES_PRIMER_ESLABON <- c(
   crecimiento_2023 = "2022 -> 2023 (original)",
@@ -492,9 +506,12 @@ ver(primer_eslabon_sin_base, filas = 15)
 guardar_tabla(primer_eslabon_sin_base, "T02b_primer_eslabon_sin_anio_base",
               "Tabla 2b. Primer eslabón con outcomes que no usan 2022")
 
-cat("\nCÓMO LEER: si una medida sigue positiva y significativa con los outcomes\n",
-    "que no usan 2022, su primer eslabón es real. Si cae a cero, el efecto de\n",
-    "la sección 5 era sesgo de división.\n")
+cat("\nCÓMO LEER: con exposición 2022, estos outcomes tienen un sesgo hacia\n",
+    "abajo (incluyen el aumento de 2022, posterior a la medición). Que el\n",
+    "coeficiente caiga a cero confirma que buena parte del efecto de la\n",
+    "sección 5 era traslape, pero no prueba que el efecto real sea nulo: la\n",
+    "prueba principal es la celda limpia de 04 (Kaitz: +0,82%, p = 0,02).\n")
+
 
 # ==============================================================================
 # 5c. PRIMER ESLABÓN ALTERNATIVO: RENTABILIDAD Y SALIDA
@@ -508,6 +525,10 @@ titulo("5c. PRIMER ESLABÓN ALTERNATIVO: RENTABILIDAD Y SALIDA")
 # empuja en la dirección de la hipótesis. Solo cuentan las versiones sin 2022.
 # Todos los resultados están en puntos porcentuales: leer la columna
 # 'coeficiente' (pp por DE de exposición), no 'efecto_pct'.
+#
+# La salida de la EAM no equivale a cierre: también ocurre al caer bajo los
+# umbrales de inclusión, cambiar de actividad, fusionarse o no responder. El
+# identificador está anonimizado, así que no se puede cruzar con RUES ni PILA.
 
 winsor_cambio <- function(x) {
   lim <- quantile(x, c(0.01, 0.99), na.rm = TRUE)
@@ -575,6 +596,65 @@ primer_eslabon_alternativo <- bind_rows(lapply(names(OUTCOMES_ALTERNATIVOS), fun
 ver(primer_eslabon_alternativo, filas = 20)
 guardar_tabla(primer_eslabon_alternativo, "T02c_primer_eslabon_alternativo",
               "Tabla 2c. Primer eslabón alternativo: rentabilidad y salida (pp por DE de exposición)")
+
+# --- Salida: tres chequeos ----------------------------------------------------
+# (a) Con control de tamaño: las firmas expuestas son pequeñas y las pequeñas
+#     salen más de la EAM (están más cerca de los umbrales de inclusión).
+# (b) Solo medianas y grandes: ahí salir se parece más a cerrar o fusionarse.
+# (c) Placebo rodante: el Kaitz de cada año contra la salida del año siguiente.
+estimar_salida <- function(outcome, controles, datos, etiqueta) {
+  m <- feols(as.formula(paste0(outcome, " ~ Bite2022_obreros_de | ", controles)),
+             data = datos, vcov = "hetero")
+  f <- coeftable(m)["Bite2022_obreros_de", ]
+  tibble(chequeo = etiqueta, outcome = outcome,
+         coeficiente_pp = f[["Estimate"]], error_estandar = f[["Std. Error"]],
+         p_valor = f[["Pr(>|t|)"]], significancia = estrellas(f[["Pr(>|t|)"]]),
+         observaciones = nobs(m))
+}
+
+salida_chequeos <- bind_rows(
+  estimar_salida("sale_2023", CONTROLES, medidas, "Especificación principal"),
+  estimar_salida("sale_2024", CONTROLES, medidas, "Especificación principal"),
+  estimar_salida("sale_2023", paste(CONTROLES, "+ tamano_2022"), medidas, "Con control de tamaño"),
+  estimar_salida("sale_2024", paste(CONTROLES, "+ tamano_2022"), medidas, "Con control de tamaño"),
+  estimar_salida("sale_2023", CONTROLES,
+                 filter(medidas, tamano_2022 %in% c("Mediana", "Grande")),
+                 "Solo medianas y grandes")
+)
+
+ver(salida_chequeos)
+guardar_tabla(salida_chequeos, "T02c2_salida_chequeos",
+              "Tabla 2c2. Salida de la EAM: control de tamaño y firmas medianas y grandes (pp por DE de Kaitz)")
+
+SM_MENSUAL <- c(`2016` = 689455, `2017` = 737717, `2018` = 781242, `2019` = 828116,
+                `2020` = 877803, `2021` = 908526, `2022` = 1000000, `2023` = 1160000,
+                `2024` = 1300000)
+
+salida_rodante <- bind_rows(lapply(c(2015:2019, 2021:2023), function(t) {
+  d <- panel %>%
+    filter(ANIO == t) %>%
+    transmute(NORDEMP,
+              w = ifelse(obreros_permanentes > 0 & sueldos_permanentes_obreros_c3r2c1 > 0,
+                         sueldos_permanentes_obreros_c3r2c1 / obreros_permanentes, NA_real_),
+              sector = factor(CIIU4), depto = factor(DPTO)) %>%
+    filter(!is.na(w)) %>%
+    mutate(kaitz = plausible(SM_MENSUAL[[as.character(t + 1)]] * 12 / 1000 / w),
+           kaitz_de = kaitz / sd(kaitz, na.rm = TRUE),
+           sale = 100 * as.integer(!NORDEMP %in% presentes$NORDEMP[presentes$ANIO == t + 1]))
+  m <- feols(sale ~ kaitz_de | sector + depto, data = d, vcov = "hetero")
+  tibble(anio_salida = t + 1, tasa_salida_pct = mean(d$sale),
+         coeficiente_pp = unname(coef(m)["kaitz_de"]), error_estandar = unname(se(m)["kaitz_de"]),
+         p_valor = unname(pvalue(m)["kaitz_de"]), firmas = nobs(m))
+}))
+
+ver(salida_rodante)
+guardar_tabla(salida_rodante, "T02c3_salida_placebo_rodante",
+              "Tabla 2c3. Salida de la EAM por año: efecto de una DE de Kaitz del año anterior (2020 es el año de la pandemia)")
+
+cat("\nCÓMO LEER: margen y peso del costo solo cuentan sin 2022. La salida no\n",
+    "tiene traslape, pero se confunde con el tamaño y con la dinámica normal de\n",
+    "las firmas de salarios bajos: comparar 2023 con los años normales de la\n",
+    "tabla 2c3.\n")
 
 
 # ==============================================================================
@@ -782,10 +862,9 @@ guardar_tabla(agrupado_sector, "T06_errores_agrupados_sector",
 # OJO: esto usa MEDIANAS CRUDAS, sin los controles de la sección 4. Lo que sale
 # aquí es que el efecto se concentra en el quintil 5 -- eso NO es la última
 # palabra sobre la forma de la relación. Con controles, la relación por
-# quintiles resulta monotónica creciente (04_decision_medida.R, sección 6). No
-# es una contradicción: son dos especificaciones distintas (con y sin
-# controles) que pueden mostrar formas distintas. No generalizar a partir de
-# esta tabla sola.
+# quintiles no es monotónica (04_decision_medida.R, sección 6). Son dos
+# especificaciones distintas (con y sin controles) que pueden mostrar formas
+# distintas. No generalizar a partir de esta tabla sola.
 if ("golpe_c_de" %in% names(medidas) && "Bite2022_obreros_de" %in% names(medidas)) {
   
   tramos <- medidas %>%
@@ -817,7 +896,7 @@ if ("golpe_c_de" %in% names(medidas) && "Bite2022_obreros_de" %in% names(medidas
                                   quintil_golpe_c = COLOR_ALTA),
                        labels = c("Bite (Kaitz de obreros)", "Golpe C")) +
     labs(title = "Crecimiento del costo laboral 2022-2023 por quintil de exposición (sin controles)",
-         subtitle = "Medianas crudas -- con controles la relación es monotónica (04_decision_medida.R, sección 6)",
+         subtitle = "Medianas crudas -- con controles la forma cambia (04_decision_medida.R, sección 6)",
          x = "Quintil de exposición (1 = menos expuesta)",
          y = "Crecimiento mediano (%)", color = NULL,
          caption = "Medianas sin controles. Sirve para ver la forma de la relación, no para medir el efecto.") +
@@ -856,10 +935,11 @@ criterios, en orden:
   1. Que el coeficiente sea positivo y significativo en la especificación
      estándar, MUESTRA COMÚN (sección 5). En muestras distintas los
      coeficientes no son comparables.
-  2. Que se sostenga sin el traslape aritmético: con outcomes que no usan 2022
-     (sección 5b) y en la CELDA LIMPIA, con exposición medida en 2019 (sección
-     6 y 04_decision_medida.R). Si el efecto sobrevive aquí, es economía, no
-     sesgo de división. Este criterio pesa más que la magnitud.
+  2. Que se sostenga sin el traslape aritmético en la CELDA LIMPIA, con
+     exposición medida en 2019 (sección 6 y 04_decision_medida.R). Si el
+     efecto sobrevive aquí, es economía, no sesgo de división. Este criterio
+     pesa más que la magnitud. Los outcomes sin 2022 de la sección 5b son
+     complementarios: tienen un sesgo hacia abajo y no deciden por sí solos.
   3. Cobertura de muestra (sección 2, tabla T01) y estabilidad de la medida
      entre años base -- ver 04_decision_medida.R, que compara
      cada medida calculada con base 2022 y con base 2019.
