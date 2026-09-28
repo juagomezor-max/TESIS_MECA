@@ -26,9 +26,18 @@
 #               heterogeneidad)
 # Por qué Bite: la medida principal usada en las secciones 5, 6 y 7 (donde
 #               solo se corre una) es Bite2022_obreros porque es la que gana
-#               la celda limpia en 04_decision_medida.R (+1,15%,
-#               p=0,008) -- ver ese script para la regla de decisión completa.
-#               No se re-justifica aquí, solo se usa.
+#               la celda limpia en 04_decision_medida.R (+0,82%, p=0,023 con
+#               la especificación sin tamaño) -- ver ese script para la regla
+#               de decisión completa. No se re-justifica aquí, solo se usa.
+#
+# ESPECIFICACIÓN: por decisión de los autores, efectos fijos de firma, año,
+# sector x año y departamento x año (fijados en 2022), SIN tamaño x año
+# (igual que 01, 03 y 04).
+#
+# LIMITACIÓN DEL DISEÑO: la exposición se mide con el salario de 2022, el año
+# base del cambio 2022->2023. Ese traslape se estudia en 03 y 04; aquí se
+# declara como limitación y los resultados se leen como asociaciones con la
+# exposición.
 #
 # CAPÍTULO 6 -- LA TENDENCIA PREVIA DEL COSTO LABORAL: el hallazgo de que las
 # firmas expuestas venían con su costo laboral relativo cayendo 2015-2022
@@ -60,10 +69,10 @@
 #   Y_ft = Σ_s β_s · 1{año = s} · Kaitz_f + γ_f + λ_t + controles×año + ε_ft
 #
 # con 2022 como año de referencia, efectos fijos de firma y año, controles de
-# sector (CIIU4), tamaño y departamento interactuados con año, todos fijados en
-# 2022, y errores agrupados por firma.
+# sector (CIIU4) y departamento interactuados con año, fijados en 2022, y
+# errores agrupados por firma.
 #
-# De ahí salen tres lecturas del primer eslabón, que NO son lo mismo:
+# De ahí salen cuatro lecturas del primer eslabón, que NO son lo mismo:
 #
 #   A. Coeficiente de 2023. Cuánto subió el costo laboral de las firmas
 #      expuestas en el año del choque, frente a 2022. Es la cifra del póster.
@@ -79,6 +88,10 @@
 #      descendente sale negativo aunque A y B sean positivos. No es la lectura
 #      principal.
 #
+#   D. 2023 frente a 2021. Compara el año del choque con el año previo a la
+#      referencia. Es una lectura de apoyo: el período incluye también el
+#      aumento del mínimo de 2022.
+#
 # POR QUÉ IMPORTA LA DISTINCIÓN: en una versión anterior de esta revisión se
 # comparó la lectura A del póster contra un DiD en panel (que es la lectura C) y
 # se concluyó erróneamente que había una contradicción. No la hay: son
@@ -90,10 +103,8 @@
 # el salario de 2022, así que las firmas de exposición alta son por definición
 # las que llegaron a 2022 con el costo más bajo, y su trayectoria previa se ve
 # descendente. Es una propiedad conocida de los diseños con bite salarial, no un
-# defecto de implementación. La lectura B existe precisamente para corregirla,
-# y la validación con exposición de 2019 (04_decision_medida.R) da
-# un efecto positivo y significativo sin depender del año base. Las dos cosas
-# van escritas en la tesis como matices del resultado, no como su refutación.
+# defecto de implementación. La lectura B existe para corregirla, y la
+# sensibilidad al año en que se mide la exposición se documenta en 04.
 # ==============================================================================
 
 
@@ -242,6 +253,34 @@ base <- base %>%
     productividad = ifelse(empleo_total > 0 & valor_agregado_valagri > 0,
                            valor_agregado_valagri / empleo_total, NA_real_),
     
+    # --- Mecanismos adicionales (revisión del diccionario, 2026-09) ---
+    # Aprendices: su apoyo de sostenimiento está atado por ley a una fracción
+    # del mínimo, así que son un margen de sustitución más barato.
+    participacion_aprendices = ifelse(empleo_total > 0, empleo_aprendices / empleo_total, NA_real_),
+    # Costo por temporal directo: otros trabajadores y otros campos del
+    # formulario que los del Kaitz (no comparten el dato de 2022).
+    costo_temporal = ifelse(empleo_temporal_directo > 0 &
+                              sueldos_prest_temporal_directo_total_c3r4c3 > 0,
+                            sueldos_prest_temporal_directo_total_c3r4c3 / empleo_temporal_directo,
+                            NA_real_),
+    # Intensidad de capital física: energía eléctrica por trabajador
+    energia_trabajador = ifelse(empleo_total > 0 & energia_electrica_kw_eelec > 0,
+                                energia_electrica_kw_eelec / empleo_total, NA_real_),
+    # Intensidad laboral: trabajadores por unidad de ventas
+    empleo_por_ventas = ifelse(empleo_total > 0 & valor_ventas_valorven > 0,
+                               empleo_total / valor_ventas_valorven, NA_real_),
+    # Rentabilidad (Draca, Machin y Van Reenen, 2011): margen y peso del costo
+    # laboral sobre la producción. Se winsorizan más abajo.
+    margen = ifelse(produccion_bruta_prodbr2 > 0,
+                    (valor_agregado_valagri - costos_totales_personal_total_c3r10c3) /
+                      produccion_bruta_prodbr2, NA_real_),
+    peso_costo = ifelse(produccion_bruta_prodbr2 > 0,
+                        costos_totales_personal_total_c3r10c3 / produccion_bruta_prodbr2, NA_real_),
+    # Composición por sexo: el mínimo suele pesar más en las mujeres. La EAM
+    # solo tiene conteos por sexo, no salarios.
+    participacion_mujeres_obreras = ifelse(obreros_total_ocupado > 0,
+                                           mh_c4r5c1 / obreros_total_ocupado, NA_real_),
+    
     # --- Identificadores y factores ---
     ANIO_F = factor(ANIO),
     post = as.integer(ANIO >= 2023)
@@ -309,10 +348,20 @@ base <- base %>%
     log_honorarios = log_seguro(honorarios),
     log_pago_agencias = log_seguro(pago_agencias),
     log_brecha_obrero_admin = log_seguro(brecha_obrero_admin),
+    log_aprendices = log_seguro(empleo_aprendices),
+    log_w_obrero = log_seguro(w_obrero),
+    log_w_admin = log_seguro(w_admin),
+    log_costo_temporal = log_seguro(costo_temporal),
+    log_servicios_terceros = log_seguro(servicios_terceros),
+    log_maquinaria_nueva = log_seguro(maquinaria_nueva),
+    log_energia_trabajador = log_seguro(energia_trabajador),
+    log_empleo_por_ventas = log_seguro(empleo_por_ventas),
     # Indicadores de margen extensivo
     hace_outsourcing = as.integer(!is.na(outsourcing) & outsourcing > 0),
     usa_agencias = as.integer(!is.na(empleo_temporal_agencias) & empleo_temporal_agencias > 0),
-    invierte = as.integer(!is.na(inversion) & inversion > 0)
+    invierte = as.integer(!is.na(inversion) & inversion > 0),
+    usa_aprendices = as.integer(!is.na(empleo_aprendices) & empleo_aprendices > 0),
+    compra_maquinaria = as.integer(!is.na(maquinaria_nueva) & maquinaria_nueva > 0)
   )
 
 # --- Medidas de exposición, winsorizadas y estandarizadas ------------------------
@@ -322,6 +371,10 @@ winsorizar <- function(x) {
   lim <- quantile(x, probs = c(0.01, 0.99), na.rm = TRUE)
   pmin(pmax(x, lim[1]), lim[2])
 }
+
+# Margen y peso del costo: pueden tomar valores extremos cuando la producción
+# es muy pequeña; se winsorizan al 1% y 99%.
+base <- base %>% mutate(margen = winsorizar(margen), peso_costo = winsorizar(peso_costo))
 
 MEDIDAS <- c("Bite2022_obreros", "Exposure2022_obreros", "golpe_c", "golpe_a", "golpe_costo")
 ETIQUETAS <- c(Bite2022_obreros = "Bite (Kaitz de obreros)",
@@ -359,17 +412,21 @@ ver(cobertura)
 # ==============================================================================
 titulo("2. ESPECIFICACIÓN")
 
-EFECTOS <- "NORDEMP + ANIO_F + sector_2022^ANIO_F + tamano_2022^ANIO_F + depto_2022^ANIO_F"
+# Por decisión de los autores no se controla por tamaño x año (igual que 01, 03 y 04)
+EFECTOS <- "NORDEMP + ANIO_F + sector_2022^ANIO_F + depto_2022^ANIO_F"
 cat("Efectos fijos:", EFECTOS, "\n")
 cat("Errores agrupados por firma (NORDEMP).\n")
 
 # estudio_evento(): coeficiente año por año frente a 2022, más la prueba
 # conjunta de los años previos al choque.
-estudio_evento <- function(outcome, tratamiento, base_datos = datos) {
+# previos: años de la prueba conjunta de tendencias previas.
+estudio_evento <- function(outcome, tratamiento, base_datos = datos,
+                           previos = "2015|2016|2017|2018|2019|2021",
+                           efectos = EFECTOS) {
   v <- paste0(tratamiento, "_de")
   if (!v %in% names(base_datos) || !outcome %in% names(base_datos)) return(NULL)
   
-  formula <- as.formula(paste0(outcome, " ~ i(ANIO_F, ", v, ", ref = '2022') | ", EFECTOS))
+  formula <- as.formula(paste0(outcome, " ~ i(ANIO_F, ", v, ", ref = '2022') | ", efectos))
   modelo <- tryCatch(feols(formula, data = base_datos, cluster = ~NORDEMP),
                      error = function(e) NULL)
   if (is.null(modelo)) return(NULL)
@@ -385,7 +442,7 @@ estudio_evento <- function(outcome, tratamiento, base_datos = datos) {
     arrange(anio)
   
   p_previos <- tryCatch(
-    wald(modelo, keep = "ANIO_F::(2015|2016|2017|2018|2019|2021):", print = FALSE)$p,
+    wald(modelo, keep = paste0("ANIO_F::(", previos, "):"), print = FALSE)$p,
     error = function(e) NA_real_)
   
   list(tabla = tabla, p_previos = p_previos, modelo = modelo, variable = v)
@@ -412,9 +469,10 @@ contraste <- function(evento, pesos, etiqueta) {
          ic95_sup_pct = 100 * (estimado + 1.96 * error))
 }
 
-# tres_lecturas(): A, B y C para un outcome y una medida.
-tres_lecturas <- function(outcome, tratamiento, base_datos = datos) {
-  evento <- estudio_evento(outcome, tratamiento, base_datos)
+# tres_lecturas(): A, B, C y D para un outcome y una medida (se conserva el
+# nombre por continuidad con versiones anteriores).
+tres_lecturas <- function(outcome, tratamiento, base_datos = datos, efectos = EFECTOS) {
+  evento <- estudio_evento(outcome, tratamiento, base_datos, efectos = efectos)
   if (is.null(evento)) return(NULL)
   
   # A: coeficiente de 2023
@@ -431,7 +489,7 @@ tres_lecturas <- function(outcome, tratamiento, base_datos = datos) {
   # C: DiD simple, promedio post menos promedio pre
   v <- evento$variable
   modelo_c <- tryCatch(
-    feols(as.formula(paste0(outcome, " ~ post:", v, " | ", EFECTOS)),
+    feols(as.formula(paste0(outcome, " ~ post:", v, " | ", efectos)),
           data = base_datos, cluster = ~NORDEMP),
     error = function(e) NULL)
   c_fila <- if (!is.null(modelo_c)) {
@@ -444,7 +502,10 @@ tres_lecturas <- function(outcome, tratamiento, base_datos = datos) {
            ic95_sup_pct = 100 * (f[["Estimate"]] + 1.96 * f[["Std. Error"]]))
   } else NULL
   
-  bind_rows(a, b, c_fila) %>%
+  # D: 2023 frente a 2021 (lectura de apoyo; ver encabezado)
+  d <- contraste(evento, c(`2023` = 1, `2021` = -1), "D. 2023 frente a 2021")
+  
+  bind_rows(a, b, c_fila, d) %>%
     mutate(outcome = outcome, medida = ETIQUETAS[[tratamiento]],
            p_previos = evento$p_previos,
            observaciones = nobs(evento$modelo))
@@ -471,7 +532,7 @@ grafico_evento <- function(evento, titulo_g, eje_y, nota = NULL) {
 
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
-NOTA <- paste("Controles: firma, año, sector x año, tamaño x año y departamento x año (fijados en 2022).",
+NOTA <- paste("Controles: firma, año, sector x año y departamento x año (fijados en 2022).",
               "\nIntervalos al 95%, errores agrupados por firma. 2020 excluido.")
 
 
@@ -496,6 +557,7 @@ cat("\nCÓMO LEER:\n",
     " C = DiD simple. Mezcla el nivel post con toda la trayectoria previa, así\n",
     "     que con tendencia descendente puede salir negativo sin contradecir\n",
     "     a A ni a B. No es la lectura principal.\n",
+    " D = 2023 frente a 2021. Lectura de apoyo: incluye el aumento de 2022.\n",
     " p_previos = prueba conjunta de que los años anteriores a 2023 son cero.\n")
 
 # Gráfico comparativo de la lectura A entre medidas
@@ -529,6 +591,7 @@ grafico_eventos <- ggplot(eventos_costo, aes(x = anio, y = 100 * coeficiente, co
        x = NULL, y = "Efecto (%)", color = NULL,
        caption = paste("La pendiente descendente previa es esperable: la exposición se mide con el salario de 2022,",
                        "\nasí que las firmas expuestas son por construcción las que llegan a 2022 con el costo más bajo.")) +
+  guides(color = guide_legend(nrow = 2)) +
   tema_tesis
 guardar_grafico(grafico_eventos, "G02_evento_costo_todas_medidas")
 
@@ -543,6 +606,15 @@ titulo("4. SEGUNDO ESLABÓN: EMPLEO TOTAL")
 # pueden dar conclusiones distintas, y si es así hay que decirlo, no elegir la
 # más favorable.
 
+# OJO CON LA ESCALA: en las filas de "Trabajadores" el coeficiente ya está en
+# número de trabajadores, así que NO se multiplica por 100. La columna se sigue
+# llamando efecto_pct por compatibilidad, pero en esas filas son trabajadores.
+corregir_escala <- function(tabla) {
+  tabla %>%
+    mutate(across(c(efecto_pct, ic95_inf_pct, ic95_sup_pct),
+                  ~ ifelse(escala == "Trabajadores", .x / 100, .x)))
+}
+
 segundo_eslabon <- bind_rows(
   bind_rows(lapply(MEDIDAS, function(m) tres_lecturas("empleo_total", m))) %>%
     mutate(escala = "Trabajadores"),
@@ -550,11 +622,13 @@ segundo_eslabon <- bind_rows(
     mutate(escala = "Log (cambio %)")
 ) %>%
   select(medida, escala, lectura, efecto_pct, ic95_inf_pct, ic95_sup_pct,
-         p_valor, significancia, p_previos, observaciones)
+         p_valor, significancia, p_previos, observaciones) %>%
+  corregir_escala()
 
-ver(segundo_eslabon, filas = 30)
+ver(segundo_eslabon, filas = 40)
 guardar_tabla(segundo_eslabon, "T02_segundo_eslabon_empleo",
-              "Tabla 2. Segundo eslabón: efecto sobre el empleo total", decimales = 3)
+              "Tabla 2. Segundo eslabón: efecto sobre el empleo total (trabajadores o % según la escala)",
+              decimales = 3)
 
 # Event study del empleo con la medida principal
 evento_empleo <- estudio_evento("log_empleo", "Bite2022_obreros")
@@ -643,26 +717,48 @@ MECANISMOS <- tribble(
   "participacion_agencias",     "% de agencias",                            "1. Composición contractual",
   "usa_agencias",               "Usa agencias (indicador)",                 "1. Composición contractual",
   
+  "log_aprendices",             "Aprendices (log)",                         "1. Composición contractual",
+  "participacion_aprendices",   "% aprendices",                             "1. Composición contractual",
+  "usa_aprendices",             "Usa aprendices (indicador)",               "1. Composición contractual",
+  
   "log_obreros",                "Obreros (log)",                            "2. Composición ocupacional",
   "participacion_obreros",      "% obreros (OJO: circular)",                "2. Composición ocupacional",
-  "log_brecha_obrero_admin",    "Salario obrero / salario admin (log)",     "3. Compresión salarial",
+  "participacion_mujeres_obreras", "% mujeres entre obreros",               "2. Composición ocupacional",
+  
+  "log_brecha_obrero_admin",    "Salario obrero / salario admin (log)",     "3. Salarios y compresión",
+  "log_w_obrero",               "Salario obrero (log; OJO: es la base del Kaitz)", "3. Salarios y compresión",
+  "log_w_admin",                "Salario administrativo (log)",             "3. Salarios y compresión",
+  "log_costo_temporal",         "Costo por temporal directo (log)",         "3. Salarios y compresión",
   
   "log_outsourcing",            "Outsourcing (log)",                        "4. Tercerización",
   "hace_outsourcing",           "Hace outsourcing (indicador)",             "4. Tercerización",
   "log_honorarios",             "Honorarios y servicios técnicos (log)",    "4. Tercerización",
   "log_pago_agencias",          "Pago a agencias temporales (log)",         "4. Tercerización",
+  "log_servicios_terceros",     "Producción encargada a terceros (log)",    "4. Tercerización",
   
   "log_inversion",              "Inversión bruta (log)",                    "5. Capital",
   "invierte",                   "Invierte (indicador)",                     "5. Capital",
+  "log_maquinaria_nueva",       "Compra de maquinaria nueva (log)",         "5. Capital",
+  "compra_maquinaria",          "Compra maquinaria nueva (indicador)",      "5. Capital",
+  "log_energia_trabajador",     "Energía eléctrica por trabajador (log)",   "5. Capital",
   
   "log_ventas",                 "Ventas (log)",                             "6. Producción",
   "log_produccion",             "Producción bruta (log)",                   "6. Producción",
   "log_valor_agregado",         "Valor agregado (log)",                     "6. Producción",
-  "log_productividad",          "Productividad (VA / trabajador, log)",     "6. Producción"
+  "log_productividad",          "Productividad (VA / trabajador, log)",     "6. Producción",
+  "log_empleo_por_ventas",      "Empleo por unidad de ventas (log)",        "6. Producción",
+  
+  "margen",                     "Margen: (VA - costo laboral) / producción", "7. Rentabilidad",
+  "peso_costo",                 "Costo laboral / producción",               "7. Rentabilidad"
 )
 
 cat("Estimando", nrow(MECANISMOS), "mecanismos con la medida principal...\n")
 
+# Los mecanismos se reportan en la especificación ESTÁNDAR (exposición 2022),
+# comparable con la literatura. El traslape entre la exposición y el año base,
+# documentado en las secciones 3 y 4, también afecta estas estimaciones: se
+# declara como limitación del diseño y los resultados se leen como
+# asociaciones con la exposición, no como efectos causales del aumento.
 mecanismos <- bind_rows(lapply(seq_len(nrow(MECANISMOS)), function(i) {
   fila <- MECANISMOS[i, ]
   if (!fila$outcome %in% names(datos)) {
@@ -670,74 +766,81 @@ mecanismos <- bind_rows(lapply(seq_len(nrow(MECANISMOS)), function(i) {
     return(NULL)
   }
   r <- tres_lecturas(fila$outcome, "Bite2022_obreros")
-  if (is.null(r)) return(NULL)
+  if (is.null(r)) {
+    cat("  AVISO: no se pudo estimar", fila$outcome, "\n")
+    return(NULL)
+  }
   r %>%
     filter(lectura == "A. Cambio 2022 -> 2023") %>%
     mutate(mecanismo = fila$etiqueta, grupo = fila$grupo, variable = fila$outcome)
 }))
 
-# Ajuste por pruebas múltiples. Con ~20 outcomes, algunos salen significativos
-# por azar: con 20 pruebas al 5%, se espera un falso positivo aunque no haya
-# ningún efecto real.
+# Ajuste por pruebas múltiples. Con ~35 outcomes, algunos salen significativos
+# por azar: con 35 pruebas al 5% se esperan casi dos falsos positivos aunque no
+# haya ningún efecto real.
 mecanismos <- mecanismos %>%
   mutate(
     p_ajustado_bh = p.adjust(p_valor, method = "BH"),
     significancia_cruda = estrellas(p_valor),
     significancia_ajustada = estrellas(p_ajustado_bh)
   ) %>%
-  select(grupo, mecanismo, efecto_pct, ic95_inf_pct, ic95_sup_pct,
+  select(grupo, mecanismo, variable, efecto_pct, ic95_inf_pct, ic95_sup_pct,
          p_valor, significancia_cruda, p_ajustado_bh, significancia_ajustada,
          p_previos, observaciones) %>%
   arrange(grupo, desc(abs(efecto_pct)))
 
-ver(mecanismos, filas = 30)
-guardar_tabla(mecanismos, "T05_mecanismos_ajuste",
+ver(mecanismos, filas = 40)
+guardar_tabla(mecanismos %>% select(-variable), "T05_mecanismos_ajuste",
               "Tabla 5. Mecanismos de ajuste: efecto en 2023 por DE de exposición (exploratorio)",
               decimales = 3)
 
 cat("\nCÓMO LEER LA TABLA DE MECANISMOS:\n",
-    " - Usar 'significancia_ajustada', no la cruda. Con 20 pruebas al 5% se\n",
-    "   espera un falso positivo aunque no haya ningún efecto real.\n",
+    " - Usar 'significancia_ajustada', no la cruda. Con 35 pruebas al 5% se\n",
+    "   esperan casi dos falsos positivos aunque no haya ningún efecto real.\n",
     " - Revisar 'p_previos' de cada fila: si es bajo, ese mecanismo ya tenía\n",
-    "   tendencias diferenciales antes del choque y su coeficiente no es\n",
-    "   interpretable como efecto AQUÍ (esta tabla solo usa la lectura A). Si\n",
-    "   son varios los mecanismos en ese caso, ver\n",
-    "   06_mecanismos_por_grupo.R (lectura B).\n",
-    " - Los indicadores (usa_agencias, hace_outsourcing, invierte) están en\n",
-    "   puntos porcentuales, no en cambio porcentual. No mezclar escalas.\n")
+    "   tendencias diferenciales antes del choque. La tabla 5c compara 2023\n",
+    "   con el promedio de los años previos para esos casos.\n",
+    " - Los indicadores y las participaciones (%, margen, costo/producción)\n",
+    "   están en puntos porcentuales, no en cambio porcentual.\n",
+    " - LIMITACIÓN: la exposición se mide con el salario de 2022, el año base\n",
+    "   del cambio. Las variables que comparten ese dato (salario y número de\n",
+    "   obreros, y las que se dividen por el empleo) están más expuestas a ese\n",
+    "   traslape. Se reportan como asociaciones.\n")
 
 grafico_mecanismos <- mecanismos %>%
   filter(!is.na(efecto_pct)) %>%
-  ggplot(aes(x = reorder(mecanismo, efecto_pct), y = efecto_pct,
-             color = significancia_ajustada != "")) +
+  mutate(significativo = ifelse(significancia_ajustada != "",
+                                "Significativo (ajustado)", "No significativo (ajustado)")) %>%
+  ggplot(aes(x = reorder(mecanismo, efecto_pct), y = efecto_pct, color = significativo)) +
   geom_hline(yintercept = 0, color = "grey50") +
   geom_pointrange(aes(ymin = ic95_inf_pct, ymax = ic95_sup_pct)) +
   coord_flip() +
-  facet_wrap(~ grupo, scales = "free_y", ncol = 2) +
-  scale_color_manual(values = c(`TRUE` = COLOR_ALTA, `FALSE` = "grey60"),
-                     labels = c("No significativo (ajustado)", "Significativo (ajustado)")) +
+  facet_wrap(~ grupo, scales = "free", ncol = 2) +
+  scale_color_manual(values = c(`Significativo (ajustado)` = COLOR_ALTA,
+                                `No significativo (ajustado)` = "grey60")) +
   labs(title = "¿Por dónde ajustan las firmas más expuestas?",
        subtitle = "Efecto en 2023 por DE de exposición. Resultados exploratorios",
        x = NULL, y = "Efecto (%)", color = NULL,
        caption = paste("p-valores ajustados por Benjamini-Hochberg.",
-                       "\nLos indicadores están en puntos porcentuales; el resto en cambio porcentual.")) +
+                       "\nIndicadores, participaciones y rentabilidad en puntos porcentuales; el resto en cambio porcentual.")) +
   tema_tesis +
-  theme(axis.text.y = element_text(size = 8))
-guardar_grafico(grafico_mecanismos, "G04_mecanismos", alto = 10)
+  theme(axis.text.y = element_text(size = 7))
+guardar_grafico(grafico_mecanismos, "G04_mecanismos", ancho = 11, alto = 14)
 
-# Event studies de los mecanismos que salgan significativos tras el ajuste
-significativos <- mecanismos %>% filter(significancia_ajustada != "") %>% pull(mecanismo)
+# Event studies de los mecanismos significativos tras el ajuste
+vars_sig <- mecanismos %>% filter(significancia_ajustada != "") %>%
+  select(outcome = variable, etiqueta = mecanismo)
 
-if (length(significativos) > 0) {
+if (nrow(vars_sig) > 0) {
   cat("\nMecanismos significativos tras el ajuste:",
-      paste(significativos, collapse = ", "), "\n")
+      paste(vars_sig$etiqueta, collapse = ", "), "\n")
   
-  vars_sig <- MECANISMOS %>% filter(etiqueta %in% significativos)
+  eventos_sig <- lapply(seq_len(nrow(vars_sig)), function(i)
+    estudio_evento(vars_sig$outcome[i], "Bite2022_obreros"))
   
   eventos_mecanismos <- bind_rows(lapply(seq_len(nrow(vars_sig)), function(i) {
-    e <- estudio_evento(vars_sig$outcome[i], "Bite2022_obreros")
-    if (is.null(e)) return(NULL)
-    mutate(e$tabla, mecanismo = vars_sig$etiqueta[i])
+    if (is.null(eventos_sig[[i]])) return(NULL)
+    mutate(eventos_sig[[i]]$tabla, mecanismo = vars_sig$etiqueta[i])
   }))
   
   if (nrow(eventos_mecanismos) > 0) {
@@ -756,12 +859,35 @@ if (length(significativos) > 0) {
            x = NULL, y = "Efecto (%)",
            caption = "Si el mecanismo ya venía moviéndose antes de 2023, el coeficiente post no es interpretable como efecto.") +
       tema_tesis
-    guardar_grafico(grafico_ev_mec, "G05_evento_mecanismos", alto = 8)
+    guardar_grafico(grafico_ev_mec, "G05_evento_mecanismos", ancho = 12, alto = 10)
   }
+  
+  # 2023 y 2024 frente al PROMEDIO de los años previos (2015-2019, 2021 y 2022,
+  # este último con valor 0 por ser la referencia), no solo frente a 2022.
+  # Sirve para los mecanismos con tendencias previas: dice si 2023 se aparta
+  # del nivel habitual y no solo del año base.
+  w <- -1/7
+  robustez_mecanismos <- bind_rows(lapply(seq_len(nrow(vars_sig)), function(i) {
+    e <- eventos_sig[[i]]
+    if (is.null(e)) return(NULL)
+    bind_rows(
+      contraste(e, c(`2023` = 1), "2023 vs 2022"),
+      contraste(e, c(`2023` = 1, `2021` = -1), "2023 vs 2021"),
+      contraste(e, c(`2023` = 1, `2015` = w, `2016` = w, `2017` = w, `2018` = w,
+                     `2019` = w, `2021` = w), "2023 vs promedio previo"),
+      contraste(e, c(`2024` = 1, `2015` = w, `2016` = w, `2017` = w, `2018` = w,
+                     `2019` = w, `2021` = w), "2024 vs promedio previo")
+    ) %>% mutate(mecanismo = vars_sig$etiqueta[i], p_previos = e$p_previos)
+  })) %>%
+    relocate(mecanismo)
+  
+  ver(robustez_mecanismos, filas = 80)
+  guardar_tabla(robustez_mecanismos, "T05c_mecanismos_frente_a_promedio_previo",
+                "Tabla 5c. Mecanismos significativos: 2023 y 2024 frente a 2022, a 2021 y al promedio previo",
+                decimales = 4)
 } else {
   cat("\nNingún mecanismo resulta significativo tras el ajuste por pruebas\n",
-      "múltiples. Eso también es un resultado: las firmas expuestas no ajustan\n",
-      "de forma detectable por ninguno de los márgenes observables en la EAM.\n")
+      "múltiples: no hay un margen de ajuste detectable en la EAM.\n")
 }
 
 
@@ -772,43 +898,38 @@ titulo("6. HETEROGENEIDAD POR TAMAÑO")
 
 # Las firmas pequeñas tienen menos capacidad de absorber un aumento de costos:
 # menos margen, menos acceso a crédito, menos posibilidad de sustituir capital
-# por trabajo. Dentro de cada grupo de tamaño quitamos el control de tamaño×año,
-# que ya no aporta variación.
+# por trabajo. La especificación principal ya no controla por tamaño x año,
+# así que dentro de cada grupo se usan los mismos efectos fijos.
 
-EFECTOS_SIN_TAMANO <- "NORDEMP + ANIO_F + sector_2022^ANIO_F + depto_2022^ANIO_F"
+EFECTOS_SIN_TAMANO <- EFECTOS
+
+a_estandar <- function(oc, sub) {
+  r <- tres_lecturas(oc, "Bite2022_obreros", base_datos = sub)
+  if (is.null(r)) return(NULL)
+  filter(r, lectura == "A. Cambio 2022 -> 2023")
+}
 
 heterogeneidad <- bind_rows(lapply(c("Pequena", "Mediana", "Grande"), function(t) {
   sub <- filter(datos, tamano_2022 == t)
   if (nrow(sub) < 500) return(NULL)
-  
-  resultados <- bind_rows(lapply(c("log_costo", "log_empleo"), function(oc) {
-    formula <- as.formula(paste0(oc, " ~ i(ANIO_F, Bite2022_obreros_de, ref = '2022') | ",
-                                 EFECTOS_SIN_TAMANO))
-    modelo <- tryCatch(feols(formula, data = sub, cluster = ~NORDEMP),
-                       error = function(e) NULL)
-    if (is.null(modelo)) return(NULL)
-    nombre <- "ANIO_F::2023:Bite2022_obreros_de"
-    if (!nombre %in% rownames(coeftable(modelo))) return(NULL)
-    f <- coeftable(modelo)[nombre, ]
-    tibble(tamano = t,
-           outcome = ifelse(oc == "log_costo", "Costo laboral", "Empleo total"),
-           efecto_pct = 100 * f[["Estimate"]],
-           ic95_inf_pct = 100 * (f[["Estimate"]] - 1.96 * f[["Std. Error"]]),
-           ic95_sup_pct = 100 * (f[["Estimate"]] + 1.96 * f[["Std. Error"]]),
-           p_valor = f[["Pr(>|t|)"]],
-           significancia = estrellas(f[["Pr(>|t|)"]]),
-           observaciones = nobs(modelo))
+  bind_rows(lapply(c("log_costo", "log_empleo"), function(oc) {
+    bind_rows(a_estandar(oc, sub)) %>%
+      mutate(tamano = t,
+             outcome = ifelse(oc == "log_costo", "Costo laboral", "Empleo total"))
   }))
-  resultados
-}))
+})) %>%
+  select(tamano, outcome, efecto_pct, ic95_inf_pct, ic95_sup_pct,
+         p_valor, significancia, p_previos, observaciones) %>%
+  arrange(factor(tamano, levels = c("Pequena", "Mediana", "Grande")), outcome)
 
-ver(heterogeneidad)
+ver(heterogeneidad, filas = 12)
 guardar_tabla(heterogeneidad, "T06_heterogeneidad_tamano",
               "Tabla 6. Efecto en 2023 por tamaño de firma", decimales = 3)
 
 if (nrow(heterogeneidad) > 0) {
   grafico_het <- heterogeneidad %>%
-    mutate(tamano = factor(tamano, levels = c("Pequena", "Mediana", "Grande"))) %>%
+    mutate(tamano = factor(tamano, levels = c("Pequena", "Mediana", "Grande"),
+                           labels = c("Pequeña", "Mediana", "Grande"))) %>%
     ggplot(aes(x = tamano, y = efecto_pct, color = outcome)) +
     geom_hline(yintercept = 0, color = "grey50") +
     geom_pointrange(aes(ymin = ic95_inf_pct, ymax = ic95_sup_pct),
@@ -874,6 +995,260 @@ cat("\nCÓMO LEER: si el coeficiente de 2023 cambia mucho al mover el año base,
 
 
 # ==============================================================================
+# 7b. DOSIS-RESPUESTA: QUINTILES DE EXPOSICIÓN
+# ==============================================================================
+titulo("7b. DOSIS-RESPUESTA: QUINTILES DE EXPOSICIÓN")
+
+# La especificación principal usa el Kaitz como variable continua, lo que
+# supone que el efecto crece en línea recta con la exposición. Aquí se relaja
+# ese supuesto: se divide a las firmas en quintiles del Kaitz de 2022 y se
+# estima el event study de cada quintil frente al quintil 1 (el menos
+# expuesto), con los mismos efectos fijos. Si el mínimo tiene efecto, debería
+# verse un gradiente: mayor en los quintiles altos.
+
+quintiles_kaitz <- base %>%
+  filter(ANIO == 2022, !is.na(Bite2022_obreros)) %>%
+  distinct(NORDEMP, .keep_all = TRUE) %>%
+  transmute(NORDEMP, Bite2022_obreros,
+            quintil_kaitz = factor(ntile(Bite2022_obreros, 5)))
+
+rangos_quintiles <- quintiles_kaitz %>%
+  group_by(quintil_kaitz) %>%
+  summarise(firmas = n(),
+            kaitz_min = min(Bite2022_obreros), kaitz_mediano = median(Bite2022_obreros),
+            kaitz_max = max(Bite2022_obreros), .groups = "drop")
+ver(rangos_quintiles)
+guardar_tabla(rangos_quintiles, "T09a_rangos_quintiles_kaitz",
+              "Tabla 9a. Quintiles del Kaitz de obreros (2022): firmas y rangos", decimales = 3)
+
+datos_q <- datos %>%
+  inner_join(select(quintiles_kaitz, NORDEMP, quintil_kaitz), by = "NORDEMP")
+
+RESULTADOS_QUINTILES <- c(log_costo = "Costo laboral por trabajador (log)",
+                          log_empleo = "Empleo total (log)",
+                          log_permanente = "Empleo permanente (log)")
+
+evento_quintiles <- function(outcome) {
+  m <- tryCatch(
+    feols(as.formula(paste0(outcome, " ~ i(ANIO_F, quintil_kaitz, ref = '2022', ref2 = '1') | ",
+                            EFECTOS)), data = datos_q, cluster = ~NORDEMP),
+    error = function(e) NULL)
+  if (is.null(m)) return(NULL)
+  b <- coef(m); V <- vcov(m); nm <- names(b)
+  anio <- as.integer(sub("^ANIO_F::(\\d+):.*$", "\\1", nm))
+  q <- as.integer(sub("^.*::(\\d+)$", "\\1", nm))
+  
+  trayectoria <- tibble(anio = anio, quintil = q, coeficiente = unname(b),
+                        error_estandar = sqrt(diag(V))) %>%
+    bind_rows(tibble(anio = 2022L, quintil = 2:5, coeficiente = 0, error_estandar = 0)) %>%
+    mutate(resultado = RESULTADOS_QUINTILES[[outcome]])
+  
+  p_previos <- tryCatch(
+    wald(m, keep = "^ANIO_F::(2015|2016|2017|2018|2019|2021):", print = FALSE)$p,
+    error = function(e) NA_real_)
+  
+  # Combinación lineal de coeficientes de un quintil, con su error estándar
+  combinar <- function(pesos, etiqueta, qq) {
+    w <- setNames(rep(0, length(b)), nm)
+    for (a in names(pesos)) w[anio == as.integer(a) & q == qq] <- pesos[[a]]
+    est <- sum(w * b); ee <- sqrt(as.numeric(t(w) %*% V %*% w))
+    tibble(quintil = qq, lectura = etiqueta, efecto_pct = 100 * est,
+           ic95_inf_pct = 100 * (est - 1.96 * ee), ic95_sup_pct = 100 * (est + 1.96 * ee),
+           p_valor = 2 * pnorm(-abs(est / ee)))
+  }
+  pp <- -1/7   # promedio previo: 2015-2019, 2021 y 2022 (este último vale 0)
+  efectos <- bind_rows(lapply(2:5, function(qq) bind_rows(
+    combinar(c(`2023` = 1), "2023 vs 2022", qq),
+    combinar(c(`2023` = 1, `2015` = pp, `2016` = pp, `2017` = pp, `2018` = pp,
+               `2019` = pp, `2021` = pp), "2023 vs promedio previo", qq)
+  ))) %>%
+    mutate(resultado = RESULTADOS_QUINTILES[[outcome]], significancia = estrellas(p_valor),
+           p_previos = p_previos, observaciones = nobs(m))
+  
+  list(trayectoria = trayectoria, efectos = efectos)
+}
+
+res_quintiles <- lapply(names(RESULTADOS_QUINTILES), evento_quintiles)
+
+efectos_quintiles <- bind_rows(lapply(res_quintiles, `[[`, "efectos")) %>%
+  select(resultado, lectura, quintil, efecto_pct, ic95_inf_pct, ic95_sup_pct,
+         p_valor, significancia, p_previos, observaciones) %>%
+  arrange(resultado, lectura, quintil)
+ver(efectos_quintiles, filas = 30)
+guardar_tabla(efectos_quintiles, "T09_quintiles_exposicion",
+              "Tabla 9. Efecto en 2023 por quintil del Kaitz frente al quintil 1 (dosis-respuesta)",
+              decimales = 3)
+
+trayectoria_quintiles <- bind_rows(lapply(res_quintiles, `[[`, "trayectoria"))
+
+grafico_quintiles <- ggplot(trayectoria_quintiles,
+                            aes(x = anio, y = 100 * coeficiente,
+                                color = factor(quintil), group = factor(quintil))) +
+  geom_hline(yintercept = 0, color = "grey60") +
+  geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
+  geom_line(linewidth = 0.7) + geom_point(size = 1.6) +
+  facet_wrap(~ resultado, scales = "free_y", ncol = 1) +
+  scale_x_continuous(breaks = c(2015:2019, 2021:2024)) +
+  scale_color_manual(values = c(`2` = "#9DB4CE", `3` = "#5B84B1", `4` = "#E08080",
+                                `5` = COLOR_ALTA)) +
+  labs(title = "Dosis-respuesta: trayectoria de cada quintil de exposición frente al quintil 1",
+       subtitle = "Diferencia frente a 2022. Quintiles del Kaitz de obreros de 2022",
+       x = NULL, y = "Efecto (%)", color = "Quintil de Kaitz", caption = NOTA) +
+  tema_tesis
+guardar_grafico(grafico_quintiles, "G07_quintiles_exposicion", ancho = 10, alto = 11)
+
+cat("\nCÓMO LEER: si el mínimo tiene efecto, el coeficiente de 2023 debería\n",
+    "crecer de Q2 a Q5 (gradiente). Si los quintiles se separan desde antes de\n",
+    "2023 (p_previos bajo), la diferencia es de trayectoria previa, no del\n",
+    "choque; por eso se reporta también 2023 frente al promedio previo.\n")
+
+
+# ==============================================================================
+# 7c. SENSIBILIDAD A TENDENCIAS PARALELAS (HONESTDID)
+# ==============================================================================
+titulo("7c. SENSIBILIDAD A TENDENCIAS PARALELAS (HONESTDID)")
+
+# La prueba conjunta de pre-tendencias (p_previos) solo dice si los
+# coeficientes previos son cero. HonestDiD (Rambachan y Roth, 2023) pregunta
+# algo más útil: cuánto tendría que violarse el supuesto de tendencias
+# paralelas DESPUÉS de 2023 para que el efecto de 2023 deje de ser
+# significativo. Dos supuestos:
+#   - Suavidad (M): la tendencia previa puede continuar, pero su pendiente
+#     solo cambia hasta M por período. M = 0 es la extrapolación lineal (la
+#     versión formal de la lectura B).
+#   - Magnitudes relativas (Mbar): la violación posterior no supera Mbar veces
+#     la mayor variación observada entre períodos previos consecutivos.
+# El "valor de quiebre" es el mayor M o Mbar con el que el intervalo sigue
+# excluyendo el cero. La convención es considerar robusto un resultado que
+# resiste al menos Mbar = 1.
+#
+# SALVEDADES que deben quedar en la tesis:
+#   - Falta 2020: el paquete trata los períodos como consecutivos, así que el
+#     paso 2019 -> 2021 cuenta como un período aunque sean dos años.
+#   - El tratamiento es continuo: la interpretación causal requiere un
+#     supuesto de tendencias paralelas más fuerte (Callaway, Goodman-Bacon y
+#     Sant'Anna, 2024).
+#   - Los intervalos están en puntos log (se reportan x 100 como %).
+
+if (!requireNamespace("HonestDiD", quietly = TRUE)) {
+  cat("AVISO: el paquete HonestDiD no está instalado. Se omite esta sección.\n",
+      "Para instalarlo: remotes::install_github(\"asheshrambachan/HonestDiD\")\n")
+} else {
+  
+  RESULTADOS_HONEST <- c(log_costo = "Costo laboral por trabajador (log)",
+                         log_empleo = "Empleo total (log)",
+                         log_permanente = "Empleo permanente (log)")
+  M_GRILLA <- seq(0, 0.01, by = 0.0025)
+  MBAR_GRILLA <- seq(0, 2, by = 0.25)
+  
+  # Ejecuta una función de HonestDiD, silencia sus avisos internos y registra
+  # si el intervalo quedó abierto (se sale de la malla de búsqueda).
+  con_avisos <- function(expr) {
+    abierto <- FALSE
+    valor <- withCallingHandlers(expr, warning = function(w) {
+      if (grepl("open at one of the endpoints", conditionMessage(w))) abierto <<- TRUE
+      invokeRestart("muffleWarning")
+    })
+    list(valor = valor, abierto = abierto)
+  }
+  
+  honest_resultado <- function(outcome) {
+    e <- estudio_evento(outcome, "Bite2022_obreros")
+    if (is.null(e)) return(NULL)
+    b <- coef(e$modelo); V <- vcov(e$modelo)
+    anios <- as.integer(gsub(paste0("ANIO_F::|:", e$variable), "", names(b)))
+    if (is.unsorted(anios) || !all(c(2023, 2024) %in% anios)) {
+      cat("  AVISO: coeficientes fuera de orden para", outcome, "- se omite\n")
+      return(NULL)
+    }
+    n_pre <- sum(anios < 2022); n_post <- sum(anios > 2022)
+    l <- c(1, rep(0, n_post - 1))   # efecto de 2023
+    
+    orig <- con_avisos(HonestDiD::constructOriginalCS(
+      betahat = b, sigma = V, numPrePeriods = n_pre, numPostPeriods = n_post, l_vec = l))
+    suav <- con_avisos(HonestDiD::createSensitivityResults(
+      betahat = b, sigma = V, numPrePeriods = n_pre, numPostPeriods = n_post,
+      l_vec = l, Mvec = M_GRILLA))
+    magn <- con_avisos(HonestDiD::createSensitivityResults_relativeMagnitudes(
+      betahat = b, sigma = V, numPrePeriods = n_pre, numPostPeriods = n_post,
+      l_vec = l, Mbarvec = MBAR_GRILLA))
+    
+    bind_rows(
+      tibble(supuesto = "Original (tendencias paralelas exactas)", parametro = 0,
+             lb = as.numeric(orig$valor$lb), ub = as.numeric(orig$valor$ub),
+             ic_abierto = orig$abierto),
+      tibble(supuesto = "Suavidad (M)", parametro = suav$valor$M,
+             lb = as.numeric(suav$valor$lb), ub = as.numeric(suav$valor$ub),
+             ic_abierto = suav$abierto),
+      tibble(supuesto = "Magnitudes relativas (Mbar)", parametro = magn$valor$Mbar,
+             lb = as.numeric(magn$valor$lb), ub = as.numeric(magn$valor$ub),
+             ic_abierto = magn$abierto)
+    ) %>%
+      mutate(resultado = RESULTADOS_HONEST[[outcome]],
+             efecto_2023_pct = 100 * unname(b[anios == 2023]),
+             p_previos = e$p_previos)
+  }
+  
+  honest <- bind_rows(lapply(names(RESULTADOS_HONEST), honest_resultado)) %>%
+    mutate(lb_pct = 100 * lb, ub_pct = 100 * ub,
+           excluye_cero = lb > 0 | ub < 0) %>%
+    select(resultado, supuesto, parametro, efecto_2023_pct, lb_pct, ub_pct,
+           excluye_cero, ic_abierto, p_previos)
+  
+  ver(honest, filas = 60)
+  guardar_tabla(honest, "T10_honestdid_sensibilidad",
+                "Tabla 10. Sensibilidad del efecto de 2023 a violaciones de tendencias paralelas (HonestDiD)",
+                decimales = 3)
+  
+  # Valor de quiebre: mayor parámetro con el que el intervalo excluye el cero
+  quiebre <- honest %>%
+    group_by(resultado) %>%
+    mutate(significativo_original = excluye_cero[supuesto == "Original (tendencias paralelas exactas)"][1]) %>%
+    filter(supuesto != "Original (tendencias paralelas exactas)") %>%
+    group_by(resultado, supuesto, significativo_original) %>%
+    summarise(
+      valor_quiebre = if (all(!excluye_cero)) NA_real_ else max(parametro[excluye_cero]),
+      maximo_grilla = max(parametro),
+      .groups = "drop") %>%
+    mutate(lectura = case_when(
+      !significativo_original ~ "No significativo ni con tendencias paralelas exactas",
+      is.na(valor_quiebre) ~ "Se pierde en cuanto se permite cualquier violación",
+      valor_quiebre >= maximo_grilla ~ "Robusto en toda la grilla probada",
+      TRUE ~ paste0("Robusto hasta ", valor_quiebre)
+    ))
+  
+  ver(quiebre)
+  guardar_tabla(quiebre, "T10b_honestdid_valor_quiebre",
+                "Tabla 10b. Valor de quiebre de HonestDiD por resultado y supuesto",
+                decimales = 4)
+  
+  grafico_honest <- honest %>%
+    filter(supuesto != "Original (tendencias paralelas exactas)") %>%
+    ggplot(aes(x = parametro, ymin = lb_pct, ymax = ub_pct)) +
+    geom_hline(yintercept = 0, color = "grey50") +
+    geom_errorbar(aes(color = excluye_cero), width = 0) +
+    geom_hline(data = honest %>% filter(supuesto != "Original (tendencias paralelas exactas)") %>%
+                 distinct(resultado, supuesto, efecto_2023_pct),
+               aes(yintercept = efecto_2023_pct), linetype = "dashed", color = COLOR_BAJA) +
+    facet_grid(resultado ~ supuesto, scales = "free") +
+    scale_color_manual(values = c(`TRUE` = COLOR_ALTA, `FALSE` = "grey60"),
+                       labels = c(`TRUE` = "Excluye el cero", `FALSE` = "Incluye el cero")) +
+    labs(title = "Sensibilidad del efecto de 2023 a violaciones de tendencias paralelas",
+         subtitle = "Intervalos robustos de HonestDiD (Rambachan y Roth, 2023). Línea punteada: estimación puntual",
+         x = "Violación permitida (M en puntos log; Mbar en múltiplos de la mayor variación previa)",
+         y = "Efecto en 2023 (%)", color = NULL,
+         caption = "Kaitz de obreros. 2020 excluido: el paquete trata 2019 -> 2021 como un solo período.") +
+    tema_tesis
+  guardar_grafico(grafico_honest, "G08_honestdid", ancho = 11, alto = 10)
+  
+  cat("\nCÓMO LEER: un resultado es robusto si su intervalo sigue excluyendo el\n",
+      "cero con Mbar >= 1 (una violación tan grande como la mayor variación\n",
+      "previa). Si se pierde con Mbar < 1, el efecto depende de que las\n",
+      "tendencias paralelas se cumplan casi exactamente, y así debe decirse.\n")
+}
+
+
+# ==============================================================================
 # 8. RESUMEN
 # ==============================================================================
 titulo("8. RESUMEN")
@@ -898,10 +1273,9 @@ guardar_tabla(principal, "T08_resumen_principal",
 cat("
 QUÉ REPORTAR EN LA TESIS:
 
-  1. PRIMER ESLABÓN. La lectura A es la cifra principal. Reportar B al lado y
-     explicar por qué es mayor: la tendencia previa es descendente, así que el
-     contrafactual de 2023 no es cero sino seguir cayendo. Mencionar C solo si
-     se explica que mezcla nivel post con trayectoria previa.
+  1. PRIMER ESLABÓN. La lectura A es la cifra principal; B, C y D son
+     lecturas de apoyo (ver encabezado). La sensibilidad al año en que se mide
+     la exposición se documenta en 04 y se menciona como limitación.
 
   2. LAS CINCO MEDIDAS. Si todas dan el mismo signo, el resultado no depende de
      la definición de exposición, y eso es robustez real. Si Exposure se aparta,
@@ -909,28 +1283,40 @@ QUÉ REPORTAR EN LA TESIS:
 
   3. TENDENCIA PREVIA (CAPÍTULO 6, no capítulo 5). Declararla de frente: es
      esperable por construcción de la medida y es una propiedad conocida de
-     los diseños con bite salarial. Las defensas son la lectura B y la
-     validación con exposición de 2019 de 04_decision_medida.R
-     (+1,15%, p=0,008), que no depende del año base.
+     los diseños con bite salarial. La lectura B la corrige, y la celda limpia
+     de 04_decision_medida.R (+0,82%, p=0,023) muestra el efecto con la
+     exposición medida en 2019.
 
   4. SEGUNDO ESLABÓN. No escribir 'el empleo no cae'. Escribir 'no detectamos
      una caída', y reportar el intervalo completo. Con el primer eslabón de esta
      magnitud, la elasticidad implícita tiene un intervalo ancho: el nulo indica
      falta de precisión, no precisión sobre el cero.
 
-  5. MECANISMOS. Exploratorios, con p ajustados, y con la advertencia de
-     circularidad para la participación de obreros. Un mecanismo con tendencias
-     previas significativas no es interpretable como efecto tal como se
-     calcula aquí (solo lectura A): revisar p_previos fila por fila. Si la
-     mayoría de los mecanismos cae en ese caso, ver
-     06_mecanismos_por_grupo.R, que usa la lectura B (salto contra
-     la trayectoria previa de cada mecanismo, no contra cero) para no perder
-     esos canales por un problema que es de la lectura, no del mecanismo.
+  5. MECANISMOS. Exploratorios, en la especificación estándar, con p
+     ajustados y con la advertencia de circularidad para la participación de
+     obreros y el salario obrero. El traslape con el año base se declara como
+     limitación: se leen como asociaciones con la exposición. Revisar
+     p_previos fila por fila y la tabla 5c (2023 frente al promedio previo)
+     para los mecanismos con tendencias previas.
 
-  6. LO QUE NO SE PUEDE CONCLUIR. Que el salario mínimo no afecta el empleo. Lo
+  6. DOSIS-RESPUESTA (sección 7b). Reportar la tabla 9 como robustez de la
+     forma funcional: el efecto por quintil de Kaitz frente al quintil 1. Un
+     gradiente creciente respalda la especificación lineal; si el efecto se
+     concentra en un quintil, decirlo.
+
+  7. HONESTDID (sección 7c). Reportar el valor de quiebre (tabla 10b) junto
+     a cada resultado principal. Un efecto que se pierde con Mbar < 1 depende
+     de tendencias paralelas casi exactas: presentarlo con esa salvedad.
+     Declarar que 2020 falta y que el tratamiento es continuo.
+
+  8. LO QUE NO SE PUEDE CONCLUIR. Que el salario mínimo no afecta el empleo. Lo
      que se puede concluir es que, en manufactura formal, en el corto plazo, con
      esta medida de exposición y esta precisión, no detectamos un ajuste por la
-     vía del empleo total.
+     vía del empleo total. Posibles razones por las que un efecto real no se
+     vería: subsidios al empleo con monto fijo por trabajador (PAEF, incentivo
+     a nuevos empleos), efecto faro sobre toda la escala salarial, y la
+     cobertura de la EAM (solo firmas formales por encima de umbrales, con
+     salarios promedio por categoría).
 ")
 
 save_as_docx(values = compendio, path = file.path(CARPETA, "00_compendio_tablas.docx"))
@@ -940,3 +1326,4 @@ cat("\nGráficos disponibles:\n")
 cat(paste(" -", names(graficos)), sep = "\n")
 
 titulo("FIN DEL SCRIPT")
+

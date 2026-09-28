@@ -1,0 +1,7 @@
+resultado,supuesto,significativo_original,valor_quiebre,maximo_grilla,lectura
+Costo laboral por trabajador (log),Magnitudes relativas (Mbar),TRUE,0.5,2,Robusto hasta 0.5
+Costo laboral por trabajador (log),Suavidad (M),TRUE,0.01,0.01,Robusto en toda la grilla probada
+Empleo permanente (log),Magnitudes relativas (Mbar),TRUE,0.25,2,Robusto hasta 0.25
+Empleo permanente (log),Suavidad (M),TRUE,NA,0.01,Se pierde en cuanto se permite cualquier violación
+Empleo total (log),Magnitudes relativas (Mbar),FALSE,NA,2,No significativo ni con tendencias paralelas exactas
+Empleo total (log),Suavidad (M),FALSE,NA,0.01,No significativo ni con tendencias paralelas exactas
