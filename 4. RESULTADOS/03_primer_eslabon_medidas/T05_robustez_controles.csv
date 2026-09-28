@@ -1,11 +1,11 @@
 medida,version,coeficiente,p_valor,significancia,observaciones
-Bite (Kaitz de obreros),Con controles,0.02983158961147445,6.860453335223078e-9,***,4863
-Bite (Kaitz de obreros),Sin controles,0.01953736014448426,3.753088930718873e-7,***,4863
-Exposure (proporción de obreros),Con controles,0.001934349597566974,0.703330782745696,,6017
+Bite (Kaitz de obreros),Con controles,0.02866257184417753,2.332514889335348e-9,***,4979
+Bite (Kaitz de obreros),Sin controles,0.025705322218590565,3.07940364001489e-9,***,4979
+Exposure (proporción de obreros),Con controles,0.001701341053741685,0.7356865812328153,,6017
 Exposure (proporción de obreros),Sin controles,0.001302106304419015,0.7566916381617999,,6017
-Golpe A (armónica ponderada),Con controles,0.034585184272397027,2.299009600547686e-11,***,5572
-Golpe A (armónica ponderada),Sin controles,0.02252830248672627,1.5883149000051615e-8,***,5572
-"Golpe C (nivel salarial, 3 categorías)",Con controles,0.03563955006957697,2.6811530809914145e-12,***,5577
-"Golpe C (nivel salarial, 3 categorías)",Sin controles,0.02184718076046796,2.4914681984648416e-7,***,5577
-Golpe costo (costo laboral total),Con controles,0.09597424752300188,3.558397472294667e-36,***,5942
-Golpe costo (costo laboral total),Sin controles,0.06149615727373253,1.2545879916304664e-33,***,5942
+Golpe A (armónica ponderada),Con controles,0.031902453623433046,7.059650690977958e-12,***,5599
+Golpe A (armónica ponderada),Sin controles,0.02874978405987355,1.3097625555744872e-11,***,5599
+"Golpe C (nivel salarial, 3 categorías)",Con controles,0.03094417699261467,1.3961262215194853e-10,***,5599
+"Golpe C (nivel salarial, 3 categorías)",Sin controles,0.027329542422414643,1.3664582078939081e-9,***,5599
+Golpe costo (costo laboral total),Con controles,0.0904004706172288,7.456159541780226e-48,***,6017
+Golpe costo (costo laboral total),Sin controles,0.07099143264736396,2.815935127999691e-48,***,6017

@@ -26,15 +26,22 @@
 # Capítulo:     2. Medición
 # Pregunta:     ¿Cuál de las cinco medidas de exposición predice el aumento
 #               diferencial del costo laboral en 2023?
-# Cifra clave:  2,98% por DE de Bite — efecto sobre la TASA DE CRECIMIENTO del
-#               costo laboral 2022-2023, en corte transversal. No es la cifra
-#               principal de la tesis (esa es 4,03%, del event study).
+# Cifra clave:  efecto de una DE de Bite sobre la TASA DE CRECIMIENTO del costo
+#               laboral 2022-2023, en corte transversal (tabla T02). No es la
+#               cifra del event study de 01; ver la nota de la sección 1.
 # Depende de:   02_medidas_exposicion.R
 # Se relaciona: 04_decision_medida.R (cierra la decisión de medida)
-#               07_reconciliacion.R (explica por qué 2,98 ≠ 4,03)
+#               07_reconciliacion.R (explica por qué las cifras no coinciden)
+#
+# ESPECIFICACIÓN: por decisión de los autores, los controles son sector y
+# departamento fijados en 2022, SIN tamaño (igual que 01).
+#
+# VALORES EXTREMOS: se winsoriza al 1% y 99% (igual que 01, 05 y 14). Versiones
+# anteriores excluían las firmas con medida > 1,3.
 #
 # SUPERADO POR VERSIONES POSTERIORES:
-#   - El placebo 2018-2019 de la sección 7 NO es informativo. Ver la nota en esa
+#   - El placebo 2018-2019 de la sección 7 NO es informativo: recoge la
+#     tendencia previa de las firmas de salarios bajos. Ver la nota en esa
 #     sección. La estimación se conserva; su lectura cambia.
 #   - La concentración en el quintil 5 de la sección 8.3 es un hallazgo de
 #     medianas SIN controles. Con controles la relación es monotónica
@@ -65,9 +72,12 @@
 # además su crecimiento hacia 2023 sale alto, sin que haya pasado nada
 # económico. Eso genera una correlación positiva puramente mecánica.
 #
-# Por eso corremos TODO dos veces: con la exposición medida en 2022 y con la
-# exposición medida en 2019. Si el coeficiente sobrevive con base 2019, es
-# economía. Si solo aparece con base 2022, es aritmética.
+# Por eso se hacen dos pruebas:
+#   - Sección 5b: el mismo primer eslabón con outcomes que NO usan 2022
+#     (2021->2023 y 2023 frente al promedio de 2019 y 2021).
+#   - Sección 6: la exposición medida en 2019 en lugar de 2022.
+# Si el coeficiente sobrevive, es economía. Si solo aparece con 2022 en los dos
+# lados, es aritmética.
 #
 # El orden de vulnerabilidad al sesgo, de peor a mejor:
 #   golpe_costo  (su denominador ES el costo laboral del outcome)
@@ -77,11 +87,13 @@
 # La sección 7 corre además un placebo 2018->2019. La idea original era: si la
 # exposición predice igual de bien el crecimiento en un período sin choque, no
 # está capturando el de 2023. Esa idea no se sostiene: el placebo da negativo
-# y significativo en las CINCO medidas, incluida Exposure (que no usa salarios
-# y no debería compartir el sesgo de división de las otras cuatro) -- el signo
-# sale de una cadena aritmética casi inevitable, no de un problema de diseño.
-# Ver la nota completa en la sección 7. La estimación se conserva como registro
-# de que se probó; ya no se lee como validación del diseño.
+# en las cinco medidas y significativo en las cuatro basadas en salarios; la
+# proporción de obreros, que no usa salarios, no es significativa (p = 0,18
+# con la especificación sin tamaño). El signo refleja la menor dinámica de
+# costos de las firmas de salarios bajos en años normales, la misma tendencia
+# que muestra el estudio de evento de 01. Ver la nota completa en la sección 7.
+# La estimación se conserva como registro de que se probó; no se lee como
+# validación ni como invalidación del diseño.
 # ==============================================================================
 
 
@@ -170,7 +182,7 @@ costo_por_trabajador <- panel %>%
     )
   ) %>%
   select(NORDEMP, ANIO, costo_trabajador, empleo_total_sin_propietarios) %>%
-  filter(ANIO %in% c(2018, 2019, 2022, 2023))
+  filter(ANIO %in% c(2018, 2019, 2021, 2022, 2023))
 
 # Pasamos a formato ancho: una fila por firma con el costo de cada año
 costos_ancho <- costo_por_trabajador %>%
@@ -178,15 +190,22 @@ costos_ancho <- costo_por_trabajador %>%
   pivot_wider(names_from = ANIO, values_from = costo_trabajador,
               names_prefix = "costo_")
 
-# Outcome principal y outcome del placebo
+# Outcome principal, outcome del placebo y dos outcomes que NO usan 2022, el
+# año con que se mide la exposición. Así el primer eslabón no comparte el dato
+# de 2022 con el Kaitz (sesgo de división). Se usan en la sección 5b.
 outcomes <- costos_ancho %>%
   mutate(
     crecimiento_2023 = log(costo_2023) - log(costo_2022),
-    crecimiento_2019 = log(costo_2019) - log(costo_2018)
+    crecimiento_2019 = log(costo_2019) - log(costo_2018),
+    crecimiento_2123 = log(costo_2023) - log(costo_2021),
+    crecimiento_prom = log(costo_2023) - (log(costo_2019) + log(costo_2021)) / 2
   )
 
 cat("Firmas con crecimiento 2022->2023:", sum(!is.na(outcomes$crecimiento_2023)), "\n")
 cat("Firmas con crecimiento 2018->2019:", sum(!is.na(outcomes$crecimiento_2019)), "\n")
+cat("Firmas con crecimiento 2021->2023:", sum(!is.na(outcomes$crecimiento_2123)), "\n")
+cat("Firmas con crecimiento promedio 2019/2021->2023:",
+    sum(!is.na(outcomes$crecimiento_prom)), "\n")
 
 # El salario mínimo subió 16% nominal en 2023. El crecimiento mediano del costo
 # laboral debería estar en ese orden de magnitud. Si sale muy lejos, hay un
@@ -197,17 +216,17 @@ print(round(quantile(outcomes$crecimiento_2023,
 cat("En porcentaje, la mediana es:",
     round(100 * (exp(median(outcomes$crecimiento_2023, na.rm = TRUE)) - 1), 2), "%\n")
 
-# ESTA cifra (tasa de crecimiento 2022-2023 del costo laboral, mediana del
-# corte transversal) es UN estimando entre cinco que circulan para "el primer
-# eslabón", no la cifra principal de la tesis. Los cinco no son
-# intercambiables porque miden objetos distintos: 4,03% es el coeficiente de
-# 2023 del event study (la cifra principal); 4,80% es ese mismo salto ajustado
-# por la pendiente previa (lectura B); ésta (~2,98% en la corrida de
-# referencia) es la mediana de corte transversal que se calcula aquí; 1,15% es
-# la celda limpia con exposición medida en 2019 (sin traslape aritmético); y
-# -1,95% es el coeficiente de 2023 contra año base 2019. Confundirlas es el
-# tipo de error que un jurado detecta de inmediato -- 07_reconciliacion.R
-# explica por qué no coinciden.
+# El coeficiente que sale de este script (efecto de una DE de exposición sobre
+# la tasa de crecimiento 2022-2023, en corte transversal) es UNO de varios
+# estimandos que circulan para "el primer eslabón", y no son intercambiables:
+#   - el coeficiente de 2023 del event study de 01 (lectura A, frente a 2022);
+#   - ese mismo salto ajustado por la pendiente previa (lectura B);
+#   - 2023 frente a 2021 en el event study (lectura D, sin el año base);
+#   - el corte transversal de este script (sección 5) y sus versiones sin el
+#     año base (sección 5b);
+#   - la celda limpia de 04, con exposición medida en 2019.
+# Confundirlos es el tipo de error que un jurado detecta de inmediato;
+# 07_reconciliacion.R explica por qué no coinciden.
 cat("\nCrecimiento 2018->2019 (placebo):\n")
 print(round(quantile(outcomes$crecimiento_2019,
                      c(0.10, 0.25, 0.50, 0.75, 0.90), na.rm = TRUE), 4))
@@ -233,27 +252,29 @@ medidas <- alternativas %>%
 
 cat("Firmas en la base combinada:", nrow(medidas), "\n")
 
-# --- Filtro de plausibilidad económica -----------------------------------------
-# Winsorizar al 1/99 no alcanza: el summary de golpe_c con base 2019 mostró un
-# máximo de 6.960, que implica un salario de 1/6960 del mínimo. Eso no es una
-# firma que paga poco, es un error de reporte, y basta un puñado para destruir
-# cualquier correlación de Pearson (fue lo que hizo que golpe_c 2022 vs 2019
-# diera -0,02 en Pearson y 0,72 en Spearman).
+# --- Tratamiento de valores extremos -------------------------------------------
+# Hay firmas con medidas imposibles: golpe_c con base 2019 llegó a 6.960, un
+# salario de 1/6960 del mínimo. Son errores de reporte o trabajadores de medio
+# tiempo, y bastan unos pocos para distorsionar cualquier promedio o
+# correlación de Pearson.
 #
-# Ningún trabajador formal de tiempo completo puede costar menos del mínimo, así
-# que un golpe por encima de ~1,3 es imposible salvo por medio tiempo o error.
-# Estos valores se vuelven NA, no se recortan: recortarlos los dejaría dentro
-# de la muestra con un valor inventado.
-LIMITE_GOLPE <- 1.3
-
-plausible <- function(x, limite = LIMITE_GOLPE) {
-  ifelse(!is.na(x) & x > 0 & x <= limite, x, NA_real_)
+# Versiones anteriores de este script excluían las firmas con medida > 1,3.
+# Para usar una sola regla en todo el pipeline (01, 05 y 14), ahora se
+# winsoriza al 1% y 99%: los valores extremos se recortan al percentil
+# correspondiente y todas las firmas se conservan. El costo es que las firmas
+# con errores quedan en la muestra con el valor del percentil 99 en lugar del
+# suyo; con 1% de las observaciones en cada cola, su peso es acotado.
+plausible <- function(x) {
+  x <- ifelse(!is.na(x) & x > 0, x, NA_real_)
+  lim <- quantile(x, c(0.01, 0.99), na.rm = TRUE)
+  pmin(pmax(x, lim[1]), lim[2])
 }
 
-cat("\nFirmas excluidas por implausibilidad (golpe > ", LIMITE_GOLPE, "):\n", sep = "")
+cat("Firmas recortadas al percentil 99 (winsorización):\n")
 for (v in c("golpe_c", "golpe_a", "golpe_costo", "Bite2022_obreros")) {
   if (v %in% names(medidas)) {
-    cat("  ", v, ": ", sum(medidas[[v]] > LIMITE_GOLPE, na.rm = TRUE), "\n", sep = "")
+    x <- medidas[[v]][!is.na(medidas[[v]]) & medidas[[v]] > 0]
+    cat("  ", v, ": ", sum(x > quantile(x, 0.99)), "\n", sep = "")
   }
 }
 
@@ -283,8 +304,8 @@ medidas <- medidas %>%
   mutate(across(any_of(c(MEDIDAS_2022, MEDIDAS_2019)), estandarizar,
                 .names = "{.col}_de"))
 
-# Controles, fijados en 2022 (el tamaño contemporáneo es bad control: el empleo
-# es el outcome de la tesis)
+# Controles, fijados en 2022. Se crea también el tamaño, aunque no entra en la
+# especificación principal, porque sirve para describir la muestra.
 medidas <- medidas %>%
   mutate(
     sector_2022 = factor(CIIU4),
@@ -343,16 +364,14 @@ titulo("4. ESPECIFICACIÓN")
 # así que la diferencia entre firmas ya está tomada; no hacen falta efectos
 # fijos de firma ni de año.
 #
-# Controles: sector (CIIU4), departamento y tamaño, todos fijados en 2022. Son
-# los mismos de la especificación principal de la tesis, donde ya se estableció
-# que la credibilidad del diseño descansa en ellos y no en la exogeneidad de la
-# exposición cruda.
+# Controles: sector (CIIU4) y departamento, fijados en 2022. Por decisión de
+# los autores no se controla por tamaño (igual que en 01).
 #
 # Errores estándar robustos a heterocedasticidad. Al ser corte transversal no
 # hay estructura de panel que clusterizar; agrupamos por sector como robustez
 # en la sección 8.
 
-CONTROLES <- "sector_2022 + depto_2022 + tamano_2022"
+CONTROLES <- "sector_2022 + depto_2022"
 
 estimar_primer_eslabon <- function(medida, outcome = "crecimiento_2023",
                                    base = medidas, solo_comun = FALSE,
@@ -422,8 +441,8 @@ guardar_tabla(primer_eslabon, "T02_primer_eslabon_cinco_medidas",
 cat("\nCÓMO LEER: el coeficiente dice en cuántos puntos log creció más el costo\n",
     "laboral por trabajador en una firma con una desviación estándar más de\n",
     "exposición. Multiplicado por 100, es el cambio porcentual aproximado.\n",
-    "La medida que gana es la que combina coeficiente grande, p-valor bajo y,\n",
-    "sobre todo, que sobreviva la prueba de la sección 6.\n")
+    "El tamaño del efecto se ordena según cuánto comparte cada medida con el\n",
+    "outcome: por eso las secciones 5b y 6 son las que deciden.\n")
 
 # Gráfico comparativo
 grafico_comparacion <- ggplot(primer_eslabon,
@@ -437,9 +456,125 @@ grafico_comparacion <- ggplot(primer_eslabon,
   labs(title = "Primer eslabón: ¿qué medida predice el aumento del costo laboral?",
        subtitle = "Cambio % en el costo laboral por trabajador 2022-2023, por DE de exposición",
        x = NULL, y = "Efecto (%)", color = "Muestra",
-       caption = "Controles: sector (CIIU4), departamento y tamaño, fijados en 2022. Errores robustos. IC al 95%.") +
+       caption = "Controles: sector (CIIU4) y departamento, fijados en 2022. Errores robustos. IC al 95%.") +
   tema_tesis
 guardar_grafico(grafico_comparacion, "G01_primer_eslabon_comparacion")
+
+
+# ==============================================================================
+# 5b. PRIMER ESLABÓN CON OUTCOMES QUE NO USAN 2022
+# ==============================================================================
+titulo("5b. PRIMER ESLABÓN SIN EL AÑO BASE")
+
+# El outcome original parte de 2022, el mismo año del Kaitz. Estos dos lo
+# evitan: 2021->2023 y 2023 frente al promedio de 2019 y 2021. Si el efecto de
+# la sección 5 era sesgo de división, aquí debería desaparecer.
+# OJO: estos outcomes abarcan dos o más años (y dos alzas del mínimo), así que
+# su magnitud no es comparable uno a uno con el crecimiento de un solo año. Lo
+# que importa es si el efecto sigue siendo positivo y significativo.
+
+OUTCOMES_PRIMER_ESLABON <- c(
+  crecimiento_2023 = "2022 -> 2023 (original)",
+  crecimiento_2123 = "2021 -> 2023",
+  crecimiento_prom = "Promedio 2019 y 2021 -> 2023"
+)
+
+primer_eslabon_sin_base <- bind_rows(lapply(names(OUTCOMES_PRIMER_ESLABON), function(o)
+  bind_rows(lapply(MEDIDAS_2022, function(m)
+    estimar_primer_eslabon(m, outcome = o, solo_comun = FALSE,
+                           etiqueta = etiquetas[[m]]))) %>%
+    mutate(outcome = OUTCOMES_PRIMER_ESLABON[[o]]))) %>%
+  select(medida, outcome, coeficiente, error_estandar, p_valor, significancia,
+         ic95_inferior, ic95_superior, efecto_pct, observaciones) %>%
+  arrange(medida, outcome)
+
+ver(primer_eslabon_sin_base, filas = 15)
+guardar_tabla(primer_eslabon_sin_base, "T02b_primer_eslabon_sin_anio_base",
+              "Tabla 2b. Primer eslabón con outcomes que no usan 2022")
+
+cat("\nCÓMO LEER: si una medida sigue positiva y significativa con los outcomes\n",
+    "que no usan 2022, su primer eslabón es real. Si cae a cero, el efecto de\n",
+    "la sección 5 era sesgo de división.\n")
+
+# ==============================================================================
+# 5c. PRIMER ESLABÓN ALTERNATIVO: RENTABILIDAD Y SALIDA
+# ==============================================================================
+titulo("5c. PRIMER ESLABÓN ALTERNATIVO: RENTABILIDAD Y SALIDA")
+
+# Hipótesis alternativa: si el mínimo golpeó a las firmas expuestas, pudo no
+# verse en el costo por trabajador sino en su rentabilidad (Draca, Machin y
+# Van Reenen, 2011) o en su permanencia. OJO: margen y peso del costo contienen
+# la nómina de obreros, igual que el Kaitz; con base 2022 el sesgo de división
+# empuja en la dirección de la hipótesis. Solo cuentan las versiones sin 2022.
+# Todos los resultados están en puntos porcentuales: leer la columna
+# 'coeficiente' (pp por DE de exposición), no 'efecto_pct'.
+
+winsor_cambio <- function(x) {
+  lim <- quantile(x, c(0.01, 0.99), na.rm = TRUE)
+  pmin(pmax(x, lim[1]), lim[2])
+}
+
+margenes <- panel %>%
+  filter(ANIO %in% c(2019, 2021, 2022, 2023)) %>%
+  transmute(
+    NORDEMP, ANIO,
+    peso_costo = ifelse(produccion_bruta_prodbr2 > 0,
+                        costos_totales_personal_total_c3r10c3 / produccion_bruta_prodbr2,
+                        NA_real_),
+    margen = ifelse(produccion_bruta_prodbr2 > 0,
+                    (valor_agregado_valagri - costos_totales_personal_total_c3r10c3) /
+                      produccion_bruta_prodbr2,
+                    NA_real_)
+  ) %>%
+  pivot_wider(names_from = ANIO, values_from = c(peso_costo, margen)) %>%
+  mutate(
+    d_margen_2223 = 100 * (margen_2023 - margen_2022),
+    d_margen_2123 = 100 * (margen_2023 - margen_2021),
+    d_margen_prom = 100 * (margen_2023 - (margen_2019 + margen_2021) / 2),
+    d_peso_2223   = 100 * (peso_costo_2023 - peso_costo_2022),
+    d_peso_2123   = 100 * (peso_costo_2023 - peso_costo_2021),
+    d_peso_prom   = 100 * (peso_costo_2023 - (peso_costo_2019 + peso_costo_2021) / 2)
+  ) %>%
+  mutate(across(starts_with("d_"), winsor_cambio)) %>%
+  select(NORDEMP, starts_with("d_"))
+
+# Salida: firmas presentes en 2022 que no aparecen en 2023 o en 2024 (en pp)
+presentes <- panel %>% distinct(NORDEMP, ANIO)
+salida <- presentes %>%
+  filter(ANIO == 2022) %>%
+  transmute(
+    NORDEMP,
+    sale_2023 = 100 * as.integer(!NORDEMP %in% presentes$NORDEMP[presentes$ANIO == 2023]),
+    sale_2024 = 100 * as.integer(!NORDEMP %in% presentes$NORDEMP[presentes$ANIO == 2024])
+  )
+
+medidas <- medidas %>%
+  select(-any_of(c(names(margenes)[-1], "sale_2023", "sale_2024"))) %>%
+  left_join(margenes, by = "NORDEMP") %>%
+  left_join(salida, by = "NORDEMP")
+
+OUTCOMES_ALTERNATIVOS <- c(
+  d_margen_2223 = "Margen: 2022 -> 2023 (con traslape)",
+  d_margen_2123 = "Margen: 2021 -> 2023",
+  d_margen_prom = "Margen: promedio 2019 y 2021 -> 2023",
+  d_peso_2223   = "Peso del costo laboral: 2022 -> 2023 (con traslape)",
+  d_peso_2123   = "Peso del costo laboral: 2021 -> 2023",
+  d_peso_prom   = "Peso del costo laboral: promedio 2019 y 2021 -> 2023",
+  sale_2023     = "Salida de la EAM en 2023",
+  sale_2024     = "Salida de la EAM en 2024"
+)
+
+primer_eslabon_alternativo <- bind_rows(lapply(names(OUTCOMES_ALTERNATIVOS), function(o)
+  bind_rows(lapply(c("Bite2022_obreros", "golpe_c"), function(m)
+    estimar_primer_eslabon(m, outcome = o, solo_comun = FALSE,
+                           etiqueta = etiquetas[[m]]))) %>%
+    mutate(outcome = OUTCOMES_ALTERNATIVOS[[o]]))) %>%
+  select(medida, outcome, coeficiente, error_estandar, p_valor, significancia,
+         ic95_inferior, ic95_superior, observaciones)
+
+ver(primer_eslabon_alternativo, filas = 20)
+guardar_tabla(primer_eslabon_alternativo, "T02c_primer_eslabon_alternativo",
+              "Tabla 2c. Primer eslabón alternativo: rentabilidad y salida (pp por DE de exposición)")
 
 
 # ==============================================================================
@@ -447,9 +582,10 @@ guardar_grafico(grafico_comparacion, "G01_primer_eslabon_comparacion")
 # ==============================================================================
 titulo("6. SESGO DE DIVISIÓN: MEDIDAS CON BASE 2019")
 
-# Aquí se separa la economía de la aritmética. Si el coeficiente de la sección 5
-# aparece porque el costo de 2022 está en los dos lados de la ecuación, entonces
-# al medir la exposición en 2019 debería caer mucho o desaparecer.
+# Aquí se separa la economía de la aritmética desde el lado de la exposición.
+# Si el coeficiente de la sección 5 aparece porque el costo de 2022 está en los
+# dos lados de la ecuación, entonces al medir la exposición en 2019 debería
+# caer mucho o desaparecer.
 #
 # Si sobrevive, la medida está capturando una característica real y persistente
 # de la firma. Recordar que golpe_c tiene Spearman 0,72 entre 2019 y 2022, así
@@ -527,21 +663,21 @@ titulo("7. PLACEBO: CRECIMIENTO DEL COSTO LABORAL 2018-2019")
 # aumento de 2023 sino una tendencia preexistente. Eso supone que un resultado
 # "limpio" (coeficiente chico o no significativo) era posible aquí. No lo es.
 #
-# POR QUÉ EL SIGNO NEGATIVO ESTÁ CASI GARANTIZADO (aritmética, no diseño).
-# Exposición alta significa costo laboral bajo en 2022. Por la persistencia del
-# costo de una firma en el tiempo (golpe_c tiene Spearman 0,72 entre 2019 y
-# 2022, sección 6), un costo bajo en 2022 implica uno bajo también en 2019. Y
-# dado el costo de 2018, un costo 2019 bajo implica un crecimiento
-# 2018->2019 = log(costo_2019) - log(costo_2018) bajo. El signo negativo sale
-# de esa cadena, no de una pre-tendencia real ni de reversión a la media.
+# POR QUÉ EL SIGNO NEGATIVO ERA ESPERABLE. Exposición alta significa costo
+# laboral bajo en 2022. Las firmas de salarios bajos venían perdiendo terreno
+# en costo frente a las demás en los años normales (el estudio de evento de 01
+# muestra coeficientes que caen de forma sostenida entre 2015 y 2022). Por eso,
+# en una transición cualquiera como 2018->2019, su costo crece un poco menos:
+# el placebo recoge esa tendencia previa, no un efecto ni una ausencia de
+# efecto del mínimo.
 #
-# LA PRUEBA DE QUE ES ESTO Y NO OTRA COSA: el placebo da coeficiente negativo y
-# significativo en las CINCO medidas, incluida Exposure2022_obreros, que es
-# composición ocupacional, no usa salarios, y por tanto no debería compartir
-# ningún sesgo de división con las otras cuatro. Un placebo que da el mismo
-# resultado para una medida que no comparte el mecanismo de las demás no está
-# midiendo una propiedad de las medidas -- está midiendo algo que comparten
-# todas por construcción del ejercicio, no por economía.
+# RESULTADO CON LA ESPECIFICACIÓN SIN TAMAÑO: negativo en las cinco medidas y
+# significativo en las cuatro basadas en salarios (entre -0,7% y -1,1% por DE).
+# La proporción de obreros, que no usa salarios, da -0,5% y no es
+# significativa (p = 0,18). Una versión anterior de este comentario afirmaba
+# que las cinco eran significativas y usaba ese hecho como prueba de que el
+# signo salía por construcción; eso correspondía a la especificación con
+# control de tamaño y ya no se cumple.
 #
 # OJO -- no confundir con el placebo de 2018 sobre EMPLEO (otro script, p=0,22,
 # no rechaza), que sí es informativo. Son pruebas distintas sobre outcomes
@@ -566,11 +702,12 @@ guardar_tabla(comparacion_placebo, "T04_placebo_2018_2019",
               "Tabla 4. Primer eslabón en el año del choque y en el placebo 2018-2019 (placebo no informativo, ver nota en el script)")
 
 cat("\nCÓMO LEER esta tabla: NO como 'si el placebo es distinto del choque, la\n",
-    "medida es válida'. El placebo da negativo y significativo en las cinco\n",
-    "medidas por la razón aritmética explicada arriba, así que un placebo\n",
-    "'parecido' al choque no descarta nada y uno 'distinto' tampoco confirma\n",
-    "nada. Se reporta para dejar registro de que se probó, no como evidencia a\n",
-    "favor del diseño.\n")
+    "medida es válida'. El placebo da negativo en las cinco medidas y\n",
+    "significativo en las cuatro basadas en salarios; la proporción de obreros\n",
+    "no es significativa. El signo refleja la menor dinámica de costos de las\n",
+    "firmas de salarios bajos en años normales (la tendencia previa del estudio\n",
+    "de evento), así que el placebo no valida ni invalida el diseño. Se reporta\n",
+    "para dejar registro de que se probó.\n")
 
 grafico_placebo <- ggplot(comparacion_placebo,
                           aes(x = reorder(medida, coeficiente),
@@ -583,9 +720,9 @@ grafico_placebo <- ggplot(comparacion_placebo,
   scale_color_manual(values = c(`Choque 2022-2023` = COLOR_ALTA,
                                 `Placebo 2018-2019` = COLOR_BAJA)) +
   labs(title = "Costo laboral: choque 2022-2023 vs. placebo 2018-2019 (placebo no informativo)",
-       subtitle = "El placebo da negativo en las 5 medidas por construcción -- no valida ni invalida el diseño",
+       subtitle = "Negativo en las 4 medidas salariales por la tendencia previa; no valida ni invalida el diseño",
        x = NULL, y = "Efecto (%)", color = NULL,
-       caption = "La exposición se mide en 2022 en los dos casos. Ver la nota completa antes de esta sección.") +
+       caption = "La exposición se mide en 2022 en los dos casos. Controles: sector y departamento. Ver la nota de la sección 7.") +
   tema_tesis
 guardar_grafico(grafico_placebo, "G02_placebo")
 
@@ -614,8 +751,8 @@ guardar_tabla(robustez_controles, "T05_robustez_controles",
               "Tabla 5. Primer eslabón con y sin controles")
 
 cat("\nCÓMO LEER: si el coeficiente cambia mucho al quitar los controles, buena\n",
-    "parte de la variación de la exposición es composición sectorial, regional\n",
-    "o de tamaño, y no exposición al mínimo propiamente.\n")
+    "parte de la variación de la exposición es composición sectorial o\n",
+    "regional, y no exposición al mínimo propiamente.\n")
 
 # 8.2 Errores agrupados por sector
 agrupado_sector <- bind_rows(lapply(MEDIDAS_2022, function(m) {
@@ -642,14 +779,13 @@ guardar_tabla(agrupado_sector, "T06_errores_agrupados_sector",
 # La especificación lineal supone que el efecto es proporcional. Si no lo es,
 # el coeficiente lineal puede esconder el patrón real. Lo miramos con quintiles.
 #
-# OJO: esto usa MEDIANAS CRUDAS, sin los controles de sector/departamento/
-# tamaño de la sección 4. Lo que sale aquí es que el efecto se concentra en el
-# quintil 5 -- eso NO es la última palabra sobre la forma de la relación. Con
-# los mismos controles de la especificación principal, la relación por
-# quintiles resulta monotónica creciente (04_decision_medida.R,
-# sección 6). No es una contradicción: son dos especificaciones distintas
-# (con y sin controles) que pueden mostrar formas distintas. No generalizar
-# a partir de esta tabla sola.
+# OJO: esto usa MEDIANAS CRUDAS, sin los controles de la sección 4. Lo que sale
+# aquí es que el efecto se concentra en el quintil 5 -- eso NO es la última
+# palabra sobre la forma de la relación. Con controles, la relación por
+# quintiles resulta monotónica creciente (04_decision_medida.R, sección 6). No
+# es una contradicción: son dos especificaciones distintas (con y sin
+# controles) que pueden mostrar formas distintas. No generalizar a partir de
+# esta tabla sola.
 if ("golpe_c_de" %in% names(medidas) && "Bite2022_obreros_de" %in% names(medidas)) {
   
   tramos <- medidas %>%
@@ -705,10 +841,10 @@ guardar_tabla(resumen, "T08_resumen_decision",
               "Tabla 8. Resumen del primer eslabón en la muestra común")
 
 # La columna efecto_pct de esta tabla es "cuánto cambia el crecimiento del
-# costo laboral por una DE más de exposición, en esta medida y esta muestra" --
-# tampoco es la cifra principal de la tesis (4,03%, event study). Es el
-# insumo para DECIDIR qué medida usar, no un resultado para citar como "el"
-# primer eslabón. Ver la nota de la sección 1 sobre las cinco cifras.
+# costo laboral por una DE más de exposición, en esta medida y esta muestra".
+# Es el insumo para DECIDIR qué medida usar, no un resultado para citar como
+# "el" primer eslabón. Ver la nota de la sección 1 sobre los distintos
+# estimandos.
 cat("
 CÓMO SE TOMA LA DECISIÓN (regla comiteada en NOTA_DECISIONES.md, corregida en
 la revisión de comentarios de 2026-09 -- ver 'CRITERIO ELIMINADO' abajo):
@@ -720,11 +856,10 @@ criterios, en orden:
   1. Que el coeficiente sea positivo y significativo en la especificación
      estándar, MUESTRA COMÚN (sección 5). En muestras distintas los
      coeficientes no son comparables.
-  2. Que se sostenga en la CELDA LIMPIA: exposición medida en 2019 contra el
-     crecimiento del costo laboral 2022-2023 (sección 6). Esto rompe el
-     traslape aritmético entre el denominador de la exposición y la base del
-     outcome -- si el efecto sobrevive aquí, es economía, no sesgo de
-     división. Este criterio pesa más que la magnitud.
+  2. Que se sostenga sin el traslape aritmético: con outcomes que no usan 2022
+     (sección 5b) y en la CELDA LIMPIA, con exposición medida en 2019 (sección
+     6 y 04_decision_medida.R). Si el efecto sobrevive aquí, es economía, no
+     sesgo de división. Este criterio pesa más que la magnitud.
   3. Cobertura de muestra (sección 2, tabla T01) y estabilidad de la medida
      entre años base -- ver 04_decision_medida.R, que compara
      cada medida calculada con base 2022 y con base 2019.
@@ -732,11 +867,12 @@ criterios, en orden:
 CRITERIO ELIMINADO EN ESTA REVISIÓN: el placebo 2018-2019 de la sección 7 NO
 entra en esta decisión. La regla anterior lo traía como tercer criterio ('que
 el placebo sea claramente menor') -- se retira porque el placebo da negativo
-y significativo en las cinco medidas por construcción (sección 7), así que no
-distingue entre ellas. Su lugar es el capítulo 6, como limitación reconocida:
-se intentó un placebo sobre el primer eslabón y resultó no informativo por
-construcción, lo que explica por qué la validación descansa en la celda
-limpia (criterio 2) y no en un placebo.
+en las cinco medidas y significativo en las cuatro basadas en salarios, lo que
+refleja la tendencia previa de las firmas de salarios bajos (sección 7) y no
+distingue entre medidas. Su lugar es el capítulo 6, como limitación
+reconocida: se intentó un placebo sobre el primer eslabón y resultó no
+informativo, lo que explica por qué la validación descansa en los outcomes sin
+el año base y en la celda limpia (criterio 2) y no en un placebo.
 
 Si ninguna medida pasa los criterios 1 y 2, el problema NO es de robustez sino
 de diseño. Está registrado como riesgo desde septiembre: en ese caso habría que
