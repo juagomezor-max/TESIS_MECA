@@ -1,7 +1,7 @@
-resultado,medida,efecto_porcentual_Placebo (año sin choque: 2019),efecto_porcentual_Real (choque de 2023),significancia_Placebo (año sin choque: 2019),significancia_Real (choque de 2023)
-Empleo total (log),A. Salario de la firma en 2022,0.24032546355987477,-0.7677235624282588,,
-Empleo total (log),B. Salario promediado 2019-2022,-1.6391368056214106,-2.1058717803109417,,
-Empleo total (log),C. Salario de firmas parecidas,-3.5153053522687765,-3.4613626548608645,*,*
-Salario promedio (log),A. Salario de la firma en 2022,8.364058743048785,8.205289289549764,***,***
-Salario promedio (log),B. Salario promediado 2019-2022,5.239648349712348,5.888833133590822,***,***
-Salario promedio (log),C. Salario de firmas parecidas,0.7076320927175056,-0.4381960850000872,,
+resultado,medida,efecto_porcentual_Placebo (año sin choque: 2019),efecto_porcentual_Real (choque de 2023),error_estandar_Placebo (año sin choque: 2019),error_estandar_Real (choque de 2023),significancia_Placebo (año sin choque: 2019),significancia_Real (choque de 2023),diferencia_real_menos_placebo,ee_diferencia,p_diferencia,significancia_diferencia
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,8.364058743048785,8.205289289549764,0.011055931519773863,0.013820624082665768,***,***,-0.15876945349902094,1.7698679945247053,0.9285200956920441,
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,5.239648349712348,5.888833133590822,0.010661733587705604,0.011821466306682198,***,***,0.6491847838784741,1.5919159171741208,0.6834198343070264,
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,0.7076320927175056,-0.4381960850000872,0.01738206262167347,0.023312795962368182,,,-1.145828177717593,2.9079590034365825,0.6935575977811697,
+Empleo total (log),A. Salario de la firma en el año base,0.24032546355987477,-0.7677235624282588,0.01591053495865341,0.016806968773285805,,,-1.0080490259881336,2.3143450953060922,0.6631519602537634,
+Empleo total (log),B. Salario promediado de los años previos,-1.6391368056214106,-2.1058717803109417,0.015058206159228864,0.016679831719455772,,,-0.46673497468953107,2.2471456537643504,0.8354622369239759,
+Empleo total (log),C. Salario de firmas parecidas,-3.5153053522687765,-3.4613626548608645,0.02110787273681616,0.019977777975479352,*,*,0.05394269740791202,2.906293007098862,0.9851915914012004,

@@ -43,7 +43,7 @@
 #   C6. Contraste con el paquete contdid.
 #
 # Capítulo 6 (Validaciones adicionales y amenazas -- lo que NO cierra):
-#   C7 (C7.1/C7.2/C7.3). ¿El salto del salario es el choque o reversión a la
+#   C7 (C7.1/C7.2/C7.3). ¿El salto del costo laboral por trabajador es el choque o reversión a la
 #       media? C7.2 en particular es un placebo que SÍ es informativo (a
 #       diferencia del placebo del primer eslabón en 03_primer_eslabon_medidas.R): aquí
 #       detecta que la medida actual produce un salto salarial falso en 2019,
@@ -172,6 +172,8 @@ datos <- panel %>%
     ANIO_F      = factor(ANIO),
     post        = as.integer(ANIO >= 2023),
     log_empleo  = log(ifelse(empleo_total > 0, empleo_total, NA)),
+    # log_salario: log del costo laboral por trabajador (costos_totales_personal /
+    # empleo_total), no el salario -- se deja el nombre interno por continuidad
     log_salario = log(ifelse(salario_promedio > 0, salario_promedio, NA))
   )
 
@@ -251,7 +253,7 @@ estimar_por_quintil <- function(variable, etiqueta) {
   )
 }
 
-quintiles_salario <- estimar_por_quintil("log_salario", "Salario promedio (log)")
+quintiles_salario <- estimar_por_quintil("log_salario", "Costo laboral por trabajador (log)")
 quintiles_empleo  <- estimar_por_quintil("log_empleo",  "Empleo total (log)")
 
 por_quintil <- bind_rows(quintiles_salario, quintiles_empleo) %>%
@@ -266,10 +268,10 @@ grafico_quintiles <- ggplot(por_quintil, aes(x = quintil, y = efecto_porcentual,
   geom_hline(yintercept = 0, color = "grey60") +
   geom_pointrange(aes(ymin = 100 * ic95_inferior, ymax = 100 * ic95_superior),
                   position = position_dodge(width = 0.4), size = 0.6) +
-  scale_color_manual(values = c(`Salario promedio (log)` = COLOR_BAJA,
+  scale_color_manual(values = c(`Costo laboral por trabajador (log)` = COLOR_BAJA,
                                 `Empleo total (log)` = COLOR_ALTA)) +
-  labs(title = "Efecto del aumento de 2023 por quintil de exposición",
-       subtitle = "Cambio % frente al quintil menos expuesto. Si el efecto fuera lineal, crecería parejo de Q2 a Q5",
+  labs(title = "Diferencia entre antes y después de 2023,\npor quintil de exposición",
+       subtitle = "Cambio % frente al quintil menos expuesto.\nSi el efecto fuera lineal, crecería parejo de Q2 a Q5",
        x = NULL, y = "Efecto (%)", color = NULL,
        caption = paste("Controles: firma, año, sector x año y departamento x año (fijados en 2022).",
                        "\nIntervalos de confianza al 95%, errores agrupados por firma.")) +
@@ -284,8 +286,8 @@ guardar_grafico(grafico_quintiles, "GC02_efecto_por_quintil")
 titulo("C2b. EL SALTO DE 2023 POR QUINTIL")
 
 # C2 compara el promedio de 2023-2024 contra el promedio de todos los años
-# previos. Para el salario eso confunde el choque con la caída que esas firmas
-# ya traían: por eso da negativo. Aquí medimos el salto de 2023 frente a 2022,
+# previos. Para el costo laboral por trabajador eso confunde el choque con la
+# caída que esas firmas ya traían: por eso da negativo. Aquí medimos el salto de 2023 frente a 2022,
 # que es la lectura A del primer eslabón, pero tramo por tramo.
 
 # Dentro de un solo quintil no se puede separar el salto de 2023 del efecto
@@ -327,7 +329,7 @@ salto_2023_por_quintil <- function(variable, etiqueta) {
 }
 
 salto_2023 <- bind_rows(
-  salto_2023_por_quintil("log_salario", "Salario promedio (log)"),
+  salto_2023_por_quintil("log_salario", "Costo laboral por trabajador (log)"),
   salto_2023_por_quintil("log_empleo",  "Empleo total (log)")
 ) %>%
   mutate(efecto_porcentual = 100 * coeficiente,
@@ -339,25 +341,12 @@ guardar_tabla(salto_2023, "T17b_salto_2023_por_quintil",
               decimales = 4)
 
 cat("\nLECTURA: aquí cada quintil se compara con el menos expuesto, pero año por año:",
-    "\n2023 y 2024 frente a 2022. Si el salario sube más en los quintiles altos en 2023,",
+    "\n2023 y 2024 frente a 2022. Si el costo laboral por trabajador sube más en los quintiles altos en 2023,",
     "\nel choque llegó como esperamos, aunque en C2 el promedio de todos los años",
     "\nprevios dé negativo por la caída que esas firmas ya traían.\n")
 
-grafico_salto <- ggplot(filter(salto_2023, anio == 2023),
-                        aes(x = quintil, y = efecto_porcentual, color = resultado)) +
-  geom_hline(yintercept = 0, color = "grey60") +
-  geom_pointrange(aes(ymin = 100 * ic95_inferior, ymax = 100 * ic95_superior),
-                  position = position_dodge(width = 0.4), size = 0.6) +
-  scale_color_manual(values = c(`Salario promedio (log)` = COLOR_BAJA,
-                                `Empleo total (log)` = COLOR_ALTA)) +
-  labs(title = "Cambio de 2022 a 2023 por quintil de exposición",
-       subtitle = "Frente al quintil menos expuesto, comparando solo 2023 con 2022",
-       x = NULL, y = "Cambio (%)", color = NULL,
-       caption = paste("Controles: firma, año, sector x año y departamento x año (fijados en 2022).",
-                       "\nIntervalos de confianza al 95%, errores agrupados por firma.")) +
-  tema_tesis +
-  theme(axis.text.x = element_text(angle = 15, hjust = 1))
-guardar_grafico(grafico_salto, "GC02b_salto_2023_por_quintil")
+# El gráfico GC02b (salto real de 2023 frente al placebo de 2019) se arma más
+# abajo, después de C7.2, porque necesita placebo_reversion.
 
 
 # ==============================================================================
@@ -420,7 +409,7 @@ contra_referencia <- function(variable, etiqueta) {
 }
 
 contra_2015_2019 <- bind_rows(
-  contra_referencia("log_salario", "Salario promedio (log)"),
+  contra_referencia("log_salario", "Costo laboral por trabajador (log)"),
   contra_referencia("log_empleo",  "Empleo total (log)")
 ) %>%
   mutate(efecto_porcentual = 100 * coeficiente,
@@ -435,10 +424,12 @@ guardar_tabla(contra_2015_2019, "T17c_por_quintil_contra_2015_2019",
 comparacion_referencias <- bind_rows(
   salto_2023 %>% filter(anio == 2023) %>%
     transmute(resultado, quintil, referencia = "2022",
-              efecto_porcentual, p_valor, significancia),
+              efecto_porcentual, p_valor, significancia,
+              ic95_inferior, ic95_superior),
   contra_2015_2019 %>% filter(anio == "2023") %>%
     transmute(resultado, quintil, referencia = "promedio 2015-2019",
-              efecto_porcentual, p_valor, significancia)
+              efecto_porcentual, p_valor, significancia,
+              ic95_inferior, ic95_superior)
 ) %>%
   arrange(resultado, quintil, referencia)
 
@@ -450,14 +441,14 @@ guardar_tabla(comparacion_referencias, "T17d_comparacion_referencias",
 grafico_referencias <- ggplot(comparacion_referencias,
                               aes(x = quintil, y = efecto_porcentual, color = referencia)) +
   geom_hline(yintercept = 0, color = "grey60") +
-  geom_point(position = position_dodge(width = 0.4), size = 3) +
+  geom_pointrange(aes(ymin = 100 * ic95_inferior, ymax = 100 * ic95_superior),
+                  position = position_dodge(width = 0.4), size = 0.6) +
   facet_wrap(~ resultado, scales = "free_y") +
   scale_color_manual(values = c(`2022` = COLOR_ALTA, `promedio 2015-2019` = COLOR_BAJA)) +
   labs(title = "El cambio de 2023 según con qué período se compare",
-       subtitle = "2022 fue un año de empleo alto por los subsidios; 2015-2019 es un período sin pandemia ni subsidios",
+       subtitle = "Cada quintil frente al menos expuesto; referencia 2022\no promedio 2015-2019 (antes de la pandemia)",
        x = NULL, y = "Cambio (%)", color = "Período de comparación",
-       caption = paste("Cada quintil frente al menos expuesto.",
-                       "\nControles: firma, año, sector x año y departamento x año (fijados en 2022).")) +
+       caption = "Controles: firma, año, sector x año y departamento x año (fijados en 2022).") +
   tema_tesis +
   theme(axis.text.x = element_text(angle = 15, hjust = 1))
 guardar_grafico(grafico_referencias, "GC02c_comparacion_referencias", ancho = 11)
@@ -505,7 +496,7 @@ comparar_formas <- function(variable, etiqueta) {
 }
 
 formas <- bind_rows(
-  comparar_formas("log_salario", "Salario promedio (log)"),
+  comparar_formas("log_salario", "Costo laboral por trabajador (log)"),
   comparar_formas("log_empleo",  "Empleo total (log)")
 )
 
@@ -563,8 +554,8 @@ grafico_evento_grupos <- ggplot(evento_grupos, aes(x = anio, y = 100 * coeficien
                   position = position_dodge(width = 0.3)) +
   scale_color_manual(values = c(`Baja exposición` = COLOR_BAJA, `Alta exposición` = COLOR_ALTA)) +
   scale_x_continuous(breaks = 2015:2024) +
-  labs(title = "Empleo año por año, estimado por separado en cada grupo de exposición",
-       subtitle = "Efecto de una desviación estándar más de Kaitz dentro de cada grupo, frente a 2022",
+  labs(title = "Empleo año por año, estimado por separado\nen cada grupo de exposición",
+       subtitle = "Efecto de una desviación estándar más de Kaitz dentro de cada grupo,\nfrente a 2022",
        x = NULL, y = "Efecto (%)", color = NULL,
        caption = "Controles: firma, año, sector x año y departamento x año. Errores agrupados por firma.") +
   tema_tesis
@@ -587,6 +578,28 @@ estimar_did <- function(variable, base, etiqueta, muestra) {
   tibble(
     muestra        = muestra,
     resultado      = etiqueta,
+    lectura        = "DiD simple (promedio post - pre)",
+    coeficiente    = fila[["Estimate"]],
+    error_estandar = fila[["Std. Error"]],
+    p_valor        = fila[["Pr(>|t|)"]],
+    significancia  = estrellas(fila[["Pr(>|t|)"]]),
+    ic95_inferior  = fila[["Estimate"]] - 1.96 * fila[["Std. Error"]],
+    ic95_superior  = fila[["Estimate"]] + 1.96 * fila[["Std. Error"]],
+    observaciones  = nobs(modelo)
+  )
+}
+
+# Lectura A: el coeficiente de 2023 del estudio de evento, en vez del promedio
+# post-pre del DiD simple. Sirve para ver si el resultado del DiD depende de
+# promediar 2023 y 2024 juntos.
+estimar_evento_2023 <- function(variable, base, etiqueta, muestra) {
+  modelo <- feols(as.formula(paste0(variable, " ~ i(ANIO_F, kaitz_de, ref = '2022') | ", EFECTOS_FIJOS)),
+                  data = base, cluster = ~NORDEMP)
+  fila <- coeftable(modelo)["ANIO_F::2023:kaitz_de", ]
+  tibble(
+    muestra        = muestra,
+    resultado      = etiqueta,
+    lectura        = "A. 2023 frente a 2022",
     coeficiente    = fila[["Estimate"]],
     error_estandar = fila[["Std. Error"]],
     p_valor        = fila[["Pr(>|t|)"]],
@@ -600,10 +613,14 @@ estimar_did <- function(variable, base, etiqueta, muestra) {
 sin_extremo <- filter(datos, quintil != "Q5 (más expuestas)")
 
 recorte_extremo <- bind_rows(
-  estimar_did("log_salario", datos,       "Salario promedio (log)", "Todas las firmas"),
-  estimar_did("log_salario", sin_extremo, "Salario promedio (log)", "Sin el quintil más expuesto"),
+  estimar_did("log_salario", datos,       "Costo laboral por trabajador (log)", "Todas las firmas"),
+  estimar_did("log_salario", sin_extremo, "Costo laboral por trabajador (log)", "Sin el quintil más expuesto"),
   estimar_did("log_empleo",  datos,       "Empleo total (log)",     "Todas las firmas"),
-  estimar_did("log_empleo",  sin_extremo, "Empleo total (log)",     "Sin el quintil más expuesto")
+  estimar_did("log_empleo",  sin_extremo, "Empleo total (log)",     "Sin el quintil más expuesto"),
+  estimar_evento_2023("log_salario", datos,       "Costo laboral por trabajador (log)", "Todas las firmas"),
+  estimar_evento_2023("log_salario", sin_extremo, "Costo laboral por trabajador (log)", "Sin el quintil más expuesto"),
+  estimar_evento_2023("log_empleo",  datos,       "Empleo total (log)",     "Todas las firmas"),
+  estimar_evento_2023("log_empleo",  sin_extremo, "Empleo total (log)",     "Sin el quintil más expuesto")
 ) %>%
   mutate(efecto_porcentual = 100 * coeficiente)
 
@@ -632,8 +649,9 @@ if (CORRER_CONTDID && requireNamespace("contdid", quietly = TRUE)) {
   
   library(contdid)
   
-  # Paso 1: quitarle al empleo el efecto de los controles, usando solo los años
-  # previos para que el choque no contamine la limpieza
+  # Paso 1: quitarle al empleo el efecto de los controles. El modelo usa TODOS
+  # los años del panel (no solo los previos): el residuo es lo que sector,
+  # departamento y año no explican, en 2015-2024 completo.
   modelo_controles <- feols(log_empleo ~ 1 | NORDEMP + ANIO_F + sector_2022^ANIO_F +
                               depto_2022^ANIO_F,
                             data = datos, cluster = ~NORDEMP)
@@ -669,6 +687,7 @@ if (CORRER_CONTDID && requireNamespace("contdid", quietly = TRUE)) {
       "| de comparación (Q1):",
       n_distinct(base_dos_periodos$NORDEMP[base_dos_periodos$grupo == 0]), "\n")
   
+  set.seed(2023)   # cont_did() usa bootstrap (biters); fija la semilla para que sea reproducible
   resultado_contdid <- try(
     cont_did(yname   = "empleo_residual",
              tname   = "periodo",
@@ -697,6 +716,29 @@ if (CORRER_CONTDID && requireNamespace("contdid", quietly = TRUE)) {
         "\n  dentro del estimador), se promedian los años antes y después, y el",
         "\n  quintil menos expuesto se trata como si no hubiera recibido el choque.",
         "\n  Por eso es un contraste metodológico y no un resultado de la tesis.\n")
+
+    # Guardamos ATT y ACRT globales con su error estándar e IC 95% (estimate +-
+    # 1.96*SE, igual que el print() de arriba). Si la estructura del objeto
+    # cambia en una versión futura de contdid, se guarda summary() como texto.
+    tabla_contdid <- try({
+      tibble(
+        parametro      = c("ATT", "ACRT"),
+        estimacion     = c(resultado_contdid$overall_att, resultado_contdid$overall_acrt),
+        error_estandar = c(resultado_contdid$overall_att_se, resultado_contdid$overall_acrt_se)
+      ) %>%
+        mutate(ic95_inferior = estimacion - 1.96 * error_estandar,
+               ic95_superior = estimacion + 1.96 * error_estandar)
+    }, silent = TRUE)
+
+    if (inherits(tabla_contdid, "try-error")) {
+      capture.output(print(summary(resultado_contdid)),
+                     file = file.path(CARPETA, "T26_contdid.txt"))
+      cat("\nNo se pudo extraer ATT/ACRT como tabla; se guardó summary() en T26_contdid.txt\n")
+    } else {
+      guardar_tabla(tabla_contdid, "T26_contdid",
+                    "Tabla 26. Contraste con contdid: ATT y ACRT globales (ver nota metodológica en C6)",
+                    decimales = 4)
+    }
   }
   
 } else {
@@ -714,19 +756,19 @@ titulo("C7. ¿EL SALTO DEL SALARIO ES EL CHOQUE O REVERSIÓN A LA MEDIA?")
 # EL PROBLEMA
 # El Kaitz lleva el salario del obrero de 2022 en el DENOMINADOR. Si una firma
 # tuvo un mal 2022 por cualquier razón pasajera, su Kaitz sube por construcción,
-# y al año siguiente su salario rebota sin que el salario mínimo tenga nada que
+# y al año siguiente su costo laboral por trabajador rebota sin que el salario mínimo tenga nada que
 # ver. Eso se llama reversión a la media y produciría un "efecto" falso.
 #
-# La sospecha viene de C2c: frente a 2022 el salario de Q5 sube 10%, pero frente
+# La sospecha viene de C2c: frente a 2022 el costo laboral por trabajador de Q5 sube 10%, pero frente
 # al promedio de 2015-2019 está 9% POR DEBAJO. Las dos cosas juntas significan
 # que esas firmas venían cayendo y solo rebotaron.
 #
 # Tres ejercicios para distinguir una cosa de la otra.
 
-# --- C7.1 La serie del salario por quintil, desde 2015 ---------------------------
+# --- C7.1 La serie del costo laboral por trabajador por quintil, desde 2015 ------
 # Si las firmas de Q5 vienen cayendo desde 2015 y en 2023 solo rebotan, es
 # reversión. Si están planas y saltan en 2023, es el choque.
-titulo("C7.1 Trayectoria del salario por quintil")
+titulo("C7.1 Trayectoria del costo laboral por trabajador por quintil")
 
 trayectoria <- datos %>%
   group_by(quintil, ANIO) %>%
@@ -738,7 +780,7 @@ trayectoria <- datos %>%
 
 ver(trayectoria, filas = 50)
 guardar_tabla(trayectoria, "T21_trayectoria_salario_por_quintil",
-              "Tabla 21. Salario promedio por quintil de exposición, frente a su nivel de 2015 (%)",
+              "Tabla 21. Costo laboral por trabajador por quintil de exposición, frente a su nivel de 2015 (%)",
               decimales = 2)
 
 grafico_trayectoria <- ggplot(trayectoria, aes(x = ANIO, y = vs_2015, color = quintil)) +
@@ -747,10 +789,10 @@ grafico_trayectoria <- ggplot(trayectoria, aes(x = ANIO, y = vs_2015, color = qu
   geom_line(linewidth = 1) + geom_point(size = 2) +
   scale_color_brewer(palette = "RdYlBu", direction = -1) +
   scale_x_continuous(breaks = 2015:2024) +
-  labs(title = "Trayectoria del salario promedio por quintil de exposición",
-       subtitle = "Diferencia frente al nivel de 2015 de cada grupo. Si Q5 viene cayendo y rebota en 2023, es reversión",
+  labs(title = "Trayectoria del costo laboral por trabajador\npor quintil de exposición",
+       subtitle = "Diferencia frente al nivel de 2015 de cada grupo.\nSi Q5 viene cayendo y rebota en 2023, es reversión",
        x = NULL, y = "% frente a 2015", color = NULL,
-       caption = "Promedios simples del logaritmo del salario, sin controles.") +
+       caption = "Promedios simples del logaritmo del costo laboral por trabajador, sin controles.") +
   tema_tesis
 guardar_grafico(grafico_trayectoria, "GC04_trayectoria_salario", ancho = 10)
 
@@ -812,11 +854,13 @@ salto_placebo <- function(variable, etiqueta) {
     filter(anio == 2019) %>%
     transmute(resultado = etiqueta, quintil, coeficiente, error_estandar, p_valor,
               significancia = estrellas(p_valor),
-              efecto_porcentual = 100 * coeficiente)
+              efecto_porcentual = 100 * coeficiente,
+              ic95_inferior = coeficiente - 1.96 * error_estandar,
+              ic95_superior = coeficiente + 1.96 * error_estandar)
 }
 
 placebo_reversion <- bind_rows(
-  salto_placebo("log_salario", "Salario promedio (log)"),
+  salto_placebo("log_salario", "Costo laboral por trabajador (log)"),
   salto_placebo("log_empleo",  "Empleo total (log)")
 ) %>%
   mutate(quintil = factor(quintil, levels = c("Q2", "Q3", "Q4", "Q5 (más expuestas)")))
@@ -826,9 +870,42 @@ guardar_tabla(placebo_reversion, "T22_placebo_reversion_2018",
               "Tabla 22. Placebo: salto de 2019 con la medida construida en 2018, por quintil",
               decimales = 4)
 
-cat("\nLECTURA: en 2019 no hubo ningún choque parecido al de 2023. Si el salario",
-    "\nigual salta en los quintiles altos, lo que mide la medida es reversión a la",
-    "\nmedia, no el efecto del salario mínimo. Compara estas cifras con las de C2b.\n")
+cat("\nLECTURA: en 2019 no hubo ningún choque parecido al de 2023. Si el costo",
+    "\nlaboral por trabajador igual salta en los quintiles altos, lo que mide la",
+    "\nmedida es reversión a la media, no el efecto del salario mínimo. Compara",
+    "\nestas cifras con las de C2b.\n")
+
+# --- GC02b: el salto real de 2023 frente al placebo de 2019 --------------------
+# Se arma aquí, y no en C2b, porque necesita placebo_reversion (recién
+# calculado arriba). Comparamos el salto real de 2023 (frente a 2022) con el
+# salto placebo de 2019 (frente a 2018, sin ningún choque). Si las dos series
+# se parecen, el salto real no dice mucho por sí solo.
+datos_salto_vs_placebo <- bind_rows(
+  salto_2023 %>% filter(anio == 2023) %>%
+    transmute(resultado, quintil, efecto_porcentual, ic95_inferior, ic95_superior,
+              serie = "Real: 2023 frente a 2022"),
+  placebo_reversion %>%
+    transmute(resultado, quintil, efecto_porcentual, ic95_inferior, ic95_superior,
+              serie = "Placebo: 2019 frente a 2018")
+)
+
+grafico_salto <- ggplot(datos_salto_vs_placebo,
+                        aes(x = quintil, y = efecto_porcentual, color = serie)) +
+  geom_hline(yintercept = 0, color = "grey60") +
+  geom_point(position = position_dodge(width = 0.4), size = 2.2) +
+  geom_errorbar(aes(ymin = 100 * ic95_inferior, ymax = 100 * ic95_superior),
+                position = position_dodge(width = 0.4), width = 0.2) +
+  facet_wrap(~ resultado) +
+  scale_color_manual(values = c(`Real: 2023 frente a 2022` = COLOR_ALTA,
+                                `Placebo: 2019 frente a 2018` = "grey60")) +
+  labs(title = "El salto de 2023 frente al placebo de 2019,\npor quintil de exposición",
+       subtitle = "Cada quintil frente al menos expuesto, en su propio período",
+       x = NULL, y = "Cambio (%)", color = NULL,
+       caption = paste("Controles: firma, año, sector x año y departamento x año (fijados en 2022).",
+                       "\nIntervalos de confianza al 95%, errores agrupados por firma.")) +
+  tema_tesis +
+  theme(axis.text.x = element_text(angle = 15, hjust = 1))
+guardar_grafico(grafico_salto, "GC02b_salto_2023_por_quintil", ancho = 10)
 
 # --- C7.3 Kaitz con el salario promedio de 2019-2021 -----------------------------
 # Si el problema es el ruido de un solo año, un denominador promediado lo
@@ -910,8 +987,8 @@ salto_alternativo <- function(variable, etiqueta, referencia) {
 }
 
 medida_alternativa <- bind_rows(
-  salto_alternativo("log_salario", "Salario promedio (log)", "2022"),
-  salto_alternativo("log_salario", "Salario promedio (log)", "promedio 2015-2019"),
+  salto_alternativo("log_salario", "Costo laboral por trabajador (log)", "2022"),
+  salto_alternativo("log_salario", "Costo laboral por trabajador (log)", "promedio 2015-2019"),
   salto_alternativo("log_empleo",  "Empleo total (log)",     "2022"),
   salto_alternativo("log_empleo",  "Empleo total (log)",     "promedio 2015-2019")
 ) %>%
@@ -922,7 +999,7 @@ guardar_tabla(medida_alternativa, "T23_kaitz_promedio_2019_2021",
               "Tabla 23. Cambio de 2023 por quintil, con el Kaitz construido sobre el salario promedio de 2019-2021",
               decimales = 4)
 
-cat("\nLECTURA: si con esta medida el salario sigue subiendo en los quintiles altos",
+cat("\nLECTURA: si con esta medida el costo laboral por trabajador sigue subiendo en los quintiles altos",
     "\ncon LAS DOS referencias, el primer eslabón es sólido y el problema era el ruido",
     "\ndel salario de 2022. Si el salto desaparece, la medida estaba capturando",
     "\nreversión a la media y hay que reconstruir la exposición desde la distribución",
@@ -1059,15 +1136,15 @@ base_medidas_2022 <- datos %>% inner_join(medidas_2022, by = "NORDEMP")
 
 real_2023 <- bind_rows(
   salto_con_medida(base_medidas_2022, "qa", "log_salario", 2023, "2022") %>%
-    mutate(medida = "A. Salario de la firma en 2022", resultado = "Salario promedio (log)"),
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Costo laboral por trabajador (log)"),
   salto_con_medida(base_medidas_2022, "qb", "log_salario", 2023, "2022") %>%
-    mutate(medida = "B. Salario promediado 2019-2022", resultado = "Salario promedio (log)"),
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Costo laboral por trabajador (log)"),
   salto_con_medida(base_medidas_2022, "qc", "log_salario", 2023, "2022") %>%
-    mutate(medida = "C. Salario de firmas parecidas", resultado = "Salario promedio (log)"),
+    mutate(medida = "C. Salario de firmas parecidas", resultado = "Costo laboral por trabajador (log)"),
   salto_con_medida(base_medidas_2022, "qa", "log_empleo", 2023, "2022") %>%
-    mutate(medida = "A. Salario de la firma en 2022", resultado = "Empleo total (log)"),
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Empleo total (log)"),
   salto_con_medida(base_medidas_2022, "qb", "log_empleo", 2023, "2022") %>%
-    mutate(medida = "B. Salario promediado 2019-2022", resultado = "Empleo total (log)"),
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Empleo total (log)"),
   salto_con_medida(base_medidas_2022, "qc", "log_empleo", 2023, "2022") %>%
     mutate(medida = "C. Salario de firmas parecidas", resultado = "Empleo total (log)")
 ) %>%
@@ -1092,15 +1169,15 @@ base_medidas_2018 <- datos %>%
 
 placebo_2019 <- bind_rows(
   salto_con_medida(base_medidas_2018, "qa", "log_salario", 2019, "2018") %>%
-    mutate(medida = "A. Salario de la firma en 2022", resultado = "Salario promedio (log)"),
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Costo laboral por trabajador (log)"),
   salto_con_medida(base_medidas_2018, "qb", "log_salario", 2019, "2018") %>%
-    mutate(medida = "B. Salario promediado 2019-2022", resultado = "Salario promedio (log)"),
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Costo laboral por trabajador (log)"),
   salto_con_medida(base_medidas_2018, "qc", "log_salario", 2019, "2018") %>%
-    mutate(medida = "C. Salario de firmas parecidas", resultado = "Salario promedio (log)"),
+    mutate(medida = "C. Salario de firmas parecidas", resultado = "Costo laboral por trabajador (log)"),
   salto_con_medida(base_medidas_2018, "qa", "log_empleo", 2019, "2018") %>%
-    mutate(medida = "A. Salario de la firma en 2022", resultado = "Empleo total (log)"),
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Empleo total (log)"),
   salto_con_medida(base_medidas_2018, "qb", "log_empleo", 2019, "2018") %>%
-    mutate(medida = "B. Salario promediado 2019-2022", resultado = "Empleo total (log)"),
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Empleo total (log)"),
   salto_con_medida(base_medidas_2018, "qc", "log_empleo", 2019, "2018") %>%
     mutate(medida = "C. Salario de firmas parecidas", resultado = "Empleo total (log)")
 ) %>%
@@ -1112,36 +1189,51 @@ ver(placebo_2019, filas = 24)
 titulo("C8.3 Real frente a placebo")
 
 comparacion_medidas <- bind_rows(real_2023, placebo_2019) %>%
-  select(resultado, medida, ejercicio, quintil, efecto_porcentual, p_valor, significancia, firmas) %>%
+  select(resultado, medida, ejercicio, quintil, efecto_porcentual, error_estandar, p_valor, significancia, firmas) %>%
   arrange(resultado, medida, quintil, ejercicio)
 
 ver(comparacion_medidas, filas = 48)
 guardar_tabla(comparacion_medidas, "T24_tres_medidas_real_vs_placebo",
-              "Tabla 24. Las tres medidas de exposición: salto real de 2023 frente al placebo de 2019",
+              paste("Tabla 24. Las tres medidas de exposición: salto real de 2023 frente al placebo de 2019.",
+                    "Real: año base 2022, promedio 2019, 2021 y 2022.",
+                    "Placebo: año base 2018, promedio 2015-2018."),
               decimales = 4)
 
 # Resumen apretado: solo el quintil más expuesto, que es donde más se nota
 resumen_medidas <- comparacion_medidas %>%
   filter(quintil == "Q5 (más expuestas)") %>%
-  select(resultado, medida, ejercicio, efecto_porcentual, significancia) %>%
-  pivot_wider(names_from = ejercicio, values_from = c(efecto_porcentual, significancia))
+  select(resultado, medida, ejercicio, efecto_porcentual, error_estandar, significancia) %>%
+  pivot_wider(names_from = ejercicio, values_from = c(efecto_porcentual, error_estandar, significancia)) %>%
+  mutate(
+    diferencia_real_menos_placebo = `efecto_porcentual_Real (choque de 2023)` -
+      `efecto_porcentual_Placebo (año sin choque: 2019)`,
+    # El error estándar de la diferencia supone independencia entre el ejercicio
+    # real y el placebo; como comparten firmas, la covarianza probablemente es
+    # positiva, así que este error es conservador (más grande que el real).
+    ee_diferencia = sqrt((100 * `error_estandar_Real (choque de 2023)`)^2 +
+                           (100 * `error_estandar_Placebo (año sin choque: 2019)`)^2),
+    p_diferencia = 2 * pnorm(-abs(diferencia_real_menos_placebo / ee_diferencia)),
+    significancia_diferencia = estrellas(p_diferencia)
+  )
 
 ver(resumen_medidas, filas = 12)
 guardar_tabla(resumen_medidas, "T25_resumen_medidas_q5",
               "Tabla 25. El quintil más expuesto: efecto real y efecto falso, con cada medida",
               decimales = 2)
 
-grafico_medidas <- ggplot(filter(comparacion_medidas, resultado == "Salario promedio (log)"),
+grafico_medidas <- ggplot(filter(comparacion_medidas, resultado == "Costo laboral por trabajador (log)"),
                           aes(x = quintil, y = efecto_porcentual, fill = ejercicio)) +
   geom_hline(yintercept = 0, color = "grey60") +
   geom_col(position = position_dodge(width = 0.8), width = 0.7) +
   facet_wrap(~ medida) +
   scale_fill_manual(values = c(`Real (choque de 2023)` = COLOR_ALTA,
                                `Placebo (año sin choque: 2019)` = "grey60")) +
-  labs(title = "Salario: el salto real frente al salto falso, con cada medida de exposición",
+  labs(title = "Costo laboral por trabajador: el salto real frente al salto falso, con cada medida de exposición",
        subtitle = "Si las dos barras son parecidas, la medida produce efectos donde no los hay",
        x = NULL, y = "Cambio (%)", fill = NULL,
        caption = paste("Cada quintil frente al menos expuesto.",
+                       "Real: año base 2022, promedio 2019, 2021 y 2022.",
+                       "Placebo: año base 2018, promedio 2015-2018.",
                        "\nControles: firma, año, sector x año y departamento x año.")) +
   tema_tesis
 guardar_grafico(grafico_medidas, "GC05_medidas_real_vs_placebo", ancho = 13, alto = 6)
