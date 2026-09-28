@@ -295,7 +295,7 @@ base <- base %>%
 # distinta a la de 2022 -- el tamaño contemporáneo es justo el "bad control"
 # que esta variable se creó para evitar. Se corrige fijando de verdad la
 # clasificación en 2022, con un join, igual que ya hacen
-# 01_descriptivos_y_contexto.R y 08_tratamiento_continuo.R.
+# 01_descriptivos_y_contexto.R y 06_tratamiento_continuo.R.
 clasificacion_2022 <- panel %>%
   filter(ANIO == 2022) %>%
   transmute(

@@ -44,7 +44,7 @@ permanece en `xx` en adelante si llega a acumularse más de uno.
 | `05_resultados_y_mecanismos.R` | 870 | Análisis principal y mecanismos | los tres paneles | — | `05_resultados_y_mecanismos` |
 | `06_mecanismos_por_grupo.R` (archivado en descartado/) | 622 | Mecanismos por tamaño de firma | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/06_mecanismos_por_grupo` |
 | `07_reconciliacion.R` (archivado en descartado/) | 534 | Validaciones (las tres lecturas) | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/07_reconciliacion` |
-| `08_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `08_tratamiento_continuo` |
+| `06_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `06_tratamiento_continuo` |
 | `09_validez_exposicion.R` (archivado en descartado/) | — | Diagnóstico: validez de la medida de exposición (Bite) | `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/09_validez_exposicion` |
 | `10_bug_controles.R` (archivado en descartado/) | 328 | Diagnóstico: descomposición del bug de controles fijos en 2022 (controles vs. muestra) | `panel_firma_eam_expalt_completo.rds`, `exposicion_alternativa_2022.rds`, `panel_analitico_firma_eam.rds` | — | `descartado/resultados/10_bug_controles` |
 | `14_variable_instrumental.R` (archivado en descartado/) | 628 | Diagnóstico: variable instrumental para el sesgo de división del Kaitz (replica la especificación de `05_resultados_y_mecanismos.R`) | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (verificación de la réplica de Bite — si el archivo no existe, se omite; mismo patrón de lectura que `02_medidas_exposicion.R`) | — | `descartado/resultados/14_variable_instrumental` |
@@ -82,7 +82,7 @@ Ver `NARRATIVA.md` para el mapa completo capítulo-por-capítulo.
 Conviven dos paneles de firma distintos:
 
 - **`panel_analitico_firma_eam.rds`** (el original): usado por
-  `01_descriptivos_y_contexto.R` y `08_tratamiento_continuo.R`.
+  `01_descriptivos_y_contexto.R` y `06_tratamiento_continuo.R`.
 - **`panel_firma_eam_expalt_completo.rds`** (el ampliado): incluye 2020 y
   variables desagregadas por categoría ocupacional (obreros/profesional-técnico/
   administrativos). Usado por el resto de los scripts.

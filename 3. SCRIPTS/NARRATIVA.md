@@ -22,14 +22,14 @@ y `05`, aunque se lea después de `01`.
 | 1 | Análisis inicial y descriptivos | `01_descriptivos_y_contexto.R` (secciones 1-4) | La EAM, el panel, el choque de 2023, quién está expuesto. También el descriptivo de `02_medidas_exposicion.R` (obrero permanente típico ~1,44 SM). |
 | 2 | Medición | `02_medidas_exposicion.R`, `03_primer_eslabon_medidas.R`, `04_decision_medida.R` (parte) | Construcción de las medidas de exposición (Bite, Exposure, golpe_c, golpe_a, golpe_costo) y elección de la principal. |
 | 3 | Identificación | `07_reconciliacion.R` (archivado en descartado/) | Estrategia, supuestos, y por qué circulan cifras distintas del primer eslabón. |
-| 4 | Validación de la identificación (pruebas que el diseño PASA) | `01_descriptivos_y_contexto.R` (sección 10), `08_tratamiento_continuo.R` (C1-C6) | Tendencias previas, formas funcionales, event studies, contraste con `contdid`. |
+| 4 | Validación de la identificación (pruebas que el diseño PASA) | `01_descriptivos_y_contexto.R` (sección 10), `06_tratamiento_continuo.R` (C1-C6) | Tendencias previas, formas funcionales, event studies, contraste con `contdid`. |
 | 5 | Resultados | `01_descriptivos_y_contexto.R` (secciones 6-9), `05_resultados_y_mecanismos.R`, `06_mecanismos_por_grupo.R` (archivado en descartado/) | Primer eslabón, segundo eslabón, mecanismos, heterogeneidad por tamaño. |
-| 6 | Validaciones adicionales y amenazas (lo que NO cierra) | `04_decision_medida.R` (parte), `08_tratamiento_continuo.R` (C7-C8), `05_resultados_y_mecanismos.R` (parte) | Sensibilidad al año base, reversión a la media, tendencias previas no resueltas, placebo no informativo. Ver la lista completa en la sección 3 de este documento. |
+| 6 | Validaciones adicionales y amenazas (lo que NO cierra) | `04_decision_medida.R` (parte), `06_tratamiento_continuo.R` (C7-C8), `05_resultados_y_mecanismos.R` (parte) | Sensibilidad al año base, reversión a la media, tendencias previas no resueltas, placebo no informativo. Ver la lista completa en la sección 3 de este documento. |
 
 **Regla aplicada sin excepciones**: si una prueba respalda el diseño, va al
 capítulo 4. Si lo amenaza, contradice o limita, va al capítulo 6. No se movió
 nada del 6 al 4 por conveniencia narrativa -- donde un script mezclaba las
-dos cosas, se marcó sección por sección (`08_tratamiento_continuo.R`
+dos cosas, se marcó sección por sección (`06_tratamiento_continuo.R`
 es el caso más claro: C1-C6 al capítulo 4, C7-C8 al capítulo 6).
 
 **`xx_script_base_historico.R`**: histórico, superado por `01_descriptivos_y_contexto.R`, no
@@ -84,7 +84,7 @@ Una línea por amenaza, con el script donde está la evidencia:
    construcción.** Kaitz se mide con el salario de 2022, así que las firmas
    de exposición alta son por definición las que llegaron a 2022 con el
    costo más bajo. — `05_resultados_y_mecanismos.R` (sección 3),
-   `08_tratamiento_continuo.R` (C7.1).
+   `06_tratamiento_continuo.R` (C7.1).
 2. **El coeficiente de 2023 pasa de +4,03% a -1,95% al mover el año base de
    exposición a 2019** (mientras el outcome se queda en 2022-2023 con
    arrastre a 2019) — exposición post-tratamiento, no interpretable.
@@ -156,7 +156,7 @@ script correspondiente con una nota, **sin resolverlas por cuenta propia**:
    tercer criterio de reemplazo o si dos criterios (celda limpia +
    consistencia con la especificación estándar) son suficientes por sí
    solos.
-4. **C8 de `08_tratamiento_continuo.R`** (tres formas de construir
+4. **C8 de `06_tratamiento_continuo.R`** (tres formas de construir
    la exposición, probadas contra el mismo placebo que detectó el problema
    en C7) no tiene todavía un veredicto: depende de cuál medida (A: salario
    propio, B: promediada, C: por celda de firmas parecidas) pase la

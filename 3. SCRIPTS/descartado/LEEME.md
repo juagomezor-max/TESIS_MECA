@@ -32,3 +32,8 @@ uno, hay que regresarlo a `3. SCRIPTS`.
 Se conservan en el flujo principal `3. SCRIPTS/`: `01` a `05` y
 `08_tratamiento_continuo.R`, con sus resultados correspondientes en
 `4. RESULTADOS/`.
+
+Los scripts archivados conservan su numeración anterior. En particular,
+`06_mecanismos_por_grupo.R` (archivado aquí) no tiene relación con el
+`06_tratamiento_continuo.R` que existe hoy en el flujo principal: éste es el
+antiguo `08_tratamiento_continuo.R`, renombrado el 2026-09-27.

@@ -8,3 +8,6 @@ metodológicas específicas) ni a `NARRATIVA.md` (mapa del pipeline).
 
 Se archivan en `descartado/` los scripts `06`, `07` y `09` a `14` y sus
 resultados. Se conservan en el flujo principal `01` a `05` y `08`.
+
+`08_tratamiento_continuo.R` pasa a ser `06_tratamiento_continuo.R`, como
+robustez adicional del flujo principal.

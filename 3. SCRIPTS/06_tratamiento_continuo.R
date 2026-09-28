@@ -1,5 +1,5 @@
 # ==============================================================================
-# 08_tratamiento_continuo.R
+# 06_tratamiento_continuo.R
 #
 # Tesis: Rigideces laborales y decisiones de la firma: evidencia desde choques
 #        en costos laborales en Colombia
@@ -27,8 +27,11 @@
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# LUGAR EN LA TESIS -- este script alimenta DOS capítulos, marcado sección por
-# sección abajo, no en bloque.
+# LUGAR EN LA TESIS -- robustez adicional del flujo principal (01 a 05): el
+# mismo análisis con tratamiento continuo (incluido el contraste con el
+# paquete contdid, de Callaway, Goodman-Bacon y Sant'Anna, 2024), con la
+# especificación sin control por tamaño (igual que 01, 03, 04 y 05). Alimenta
+# DOS capítulos, marcado sección por sección abajo, no en bloque.
 #
 # Capítulo 4 (Validación de la identificación -- pruebas que el diseño PASA):
 #   C1. Distribución de la exposición.
@@ -73,7 +76,7 @@ library(ggplot2)
 library(flextable)
 
 # Carpeta de salida propia, para no pisar nada de lo que ya está validado
-CARPETA <- file.path("4. RESULTADOS", "08_tratamiento_continuo")
+CARPETA <- file.path("4. RESULTADOS", "06_tratamiento_continuo")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
 # Si el paquete contdid no está instalado, el script corre igual y se salta C6.
