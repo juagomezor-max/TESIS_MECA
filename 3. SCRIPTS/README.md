@@ -42,19 +42,19 @@ permanece en `xx` en adelante si llega a acumularse más de uno.
 | `03_primer_eslabon_medidas.R` | 665 | Primera etapa con las cinco medidas | los tres paneles | — | `03_primer_eslabon_medidas` |
 | `04_decision_medida.R` | 665 | Elección de la medida principal | los tres paneles | — | `04_decision_medida` |
 | `05_resultados_y_mecanismos.R` | 870 | Análisis principal y mecanismos | los tres paneles | — | `05_resultados_y_mecanismos` |
-| `06_mecanismos_por_grupo.R` | 622 | Mecanismos por tamaño de firma | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `06_mecanismos_por_grupo` |
-| `07_reconciliacion.R` | 534 | Validaciones (las tres lecturas) | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `07_reconciliacion` |
+| `06_mecanismos_por_grupo.R` (archivado en descartado/) | 622 | Mecanismos por tamaño de firma | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/06_mecanismos_por_grupo` |
+| `07_reconciliacion.R` (archivado en descartado/) | 534 | Validaciones (las tres lecturas) | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/07_reconciliacion` |
 | `08_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `08_tratamiento_continuo` |
-| `09_validez_exposicion.R` | — | Diagnóstico: validez de la medida de exposición (Bite) | `panel_firma_eam_expalt_completo.rds` | — | `09_validez_exposicion` |
-| `10_bug_controles.R` | 328 | Diagnóstico: descomposición del bug de controles fijos en 2022 (controles vs. muestra) | `panel_firma_eam_expalt_completo.rds`, `exposicion_alternativa_2022.rds`, `panel_analitico_firma_eam.rds` | — | `10_bug_controles` |
-| `14_variable_instrumental.R` | 628 | Diagnóstico: variable instrumental para el sesgo de división del Kaitz (replica la especificación de `05_resultados_y_mecanismos.R`) | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (verificación de la réplica de Bite — si el archivo no existe, se omite; mismo patrón de lectura que `02_medidas_exposicion.R`) | — | `14_variable_instrumental` |
+| `09_validez_exposicion.R` (archivado en descartado/) | — | Diagnóstico: validez de la medida de exposición (Bite) | `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/09_validez_exposicion` |
+| `10_bug_controles.R` (archivado en descartado/) | 328 | Diagnóstico: descomposición del bug de controles fijos en 2022 (controles vs. muestra) | `panel_firma_eam_expalt_completo.rds`, `exposicion_alternativa_2022.rds`, `panel_analitico_firma_eam.rds` | — | `descartado/resultados/10_bug_controles` |
+| `14_variable_instrumental.R` (archivado en descartado/) | 628 | Diagnóstico: variable instrumental para el sesgo de división del Kaitz (replica la especificación de `05_resultados_y_mecanismos.R`) | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (verificación de la réplica de Bite — si el archivo no existe, se omite; mismo patrón de lectura que `02_medidas_exposicion.R`) | — | `descartado/resultados/14_variable_instrumental` |
 | `xx_script_base_historico.R` | 829 | Histórico, **NO correr** | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones` |
 
 "Los tres paneles" = `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds`, `1. DATOS/exposicion_alternativa_2022.rds`.
 
 **Notas sobre el inventario** (correcciones encontradas al verificarlo contra
 el repositorio real, 2026-09-24):
-- `06_mecanismos_por_grupo.R` tiene 622 líneas, no 665 — la cifra original
+- `06_mecanismos_por_grupo.R` (archivado en descartado/) tiene 622 líneas, no 665 — la cifra original
   quedó desactualizada. El script termina con su bloque de cierre completo, no
   está truncado.
 - `02_medidas_exposicion.R` también lee `panel_analitico_firma_eam.rds`
@@ -120,7 +120,8 @@ sección de metodología de la tesis.
 
 ## Diagnóstico de validez de la medida de exposición (09-10)
 
-`09_validez_exposicion.R` y `10_bug_controles.R` no son parte de la
+`09_validez_exposicion.R` y `10_bug_controles.R` (ambos archivados en
+descartado/) no son parte de la
 estimación: auditan desde afuera si `Bite2022_obreros` (la medida elegida en
 `04_decision_medida.R`) mide de verdad exposición al salario mínimo o si el
 traslape aritmético entre el denominador de la exposición y la base del
@@ -128,14 +129,15 @@ outcome contamina el resultado. Se corren aparte, no modifican ni vuelven a
 correr el pipeline `01`-`08`, y sus cifras no reemplazan a las del glosario de
 `NARRATIVA.md` — lo complementan con el análisis de robustez.
 
-- **`09_validez_exposicion.R`** consolida en una sola carpeta de salida
-  (`4. RESULTADOS/09_validez_exposicion/`) cuatro pruebas que antes vivían en
+- **`09_validez_exposicion.R`** (archivado en descartado/) consolida en una
+  sola carpeta de salida
+  (`3. SCRIPTS/descartado/resultados/09_validez_exposicion/`) cuatro pruebas que antes vivían en
   scripts separados: placebo rodante con aumentos reales del mínimo, celda
   limpia con la indexación del rezago corregida, sensibilidad del outcome de
   2023 al aumento de 2022, y una auditoría adversarial de cinco afirmaciones
   (buscando activamente dónde el diagnóstico se equivoca). Su última sección
   (síntesis) resume qué resiste, qué queda falsado y qué queda pendiente.
-- **`10_bug_controles.R`** (antes `16_descomposicion_bug.R`) descompone si la
+- **`10_bug_controles.R`** (archivado en descartado/; antes `16_descomposicion_bug.R`) descompone si la
   mejora observada al corregir el bug de controles fijos en 2022 (ver más
   abajo) viene de los controles o de la restricción de muestra que trae esa
   corrección. Resultado: 100% controles, 0% muestra.
@@ -149,21 +151,22 @@ correr el pipeline `01`-`08`, y sus cifras no reemplazan a las del glosario de
   - **Consolidados, sin error propio** (`11_placebo_rodante_real.R`,
     `13_celda_limpia_corregida.R`, `14_outcome_alternativo.R`,
     `15_auditoria_adversarial.R`): su lógica era correcta; se archivaron
-    porque `09_validez_exposicion.R` reproduce sus cifras de forma
+    porque `09_validez_exposicion.R` (archivado en descartado/) reproduce sus cifras de forma
     verificada (7 cifras citadas, comprobadas antes de archivar) y no tiene
     sentido mantener dos rutas al mismo resultado.
   - Las salidas de los scripts descartados se archivaron y siguen
     disponibles en el historial de git (commit 89b959e). Su evidencia
-    vigente la reproduce `09_validez_exposicion.R` (secciones 1 a 4).
+    vigente la reproduce `09_validez_exposicion.R` (archivado en descartado/; secciones 1 a 4).
 
 **Bug de controles fijos en 2022** (encontrado en esta ronda de diagnóstico,
-ya corregido en `05_resultados_y_mecanismos.R`, `06_mecanismos_por_grupo.R` y
-`07_reconciliacion.R`): `sector_2022`/`depto_2022`/`tamano_2022` se
+ya corregido en `05_resultados_y_mecanismos.R`, `06_mecanismos_por_grupo.R`
+(archivado en descartado/) y
+`07_reconciliacion.R` (archivado en descartado/): `sector_2022`/`depto_2022`/`tamano_2022` se
 recalculaban con el CIIU4/DPTO/tamaño de cada fila en su propio año, pese al
 nombre — no estaban fijos en 2022. Para ventanas de outcome de más de un año,
 eso fragmentaba a las firmas que cambiaron de clasificación entre años. El
 detalle completo, con las cifras exactas de cuántas firmas-año estaban
-afectadas, está en la sección 4.1 de `09_validez_exposicion.R`.
+afectadas, está en la sección 4.1 de `09_validez_exposicion.R` (archivado en descartado/).
 
 ## Ramas históricas
 

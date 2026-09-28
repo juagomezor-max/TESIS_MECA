@@ -21,9 +21,9 @@ y `05`, aunque se lea después de `01`.
 |---|---|---|---|
 | 1 | Análisis inicial y descriptivos | `01_descriptivos_y_contexto.R` (secciones 1-4) | La EAM, el panel, el choque de 2023, quién está expuesto. También el descriptivo de `02_medidas_exposicion.R` (obrero permanente típico ~1,44 SM). |
 | 2 | Medición | `02_medidas_exposicion.R`, `03_primer_eslabon_medidas.R`, `04_decision_medida.R` (parte) | Construcción de las medidas de exposición (Bite, Exposure, golpe_c, golpe_a, golpe_costo) y elección de la principal. |
-| 3 | Identificación | `07_reconciliacion.R` | Estrategia, supuestos, y por qué circulan cifras distintas del primer eslabón. |
+| 3 | Identificación | `07_reconciliacion.R` (archivado en descartado/) | Estrategia, supuestos, y por qué circulan cifras distintas del primer eslabón. |
 | 4 | Validación de la identificación (pruebas que el diseño PASA) | `01_descriptivos_y_contexto.R` (sección 10), `08_tratamiento_continuo.R` (C1-C6) | Tendencias previas, formas funcionales, event studies, contraste con `contdid`. |
-| 5 | Resultados | `01_descriptivos_y_contexto.R` (secciones 6-9), `05_resultados_y_mecanismos.R`, `06_mecanismos_por_grupo.R` | Primer eslabón, segundo eslabón, mecanismos, heterogeneidad por tamaño. |
+| 5 | Resultados | `01_descriptivos_y_contexto.R` (secciones 6-9), `05_resultados_y_mecanismos.R`, `06_mecanismos_por_grupo.R` (archivado en descartado/) | Primer eslabón, segundo eslabón, mecanismos, heterogeneidad por tamaño. |
 | 6 | Validaciones adicionales y amenazas (lo que NO cierra) | `04_decision_medida.R` (parte), `08_tratamiento_continuo.R` (C7-C8), `05_resultados_y_mecanismos.R` (parte) | Sensibilidad al año base, reversión a la media, tendencias previas no resueltas, placebo no informativo. Ver la lista completa en la sección 3 de este documento. |
 
 **Regla aplicada sin excepciones**: si una prueba respalda el diseño, va al
@@ -35,7 +35,8 @@ es el caso más claro: C1-C6 al capítulo 4, C7-C8 al capítulo 6).
 **`xx_script_base_historico.R`**: histórico, superado por `01_descriptivos_y_contexto.R`, no
 se corre.
 
-**`09_validez_exposicion.R` y `10_bug_controles.R`**: no alimentan ningún
+**`09_validez_exposicion.R` y `10_bug_controles.R`** (ambos archivados en
+descartado/): no alimentan ningún
 capítulo directamente — auditan desde afuera si la medida elegida en
 `04_decision_medida.R` mide lo que dice medir. Su evidencia respalda o
 matiza varias de las amenazas del capítulo 6 (ver la sección 5 de este
@@ -54,7 +55,7 @@ distintos.
 |---|---|---|
 | **4,03%** | `01_descriptivos_y_contexto.R` y `05_resultados_y_mecanismos.R`, coeficiente de 2023 del event study en panel (lectura A) | Cuánto subió el costo laboral por trabajador en 2023 frente a 2022, en una firma una DE más expuesta. **Cifra principal de la tesis.** |
 | **4,80%** | Mismo event study, lectura B (`05_resultados_y_mecanismos.R`, `contraste()` con pesos `{2023=1, 2016=1/3, 2019=-1/3}`) | El mismo salto de 2023, ajustado por la pendiente anual previa (2016-2019). Como la tendencia previa es descendente, B sale MAYOR que A, no menor. **Pendiente sin resolver** (ver sección 4): el póster describe esta misma cifra como "el cambio típico de 2016-2019", que es una descripción distinta y potencialmente contradictoria -- si fueran la misma cosa, el diferencial del choque sería menor que el de un año normal. |
-| **2,98%** | `03_primer_eslabon_medidas.R`, sección 1 | Tasa de crecimiento del costo laboral 2022-2023 en **corte transversal** (una fila por firma, sin efectos fijos de panel). Ver `07_reconciliacion.R` para la descomposición completa de por qué difiere de 4,03%. |
+| **2,98%** | `03_primer_eslabon_medidas.R`, sección 1 | Tasa de crecimiento del costo laboral 2022-2023 en **corte transversal** (una fila por firma, sin efectos fijos de panel). Ver `07_reconciliacion.R` (archivado en descartado/) para la descomposición completa de por qué difiere de 4,03%. |
 | **1,15%** (p=0,008) | `04_decision_medida.R`, sección 3, tabla T01_celda_limpia | La "celda limpia": exposición medida en **2019** contra crecimiento del costo laboral **2022-2023**. Rompe el traslape aritmético entre el denominador de la exposición y la base del outcome. Es la estimación más creíble metodológicamente, aunque no la más citada -- es una **cota inferior** por atenuación, no una medición exacta. |
 | **-1,95%** | `04_decision_medida.R`, sección 4, matriz de combinaciones | Coeficiente de 2023 con exposición medida en 2022 y el outcome que arrastra año base 2019. Exposición **post-tratamiento** respecto del aumento del mínimo de 2022 -- no es interpretable, se reporta solo como diagnóstico de por qué esa combinación no sirve. |
 
@@ -69,7 +70,7 @@ mal calculado" -- cada una responde una pregunta ligeramente distinta.
   de decisión (`04_decision_medida.R`) -- ver la regla en `03_primer_eslabon_medidas.R` y `04_decision_medida.R`.
 - Compresión salarial: 0,22 DE, cuatro veces cualquier otro canal de ajuste,
   estable en los 3 grupos de tamaño (0,218 pequeñas / 0,212 medianas / 0,179
-  grandes) -- `06_mecanismos_por_grupo.R`.
+  grandes) -- `06_mecanismos_por_grupo.R` (archivado en descartado/).
 - 5.742 firmas con `golpe_c` definido frente a 5.099 con Bite (643
   recuperadas) -- `02_medidas_exposicion.R`, tabla T06.
 
@@ -92,7 +93,7 @@ Una línea por amenaza, con el script donde está la evidencia:
    lectura A (coeficiente de 2023 contra 2022 sin ajustar por pendiente
    previa) — `05_resultados_y_mecanismos.R` (sección 5, revisar
    `p_previos`). Parcialmente resuelto con la lectura B en
-   `06_mecanismos_por_grupo.R`, pero declarado como asociación
+   `06_mecanismos_por_grupo.R` (archivado en descartado/), pero declarado como asociación
    comparativa, no efecto causal limpio.
 4. **El placebo 2018-2019 del primer eslabón no es informativo por
    construcción**: da coeficiente negativo y significativo en las 5 medidas,
@@ -110,7 +111,7 @@ Una línea por amenaza, con el script donde está la evidencia:
    canales relevantes de ajuste. La ausencia de evidencia sobre un canal no
    observable no es evidencia de su ausencia. — mencionado en
    `05_resultados_y_mecanismos.R` (sección 5) y en
-   `06_mecanismos_por_grupo.R`.
+   `06_mecanismos_por_grupo.R` (archivado en descartado/).
 7. **El panel arranca en 2012 con sector confiable** porque `CIIU4` no
    existe antes de 2012 y no hay tabla de correspondencia verificable desde
    `CIIU3` (0 años de solapamiento, confirmado en el cierre del panel
@@ -131,7 +132,8 @@ Una línea por amenaza, con el script donde está la evidencia:
 Encontradas durante la revisión de comentarios, marcadas explícitamente en el
 script correspondiente con una nota, **sin resolverlas por cuenta propia**:
 
-1. **¿Qué mide exactamente "4,80%"?** `07_reconciliacion.R` (punto
+1. **¿Qué mide exactamente "4,80%"?** `07_reconciliacion.R` (archivado en
+   descartado/; punto
    6 de la sección 6) trae, sin resolver desde antes de esta revisión, que el
    póster describe esta cifra como "el cambio típico de 2016-2019", mientras
    que en `01_descriptivos_y_contexto.R` y `05_resultados_y_mecanismos.R` la Lectura B se calcula como "el
@@ -142,7 +144,7 @@ script correspondiente con una nota, **sin resolverlas por cuenta propia**:
    **Antes de escribir la tesis, correr ambos cálculos y verificar si
    coinciden.**
 2. **¿La relación por tramos de exposición se aplana o es monotónica
-   creciente?** `07_reconciliacion.R` (sección 6, punto 5) dice
+   creciente?** `07_reconciliacion.R` (archivado en descartado/; sección 6, punto 5) dice
    que se aplana en el quintil más expuesto; `04_decision_medida.R`
    (sección 6) dice, con los mismos controles, que es monotónica
    creciente. No se sabe cuál quedó desactualizada. **Verificar contra la
@@ -177,7 +179,7 @@ eslabón (cualquiera de las cinco cifras de esa tabla) refleja el choque del
 salario mínimo, o el traslape aritmético entre el denominador de Bite
 (salario del obrero en 2022) y la base del outcome (costo laboral de 2022)?
 
-- **`09_validez_exposicion.R`** corre cuatro pruebas: placebo rodante con
+- **`09_validez_exposicion.R`** (archivado en descartado/) corre cuatro pruebas: placebo rodante con
   aumentos REALES del mínimo (no nominales -- ordenar por nominal invierte
   qué años parecen "el choque"), celda limpia (exposición medida varios años
   antes del outcome, con la indexación del rezago corregida), sensibilidad
@@ -192,7 +194,7 @@ salario mínimo, o el traslape aritmético entre el denominador de Bite
   años (dos afirmaciones FALSADAS). Queda pendiente reestimar el efecto de
   empleo (-1,75% con exposición 2022) con la exposición de celda limpia
   (2019).
-- **`10_bug_controles.R`** separa si la mejora de corregir los controles
+- **`10_bug_controles.R`** (archivado en descartado/) separa si la mejora de corregir los controles
   fijos en 2022 (sección "Diagnóstico de validez" del `README.md`) viene de
   los controles o de la restricción de muestra que trae esa corrección:
   100% controles, 0% muestra.

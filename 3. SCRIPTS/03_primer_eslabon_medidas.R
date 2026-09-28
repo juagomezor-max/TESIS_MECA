@@ -31,7 +31,7 @@
 #               cifra del event study de 01; ver la nota de la sección 1.
 # Depende de:   02_medidas_exposicion.R
 # Se relaciona: 04_decision_medida.R (cierra la decisión de medida)
-#               07_reconciliacion.R (explica por qué las cifras no coinciden)
+#               07_reconciliacion.R (archivado en descartado/; explica por qué las cifras no coinciden)
 #
 # ESPECIFICACIÓN: por decisión de los autores, los controles son sector y
 # departamento fijados en 2022, SIN tamaño (igual que 01).
@@ -233,7 +233,7 @@ cat("En porcentaje, la mediana es:",
 #     año base (sección 5b);
 #   - la celda limpia de 04, con exposición medida en 2019.
 # Confundirlos es el tipo de error que un jurado detecta de inmediato;
-# 07_reconciliacion.R explica por qué no coinciden.
+# 07_reconciliacion.R (archivado en descartado/) explica por qué no coinciden.
 cat("\nCrecimiento 2018->2019 (placebo):\n")
 print(round(quantile(outcomes$crecimiento_2019,
                      c(0.10, 0.25, 0.50, 0.75, 0.90), na.rm = TRUE), 4))

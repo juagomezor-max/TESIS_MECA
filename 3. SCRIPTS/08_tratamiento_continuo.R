@@ -57,8 +57,10 @@
 # Panel usado: panel_analitico_firma_eam.rds (el ORIGINAL, sección 1), NO
 # panel_firma_eam_expalt_completo.rds (el ampliado, con 2020 y categorías
 # ocupacionales separadas). Las cifras de este script NO son directamente
-# comparables con las de 03_primer_eslabon_medidas.R, 04_decision_medida.R, 07_reconciliacion.R ni con
-# 05_resultados_y_mecanismos.R y 06_mecanismos_por_grupo.R, que sí usan el panel ampliado.
+# comparables con las de 03_primer_eslabon_medidas.R, 04_decision_medida.R,
+# 07_reconciliacion.R (archivado en descartado/) ni con
+# 05_resultados_y_mecanismos.R y 06_mecanismos_por_grupo.R (archivado en
+# descartado/), que sí usan el panel ampliado.
 # ------------------------------------------------------------------------------
 
 rm(list = ls())

@@ -51,7 +51,8 @@
 # MECANISMOS Y TENDENCIAS PREVIAS: si al revisar p_previos (sección 5) resulta
 # que la mayoría de los mecanismos tiene tendencias diferenciales antes del
 # choque, su coeficiente de 2023 no es interpretable como efecto tal como se
-# calcula aquí (solo lectura A). 06_mecanismos_por_grupo.R resuelve
+# calcula aquí (solo lectura A). 06_mecanismos_por_grupo.R (archivado en
+# descartado/) resuelve
 # ese problema usando la lectura B para cada mecanismo (el salto contra la
 # trayectoria previa de esa variable, no contra cero) -- remitir ahí cuando
 # ese sea el caso. La advertencia de que los mecanismos siguen siendo
