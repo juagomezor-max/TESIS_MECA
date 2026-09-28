@@ -42,15 +42,25 @@ permanece en `xx` en adelante si llega a acumularse más de uno.
 | `03_primer_eslabon_medidas.R` | 665 | Primera etapa con las cinco medidas | los tres paneles | — | `03_primer_eslabon_medidas` |
 | `04_decision_medida.R` | 665 | Elección de la medida principal | los tres paneles | — | `04_decision_medida` |
 | `05_resultados_y_mecanismos.R` | 870 | Análisis principal y mecanismos | los tres paneles | — | `05_resultados_y_mecanismos` |
+| `06_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `06_tratamiento_continuo` |
+
+"Los tres paneles" = `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds`, `1. DATOS/exposicion_alternativa_2022.rds`.
+
+### Archivados en descartado/
+
+Fuera del flujo principal (ver `descartado/LEEME.md`). Conservan su numeración
+original, que no corresponde a la de los scripts vigentes de arriba —
+`06_mecanismos_por_grupo.R` no tiene relación con el `06_tratamiento_continuo.R`
+de hoy.
+
+| Script | Líneas | Sección del estudio | Lee | Escribe | Carpeta de salida |
+|---|---|---|---|---|---|
 | `06_mecanismos_por_grupo.R` (archivado en descartado/) | 622 | Mecanismos por tamaño de firma | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/06_mecanismos_por_grupo` |
 | `07_reconciliacion.R` (archivado en descartado/) | 534 | Validaciones (las tres lecturas) | `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/07_reconciliacion` |
-| `06_tratamiento_continuo.R` | 1183 | Validaciones adicionales (forma funcional) | `panel_analitico_firma_eam.rds` | — | `06_tratamiento_continuo` |
 | `09_validez_exposicion.R` (archivado en descartado/) | — | Diagnóstico: validez de la medida de exposición (Bite) | `panel_firma_eam_expalt_completo.rds` | — | `descartado/resultados/09_validez_exposicion` |
 | `10_bug_controles.R` (archivado en descartado/) | 328 | Diagnóstico: descomposición del bug de controles fijos en 2022 (controles vs. muestra) | `panel_firma_eam_expalt_completo.rds`, `exposicion_alternativa_2022.rds`, `panel_analitico_firma_eam.rds` | — | `descartado/resultados/10_bug_controles` |
 | `14_variable_instrumental.R` (archivado en descartado/) | 628 | Diagnóstico: variable instrumental para el sesgo de división del Kaitz (replica la especificación de `05_resultados_y_mecanismos.R`) | `panel_firma_eam_expalt_completo.rds`, y condicionalmente `panel_analitico_firma_eam.rds` (verificación de la réplica de Bite — si el archivo no existe, se omite; mismo patrón de lectura que `02_medidas_exposicion.R`) | — | `descartado/resultados/14_variable_instrumental` |
-| `xx_script_base_historico.R` | 829 | Histórico, **NO correr** | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones` |
-
-"Los tres paneles" = `panel_analitico_firma_eam.rds`, `panel_firma_eam_expalt_completo.rds`, `1. DATOS/exposicion_alternativa_2022.rds`.
+| `xx_script_base_historico.R` (archivado en descartado/) | 829 | Histórico, **NO correr** | `panel_analitico_firma_eam.rds`, `panel_establecimiento_formal.rds` | — | `Descriptivos`, `Estimacion`, `Robustez`, `Validaciones` |
 
 **Notas sobre el inventario** (correcciones encontradas al verificarlo contra
 el repositorio real, 2026-09-24):

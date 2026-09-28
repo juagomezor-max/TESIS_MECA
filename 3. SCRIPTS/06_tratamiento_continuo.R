@@ -1205,13 +1205,17 @@ resumen_medidas <- comparacion_medidas %>%
   select(resultado, medida, ejercicio, efecto_porcentual, error_estandar, significancia) %>%
   pivot_wider(names_from = ejercicio, values_from = c(efecto_porcentual, error_estandar, significancia)) %>%
   mutate(
+    # error_estandar_* queda en puntos porcentuales (coeficiente x 100), igual
+    # que efecto_porcentual y que ee_diferencia, para que sean comparables.
+    `error_estandar_Real (choque de 2023)` = 100 * `error_estandar_Real (choque de 2023)`,
+    `error_estandar_Placebo (año sin choque: 2019)` = 100 * `error_estandar_Placebo (año sin choque: 2019)`,
     diferencia_real_menos_placebo = `efecto_porcentual_Real (choque de 2023)` -
       `efecto_porcentual_Placebo (año sin choque: 2019)`,
     # El error estándar de la diferencia supone independencia entre el ejercicio
     # real y el placebo; como comparten firmas, la covarianza probablemente es
     # positiva, así que este error es conservador (más grande que el real).
-    ee_diferencia = sqrt((100 * `error_estandar_Real (choque de 2023)`)^2 +
-                           (100 * `error_estandar_Placebo (año sin choque: 2019)`)^2),
+    ee_diferencia = sqrt(`error_estandar_Real (choque de 2023)`^2 +
+                           `error_estandar_Placebo (año sin choque: 2019)`^2),
     p_diferencia = 2 * pnorm(-abs(diferencia_real_menos_placebo / ee_diferencia)),
     significancia_diferencia = estrellas(p_diferencia)
   )
