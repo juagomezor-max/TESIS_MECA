@@ -25,9 +25,10 @@
 # (agrega costos laborales por categoría, tipos de contrato, inversión,
 # producción y otras variables). Si no se ha corrido, la sección 1 lo avisa.
 #
-# El script anterior (xx_script_base_historico.R) queda en el repositorio
-# como registro histórico de la revisión que hicimos -- no correrlo, su
-# carpeta de salida colisiona con la de este.
+# El script anterior (xx_script_base_historico.R) está archivado en
+# 3. SCRIPTS/descartado/ como registro histórico de la revisión que hicimos
+# -- no correrlo: sus rutas de salida apuntan a la estructura de carpetas
+# anterior y recrearían carpetas sin numerar en 4. RESULTADOS/.
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
