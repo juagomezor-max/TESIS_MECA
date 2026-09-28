@@ -15,6 +15,9 @@ uno, hay que regresarlo a `3. SCRIPTS`.
 - `12_detalle_tendencias_previas.R`
 - `13_auditoria_seccion4_empleo.R`
 - `14_variable_instrumental.R`
+- `xx_script_base_historico.R` (sin carpeta de resultados propia: sus
+  salidas siempre colisionaban con las de `01_descriptivos_y_contexto.R`
+  y ya se habían eliminado del repo; ver commit `db7b318`)
 
 **Resultados** (`descartado/resultados/`):
 - `06_mecanismos_por_grupo/`
