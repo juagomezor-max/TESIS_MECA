@@ -172,7 +172,8 @@ datos <- panel %>%
     log_salario = log(ifelse(salario_promedio > 0, salario_promedio, NA))
   )
 
-EFECTOS_FIJOS <- "NORDEMP + ANIO_F + sector_2022^ANIO_F + tamano_2022^ANIO_F + depto_2022^ANIO_F"
+# Por decisión de los autores no se controla por tamaño x año (igual que 01 a 05)
+EFECTOS_FIJOS <- "NORDEMP + ANIO_F + sector_2022^ANIO_F + depto_2022^ANIO_F"
 cat("Firmas con Kaitz:", n_distinct(datos$NORDEMP), "| Observaciones:", nrow(datos), "\n")
 cat("Efectos fijos:", EFECTOS_FIJOS, "\n")
 
@@ -267,7 +268,7 @@ grafico_quintiles <- ggplot(por_quintil, aes(x = quintil, y = efecto_porcentual,
   labs(title = "Efecto del aumento de 2023 por quintil de exposición",
        subtitle = "Cambio % frente al quintil menos expuesto. Si el efecto fuera lineal, crecería parejo de Q2 a Q5",
        x = NULL, y = "Efecto (%)", color = NULL,
-       caption = paste("Controles: firma, año, sector x año, tamaño x año y departamento x año (fijados en 2022).",
+       caption = paste("Controles: firma, año, sector x año y departamento x año (fijados en 2022).",
                        "\nIntervalos de confianza al 95%, errores agrupados por firma.")) +
   tema_tesis +
   theme(axis.text.x = element_text(angle = 15, hjust = 1))
@@ -349,7 +350,7 @@ grafico_salto <- ggplot(filter(salto_2023, anio == 2023),
   labs(title = "Cambio de 2022 a 2023 por quintil de exposición",
        subtitle = "Frente al quintil menos expuesto, comparando solo 2023 con 2022",
        x = NULL, y = "Cambio (%)", color = NULL,
-       caption = paste("Controles: firma, año, sector x año, tamaño x año y departamento x año (fijados en 2022).",
+       caption = paste("Controles: firma, año, sector x año y departamento x año (fijados en 2022).",
                        "\nIntervalos de confianza al 95%, errores agrupados por firma.")) +
   tema_tesis +
   theme(axis.text.x = element_text(angle = 15, hjust = 1))
@@ -453,7 +454,7 @@ grafico_referencias <- ggplot(comparacion_referencias,
        subtitle = "2022 fue un año de empleo alto por los subsidios; 2015-2019 es un período sin pandemia ni subsidios",
        x = NULL, y = "Cambio (%)", color = "Período de comparación",
        caption = paste("Cada quintil frente al menos expuesto.",
-                       "\nControles: firma, año, sector x año, tamaño x año y departamento x año (fijados en 2022).")) +
+                       "\nControles: firma, año, sector x año y departamento x año (fijados en 2022).")) +
   tema_tesis +
   theme(axis.text.x = element_text(angle = 15, hjust = 1))
 guardar_grafico(grafico_referencias, "GC02c_comparacion_referencias", ancho = 11)
@@ -616,10 +617,10 @@ titulo("C6. CONTRASTE CON EL PAQUETE contdid")
 # NOTA IMPORTANTE SOBRE ESTE EJERCICIO
 # El paquete contdid (Callaway, Goodman-Bacon y Sant'Anna) implementa el método
 # de los autores, pero en su versión actual NO admite covariables ni panel
-# desbalanceado, y trabaja con dos períodos. Como nuestro control de tamaño por
-# año es determinante, no podemos meterlo dentro del estimador. Lo que hacemos
-# es quitarle al resultado el efecto de los controles ANTES de estimar
-# (residualizar) y correr el método sobre esos residuos.
+# desbalanceado, y trabaja con dos períodos. Como nuestros controles fijos
+# (sector y departamento por año) no se pueden meter dentro del estimador, lo
+# que hacemos es quitarle al resultado el efecto de los controles ANTES de
+# estimar (residualizar) y correr el método sobre esos residuos.
 #
 # Esto NO es equivalente a incluir los controles dentro del estimador. Se
 # reporta como contraste metodológico, no como especificación principal.
@@ -631,7 +632,7 @@ if (CORRER_CONTDID && requireNamespace("contdid", quietly = TRUE)) {
   # Paso 1: quitarle al empleo el efecto de los controles, usando solo los años
   # previos para que el choque no contamine la limpieza
   modelo_controles <- feols(log_empleo ~ 1 | NORDEMP + ANIO_F + sector_2022^ANIO_F +
-                              tamano_2022^ANIO_F + depto_2022^ANIO_F,
+                              depto_2022^ANIO_F,
                             data = datos, cluster = ~NORDEMP)
   # obs() devuelve las filas que el modelo usó de verdad: fixest quita las
   # vacías y las que quedan solas en una celda, así los residuos calzan
@@ -792,7 +793,7 @@ salto_placebo <- function(variable, etiqueta) {
   modelo <- feols(as.formula(paste0(
     variable, " ~ i(ANIO_F, p2, ref = '2018') + i(ANIO_F, p3, ref = '2018')",
     " + i(ANIO_F, p4, ref = '2018') + i(ANIO_F, p5, ref = '2018') | ",
-    "NORDEMP + ANIO_F + sector_2022^ANIO_F + tamano_2022^ANIO_F + depto_2022^ANIO_F")),
+    EFECTOS_FIJOS)),
     data = base_placebo, cluster = ~NORDEMP)
   coeficientes <- as.data.frame(coeftable(modelo))
   
@@ -1138,7 +1139,7 @@ grafico_medidas <- ggplot(filter(comparacion_medidas, resultado == "Salario prom
        subtitle = "Si las dos barras son parecidas, la medida produce efectos donde no los hay",
        x = NULL, y = "Cambio (%)", fill = NULL,
        caption = paste("Cada quintil frente al menos expuesto.",
-                       "\nControles: firma, año, sector x año, tamaño x año y departamento x año.")) +
+                       "\nControles: firma, año, sector x año y departamento x año.")) +
   tema_tesis
 guardar_grafico(grafico_medidas, "GC05_medidas_real_vs_placebo", ancho = 13, alto = 6)
 
