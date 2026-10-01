@@ -1552,6 +1552,83 @@ if (!requireNamespace("HonestDiD", quietly = TRUE)) {
 
 
 # ==============================================================================
+# 7e. GRÁFICO DE TENDENCIAS PARALELAS
+# ==============================================================================
+titulo("7e. GRÁFICO DE TENDENCIAS PARALELAS")
+
+# Un solo gráfico resumen con la trayectoria año a año (frente a 2022) de seis
+# resultados, con y sin control de tamaño x año, para ver de un vistazo si las
+# tendencias previas son paralelas y si esa decisión de control las cambia.
+# No reemplaza ninguna tabla existente.
+
+VARIABLES_TENDENCIAS <- tribble(
+  ~variable,                   ~etiqueta,
+  "log_costo",                 "Costo laboral por trabajador (log)",
+  "log_empleo",                 "Empleo total (log)",
+  "log_permanente",             "Empleo permanente (log)",
+  "log_temporal_directo",       "Empleo temporal directo (log)",
+  "participacion_permanente",   "Participación de permanentes (%)",
+  "log_agencias",               "Personal de agencias (log)"
+)
+
+CONTROLES_TENDENCIAS <- c("Sin control por tamaño" = EFECTOS,
+                          "Con control por tamaño" = EFECTOS_TAMANO)
+
+evento_tendencias <- function(variable, etiqueta, control) {
+  evento <- estudio_evento(variable, "Bite2022_obreros",
+                           efectos = CONTROLES_TENDENCIAS[[control]])
+  if (is.null(evento)) {
+    cat("AVISO: no se pudo estimar", variable, "con", control, "- se omite\n")
+    return(NULL)
+  }
+  trayectoria <- evento$tabla %>%
+    mutate(variable = variable, etiqueta = etiqueta, control = control,
+           efecto_pct = 100 * coeficiente,
+           ic95_inf_pct = 100 * (coeficiente - 1.96 * error_estandar),
+           ic95_sup_pct = 100 * (coeficiente + 1.96 * error_estandar))
+  resumen <- tibble(variable = variable, etiqueta = etiqueta, control = control,
+                    p_previos = evento$p_previos, observaciones = nobs(evento$modelo))
+  list(trayectoria = trayectoria, resumen = resumen)
+}
+
+resultados_tendencias <- list()
+for (i in seq_len(nrow(VARIABLES_TENDENCIAS))) {
+  for (control in names(CONTROLES_TENDENCIAS)) {
+    resultados_tendencias[[length(resultados_tendencias) + 1]] <- evento_tendencias(
+      VARIABLES_TENDENCIAS$variable[i], VARIABLES_TENDENCIAS$etiqueta[i], control)
+  }
+}
+resultados_tendencias <- Filter(Negate(is.null), resultados_tendencias)
+
+trayectoria_tendencias <- bind_rows(lapply(resultados_tendencias, `[[`, "trayectoria")) %>%
+  mutate(etiqueta = factor(etiqueta, levels = VARIABLES_TENDENCIAS$etiqueta),
+         control = factor(control, levels = names(CONTROLES_TENDENCIAS)),
+         # Desplazamiento horizontal para que los puntos de las dos
+         # especificaciones no se tapen en el mismo año.
+         anio_offset = anio + ifelse(control == "Con control por tamaño", 0.12, -0.12))
+
+resumen_tendencias <- bind_rows(lapply(resultados_tendencias, `[[`, "resumen")) %>%
+  mutate(etiqueta = factor(etiqueta, levels = VARIABLES_TENDENCIAS$etiqueta),
+         control = factor(control, levels = names(CONTROLES_TENDENCIAS)))
+
+ver(resumen_tendencias, filas = 12)
+guardar_tabla(resumen_tendencias %>% select(variable, etiqueta, control, p_previos, observaciones),
+              "T11_tendencias_paralelas",
+              "Tabla 11. Prueba conjunta de años previos y observaciones, por variable y especificación",
+              decimales = 4)
+
+# El gráfico G09_tendencias_paralelas ya NO se dibuja aquí. Se mueve a
+# "3. SCRIPTS/herramientas/graficar_tendencias_paralelas.R", un script
+# independiente que no depende de correr 05 completo (HonestDiD, arriba,
+# tarda varios minutos y no hace falta para este gráfico). Ese script puede
+# reestimar desde cero (REESTIMAR <- TRUE) o, si ya existe
+# T11b_coeficientes_tendencias.csv, solo leerlo y graficar (REESTIMAR <-
+# FALSE, el default). Para no tener dos versiones del mismo gráfico, esta
+# sección de 05 se queda solo con las estimaciones y la tabla T11 de arriba;
+# correr el otro script después de este si hace falta regenerar el PNG.
+
+
+# ==============================================================================
 # 8. RESUMEN
 # ==============================================================================
 titulo("8. RESUMEN")

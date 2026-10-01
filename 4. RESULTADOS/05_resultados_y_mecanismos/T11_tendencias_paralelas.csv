@@ -1,0 +1,13 @@
+variable,etiqueta,control,p_previos,observaciones
+log_costo,Costo laboral por trabajador (log),Sin control por tamaño,1.746349542278937e-28,44614
+log_costo,Costo laboral por trabajador (log),Con control por tamaño,1.2485835877343707e-35,44614
+log_empleo,Empleo total (log),Sin control por tamaño,3.420341006203403e-7,44615
+log_empleo,Empleo total (log),Con control por tamaño,0.4551081625903587,44615
+log_permanente,Empleo permanente (log),Sin control por tamaño,0.5122612914619249,43675
+log_permanente,Empleo permanente (log),Con control por tamaño,2.936061671297341e-4,43675
+log_temporal_directo,Empleo temporal directo (log),Sin control por tamaño,1.0276268456050316e-4,16213
+log_temporal_directo,Empleo temporal directo (log),Con control por tamaño,0.0852276573848834,16213
+participacion_permanente,Participación de permanentes (%),Sin control por tamaño,2.0612842727968037e-20,44615
+participacion_permanente,Participación de permanentes (%),Con control por tamaño,2.2506757470709904e-12,44615
+log_agencias,Personal de agencias (log),Sin control por tamaño,0.07681558214198013,15614
+log_agencias,Personal de agencias (log),Con control por tamaño,0.7255659530393896,15614
