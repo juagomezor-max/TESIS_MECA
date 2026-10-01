@@ -1328,6 +1328,230 @@ if (!requireNamespace("HonestDiD", quietly = TRUE)) {
 
 
 # ==============================================================================
+# 7d. PRUEBAS CON CONTROL POR TAMAÑO
+# ==============================================================================
+titulo("7d. PRUEBAS CON CONTROL POR TAMAÑO")
+
+# Repite las pruebas de robustez principales (lecturas, dosis-respuesta y
+# HonestDiD) agregando tamano_2022^ANIO_F a los efectos fijos (EFECTOS_TAMANO,
+# definido en la sección 7a). No reemplaza ninguna tabla existente: todas las
+# salidas de esta sección llevan el sufijo "_tamano".
+
+# --- 7d.1 Lecturas principales, con Bite de obreros -----------------------------
+titulo("7d.1 Lecturas con control de tamaño")
+
+lecturas_tamano <- function(outcome) {
+  evento <- estudio_evento(outcome, "Bite2022_obreros", efectos = EFECTOS_TAMANO)
+  if (is.null(evento)) return(NULL)
+  v <- evento$variable
+
+  a <- contraste(evento, c(`2023` = 1), "A. Cambio 2022 -> 2023")
+  b <- contraste(evento, c(`2023` = 1, `2016` = 1/3, `2019` = -1/3),
+                 "B. Salto 2023 ajustado por tendencia previa")
+
+  modelo_c <- tryCatch(
+    feols(as.formula(paste0(outcome, " ~ post:", v, " | ", EFECTOS_TAMANO)),
+          data = datos, cluster = ~NORDEMP),
+    error = function(e) NULL)
+  c_fila <- if (!is.null(modelo_c)) {
+    f <- coeftable(modelo_c)[paste0("post:", v), ]
+    tibble(lectura = "C. DiD simple (promedio post - pre)",
+           coeficiente = f[["Estimate"]], error_estandar = f[["Std. Error"]],
+           p_valor = f[["Pr(>|t|)"]], significancia = estrellas(f[["Pr(>|t|)"]]),
+           efecto_pct = 100 * f[["Estimate"]],
+           ic95_inf_pct = 100 * (f[["Estimate"]] - 1.96 * f[["Std. Error"]]),
+           ic95_sup_pct = 100 * (f[["Estimate"]] + 1.96 * f[["Std. Error"]]))
+  } else NULL
+
+  d <- contraste(evento, c(`2023` = 1, `2021` = -1), "D. 2023 frente a 2021")
+
+  # "promedio previo": 2015-2019, 2021 y 2022 (este último vale 0), igual que
+  # en la sección 7b.
+  pp <- -1/7
+  pesos_previo <- c(`2015` = pp, `2016` = pp, `2017` = pp, `2018` = pp,
+                    `2019` = pp, `2021` = pp)
+  e2023 <- contraste(evento, c(`2023` = 1, pesos_previo), "2023 vs promedio previo")
+  e2024 <- contraste(evento, c(`2024` = 1, pesos_previo), "2024 vs promedio previo")
+
+  bind_rows(a, b, c_fila, d, e2023, e2024) %>%
+    mutate(outcome = outcome, p_previos = evento$p_previos,
+           observaciones = nobs(evento$modelo))
+}
+
+lecturas_tamano_tabla <- bind_rows(
+  lapply(c("log_costo", "log_empleo", "log_permanente"), lecturas_tamano)) %>%
+  select(outcome, lectura, efecto_pct, ic95_inf_pct, ic95_sup_pct,
+         p_valor, significancia, p_previos, observaciones)
+
+ver(lecturas_tamano_tabla, filas = 20)
+guardar_tabla(lecturas_tamano_tabla, "T07c_lecturas_tamano",
+              "Tabla 7c. Lecturas principales con control por tamaño x año (Bite de obreros)",
+              decimales = 3)
+
+cat("\nCÓMO LEER: compara esta tabla con T01/T02 (sin control de tamaño). Si el\n",
+    "efecto de 2023 y la prueba de años previos no cambian mucho, la decisión\n",
+    "de no controlar por tamaño (sección 2) no está impulsando el resultado.\n")
+
+# --- 7d.2 Dosis-respuesta: quintiles, con control de tamaño ---------------------
+titulo("7d.2 Quintiles con control de tamaño")
+
+evento_quintiles_tamano <- function(outcome) {
+  m <- tryCatch(
+    feols(as.formula(paste0(outcome, " ~ i(ANIO_F, quintil_kaitz, ref = '2022', ref2 = '1') | ",
+                            EFECTOS_TAMANO)), data = datos_q, cluster = ~NORDEMP),
+    error = function(e) NULL)
+  if (is.null(m)) return(NULL)
+  b <- coef(m); V <- vcov(m); nm <- names(b)
+  anio <- as.integer(sub("^ANIO_F::(\\d+):.*$", "\\1", nm))
+  q <- as.integer(sub("^.*::(\\d+)$", "\\1", nm))
+
+  p_previos <- tryCatch(
+    wald(m, keep = "^ANIO_F::(2015|2016|2017|2018|2019|2021):", print = FALSE)$p,
+    error = function(e) NA_real_)
+
+  combinar <- function(pesos, etiqueta, qq) {
+    w <- setNames(rep(0, length(b)), nm)
+    for (a in names(pesos)) w[anio == as.integer(a) & q == qq] <- pesos[[a]]
+    est <- sum(w * b); ee <- sqrt(as.numeric(t(w) %*% V %*% w))
+    tibble(quintil = qq, lectura = etiqueta, efecto_pct = 100 * est,
+           ic95_inf_pct = 100 * (est - 1.96 * ee), ic95_sup_pct = 100 * (est + 1.96 * ee),
+           p_valor = 2 * pnorm(-abs(est / ee)))
+  }
+  pp <- -1/7
+  efectos <- bind_rows(lapply(2:5, function(qq) bind_rows(
+    combinar(c(`2023` = 1), "2023 vs 2022", qq),
+    combinar(c(`2023` = 1, `2015` = pp, `2016` = pp, `2017` = pp, `2018` = pp,
+               `2019` = pp, `2021` = pp), "2023 vs promedio previo", qq)
+  ))) %>%
+    mutate(resultado = RESULTADOS_QUINTILES[[outcome]], significancia = estrellas(p_valor),
+           p_previos = p_previos, observaciones = nobs(m))
+
+  trayectoria <- tibble(anio = anio, quintil = q, coeficiente = unname(b),
+                        error_estandar = sqrt(diag(V))) %>%
+    bind_rows(tibble(anio = 2022L, quintil = 2:5, coeficiente = 0, error_estandar = 0)) %>%
+    mutate(resultado = RESULTADOS_QUINTILES[[outcome]])
+
+  list(trayectoria = trayectoria, efectos = efectos)
+}
+
+res_quintiles_tamano <- lapply(names(RESULTADOS_QUINTILES), evento_quintiles_tamano)
+
+efectos_quintiles_tamano <- bind_rows(lapply(res_quintiles_tamano, `[[`, "efectos")) %>%
+  select(resultado, lectura, quintil, efecto_pct, ic95_inf_pct, ic95_sup_pct,
+         p_valor, significancia, p_previos, observaciones) %>%
+  arrange(resultado, lectura, quintil)
+ver(efectos_quintiles_tamano, filas = 30)
+guardar_tabla(efectos_quintiles_tamano, "T09_quintiles_exposicion_tamano",
+              paste("Tabla 9 (con control de tamaño x año). Efecto en 2023 por quintil del Kaitz",
+                    "frente al quintil 1 (dosis-respuesta)"),
+              decimales = 3)
+
+trayectoria_quintiles_tamano <- bind_rows(lapply(res_quintiles_tamano, `[[`, "trayectoria"))
+
+grafico_quintiles_tamano <- ggplot(trayectoria_quintiles_tamano,
+                                   aes(x = anio, y = 100 * coeficiente,
+                                       color = factor(quintil), group = factor(quintil))) +
+  geom_hline(yintercept = 0, color = "grey60") +
+  geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
+  geom_line(linewidth = 0.7) + geom_point(size = 1.6) +
+  facet_wrap(~ resultado, scales = "free_y", ncol = 1) +
+  scale_x_continuous(breaks = c(2015:2019, 2021:2024)) +
+  scale_color_manual(values = c(`2` = "#9DB4CE", `3` = "#5B84B1", `4` = "#E08080",
+                                `5` = COLOR_ALTA)) +
+  labs(title = "Dosis-respuesta con control de tamaño x año, frente al quintil 1",
+       subtitle = "Diferencia frente a 2022. Quintiles del Kaitz de obreros de 2022",
+       x = NULL, y = "Efecto (%)", color = "Quintil de Kaitz", caption = NOTA) +
+  tema_tesis
+guardar_grafico(grafico_quintiles_tamano, "G07_quintiles_exposicion_tamano", ancho = 10, alto = 11)
+
+cat("\nCÓMO LEER: compara con T09_quintiles_exposicion (sin tamaño). Si el\n",
+    "gradiente entre quintiles se mantiene, la dosis-respuesta no depende de\n",
+    "esa decisión de control.\n")
+
+# --- 7d.3 HonestDiD con control de tamaño ---------------------------------------
+titulo("7d.3 HonestDiD con control de tamaño")
+
+if (!requireNamespace("HonestDiD", quietly = TRUE)) {
+  cat("AVISO: el paquete HonestDiD no está instalado. Se omite esta subsección.\n")
+} else {
+
+  honest_resultado_tamano <- function(outcome) {
+    e <- estudio_evento(outcome, "Bite2022_obreros", efectos = EFECTOS_TAMANO)
+    if (is.null(e)) return(NULL)
+    b <- coef(e$modelo); V <- vcov(e$modelo)
+    anios <- as.integer(gsub(paste0("ANIO_F::|:", e$variable), "", names(b)))
+    if (is.unsorted(anios) || !all(c(2023, 2024) %in% anios)) {
+      cat("  AVISO: coeficientes fuera de orden para", outcome, "- se omite\n")
+      return(NULL)
+    }
+    n_pre <- sum(anios < 2022); n_post <- sum(anios > 2022)
+    l <- c(1, rep(0, n_post - 1))
+
+    orig <- con_avisos(HonestDiD::constructOriginalCS(
+      betahat = b, sigma = V, numPrePeriods = n_pre, numPostPeriods = n_post, l_vec = l))
+    suav <- con_avisos(HonestDiD::createSensitivityResults(
+      betahat = b, sigma = V, numPrePeriods = n_pre, numPostPeriods = n_post,
+      l_vec = l, Mvec = M_GRILLA))
+    magn <- con_avisos(HonestDiD::createSensitivityResults_relativeMagnitudes(
+      betahat = b, sigma = V, numPrePeriods = n_pre, numPostPeriods = n_post,
+      l_vec = l, Mbarvec = MBAR_GRILLA))
+
+    bind_rows(
+      tibble(supuesto = "Original (tendencias paralelas exactas)", parametro = 0,
+             lb = as.numeric(orig$valor$lb), ub = as.numeric(orig$valor$ub),
+             ic_abierto = orig$abierto),
+      tibble(supuesto = "Suavidad (M)", parametro = suav$valor$M,
+             lb = as.numeric(suav$valor$lb), ub = as.numeric(suav$valor$ub),
+             ic_abierto = suav$abierto),
+      tibble(supuesto = "Magnitudes relativas (Mbar)", parametro = magn$valor$Mbar,
+             lb = as.numeric(magn$valor$lb), ub = as.numeric(magn$valor$ub),
+             ic_abierto = magn$abierto)
+    ) %>%
+      mutate(resultado = RESULTADOS_HONEST[[outcome]],
+             efecto_2023_pct = 100 * unname(b[anios == 2023]),
+             p_previos = e$p_previos)
+  }
+
+  honest_tamano <- bind_rows(lapply(names(RESULTADOS_HONEST), honest_resultado_tamano)) %>%
+    mutate(lb_pct = 100 * lb, ub_pct = 100 * ub,
+           excluye_cero = lb > 0 | ub < 0) %>%
+    select(resultado, supuesto, parametro, efecto_2023_pct, lb_pct, ub_pct,
+           excluye_cero, ic_abierto, p_previos)
+
+  ver(honest_tamano, filas = 60)
+  guardar_tabla(honest_tamano, "T10_honestdid_tamano",
+                paste("Tabla 10 (con control de tamaño x año). Sensibilidad del efecto de 2023",
+                      "a violaciones de tendencias paralelas (HonestDiD)"),
+                decimales = 3)
+
+  quiebre_tamano <- honest_tamano %>%
+    group_by(resultado) %>%
+    mutate(significativo_original = excluye_cero[supuesto == "Original (tendencias paralelas exactas)"][1]) %>%
+    filter(supuesto != "Original (tendencias paralelas exactas)") %>%
+    group_by(resultado, supuesto, significativo_original) %>%
+    summarise(
+      valor_quiebre = if (all(!excluye_cero)) NA_real_ else max(parametro[excluye_cero]),
+      maximo_grilla = max(parametro),
+      .groups = "drop") %>%
+    mutate(lectura = case_when(
+      !significativo_original ~ "No significativo ni con tendencias paralelas exactas",
+      is.na(valor_quiebre) ~ "Se pierde en cuanto se permite cualquier violación",
+      valor_quiebre >= maximo_grilla ~ "Robusto en toda la grilla probada",
+      TRUE ~ paste0("Robusto hasta ", valor_quiebre)
+    ))
+
+  ver(quiebre_tamano)
+  guardar_tabla(quiebre_tamano, "T10b_honestdid_valor_quiebre_tamano",
+                "Tabla 10b (con control de tamaño x año). Valor de quiebre de HonestDiD por resultado y supuesto",
+                decimales = 4)
+
+  cat("\nCÓMO LEER: compara con T10b_honestdid_valor_quiebre (sin tamaño). Si el\n",
+      "valor de quiebre no cambia mucho, la sensibilidad a violaciones de\n",
+      "tendencias paralelas no depende de esa decisión de control.\n")
+}
+
+
+# ==============================================================================
 # 8. RESUMEN
 # ==============================================================================
 titulo("8. RESUMEN")

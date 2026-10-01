@@ -1,0 +1,49 @@
+resultado,medida,ejercicio,quintil,efecto_porcentual,error_estandar,p_valor,significancia,firmas
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q2,2.4277039585794173,0.010697756511037364,0.02329182784475163,**,4686
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Real (choque de 2023),Q2,2.516710704299074,0.01300994279824628,0.05311288072179169,*,5098
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q3,4.1023702562604125,0.010018818828882005,4.299062375838796e-5,***,4686
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Real (choque de 2023),Q3,6.107488824636736,0.01409739227383739,1.5035959311068832e-5,***,5098
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q4,6.093337967903263,0.010956934249762205,2.828570646496724e-8,***,4686
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Real (choque de 2023),Q4,4.623123705622315,0.01472178075365058,0.0016972350871961252,***,5098
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q5 (más expuestas),9.405310086792994,0.01171651048485343,1.2485127041938817e-15,***,4686
+Costo laboral por trabajador (log),A. Salario de la firma en el año base,Real (choque de 2023),Q5 (más expuestas),10.085374242897686,0.015595806708248929,1.0951270722581329e-10,***,5098
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q2,1.657552877063761,0.011104687669053087,0.1355949083738512,,4584
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Real (choque de 2023),Q2,2.2882272407317363,0.01196315706138892,0.05583998006133622,*,4992
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q3,2.341091578440698,0.009882207922491282,0.017877646398056734,**,4584
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Real (choque de 2023),Q3,4.4278680231240735,0.013299774011959664,8.77020465024497e-4,***,4992
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q4,4.900662146532478,0.011766599631350903,3.1722832619241354e-5,***,4584
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Real (choque de 2023),Q4,5.00806173304931,0.0125497450887727,6.686015286580653e-5,***,4992
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q5 (más expuestas),6.11977142841666,0.011646259454271099,1.5498659995423255e-7,***,4584
+Costo laboral por trabajador (log),B. Salario promediado de los años previos,Real (choque de 2023),Q5 (más expuestas),7.601111045415513,0.013143576697281579,7.778223482911693e-9,***,4992
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q2,-1.2235418960914755,0.015453240643822787,0.4285607189486186,,2839
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Real (choque de 2023),Q2,1.755937764696985,0.016076594743814798,0.27481438693651994,,3155
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q3,1.1365372889039504,0.015231260427278091,0.45561609002621006,,2839
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Real (choque de 2023),Q3,-2.5656493684062696,0.018871808204779395,0.17408085024686856,,3155
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q4,0.9665886666917746,0.017287484051128302,0.5761196568784821,,2839
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Real (choque de 2023),Q4,1.1360194955893057,0.021983742109537522,0.6053638631040483,,3155
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q5 (más expuestas),-0.4267508375347551,0.019890314867061682,0.8301319749286709,,2839
+Costo laboral por trabajador (log),C. Salario de firmas parecidas,Real (choque de 2023),Q5 (más expuestas),-0.5654475009271367,0.028345569947668604,0.8418973666946967,,3155
+Empleo total (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q2,2.6305925877272127,0.016667991868404584,0.11458027777092757,,4686
+Empleo total (log),A. Salario de la firma en el año base,Real (choque de 2023),Q2,0.7058962757002841,0.015354087058858785,0.6457189673252706,,5098
+Empleo total (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q3,1.5630467406449382,0.01611460948219176,0.33211833346487907,,4686
+Empleo total (log),A. Salario de la firma en el año base,Real (choque de 2023),Q3,-3.4864305624288745,0.018085216936671283,0.053938088051928255,*,5098
+Empleo total (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q4,3.677416045353074,0.016486852531627624,0.025760490947956866,**,4686
+Empleo total (log),A. Salario de la firma en el año base,Real (choque de 2023),Q4,-3.7822662342238953,0.01806193914397295,0.03630450924064136,**,5098
+Empleo total (log),A. Salario de la firma en el año base,Placebo (año sin choque: 2019),Q5 (más expuestas),3.461787959907626,0.017701726613837312,0.050569098457048545,*,4686
+Empleo total (log),A. Salario de la firma en el año base,Real (choque de 2023),Q5 (más expuestas),-3.7153204571342844,0.017656533081181765,0.035408236910923936,**,5098
+Empleo total (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q2,1.8804606012467848,0.017090327757095593,0.271256204661471,,4584
+Empleo total (log),B. Salario promediado de los años previos,Real (choque de 2023),Q2,-2.6058951024005634,0.01675004558629145,0.1198299956265648,,4992
+Empleo total (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q3,1.803844099313034,0.015910339591323902,0.2569562659450743,,4584
+Empleo total (log),B. Salario promediado de los años previos,Real (choque de 2023),Q3,-4.120159907406854,0.016306191977783727,0.011543135913565827,**,4992
+Empleo total (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q4,3.2518380367398523,0.017494387776611397,0.06312107084567273,*,4584
+Empleo total (log),B. Salario promediado de los años previos,Real (choque de 2023),Q4,-4.429111251987337,0.016879566574246083,0.008718157862080985,***,4992
+Empleo total (log),B. Salario promediado de los años previos,Placebo (año sin choque: 2019),Q5 (más expuestas),1.8857953067271647,0.017339119937308106,0.27683080309330516,,4584
+Empleo total (log),B. Salario promediado de los años previos,Real (choque de 2023),Q5 (más expuestas),-5.2853997333891325,0.017405228072176503,0.0024043968734072385,***,4992
+Empleo total (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q2,-1.9762477816734927,0.016883827877032482,0.24189910854511845,,2839
+Empleo total (log),C. Salario de firmas parecidas,Real (choque de 2023),Q2,-4.073262270478053,0.017140531950485708,0.017542245896132545,**,3155
+Empleo total (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q3,0.004810985451374206,0.02088028345622527,0.9981617732845786,,2839
+Empleo total (log),C. Salario de firmas parecidas,Real (choque de 2023),Q3,-5.110488111249658,0.01945728527169809,0.008668104450645227,***,3155
+Empleo total (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q4,0.25250282194417134,0.02332138410064301,0.9137884259983959,,2839
+Empleo total (log),C. Salario de firmas parecidas,Real (choque de 2023),Q4,-0.730722551095072,0.02185091879984984,0.7380903661658111,,3155
+Empleo total (log),C. Salario de firmas parecidas,Placebo (año sin choque: 2019),Q5 (más expuestas),2.4011918315926843,0.027148892440359274,0.37652666676736435,,2839
+Empleo total (log),C. Salario de firmas parecidas,Real (choque de 2023),Q5 (más expuestas),-3.9498320828349422,0.024968536008120608,0.113767237582628,,3155

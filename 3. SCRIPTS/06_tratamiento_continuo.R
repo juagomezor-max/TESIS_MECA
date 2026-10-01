@@ -1252,6 +1252,158 @@ cat("\nCÓMO DECIDIR:",
 
 
 # ==============================================================================
+# C9. PLACEBO CON CONTROL POR TAMAÑO x AÑO
+# ==============================================================================
+titulo("C9. PLACEBO CON CONTROL POR TAMAÑO")
+
+# Repite C8 (las tres medidas de exposición, real 2023 frente al placebo de
+# 2019) agregando tamano_2022^ANIO_F a los efectos fijos -- la misma robustez
+# que 05_resultados_y_mecanismos.R corre en sus secciones 7a y 7d. No
+# reemplaza ninguna tabla existente: todas las salidas de esta sección llevan
+# el sufijo "_tamano".
+#
+# medidas_2022, medidas_2018, base_medidas_2022 y base_medidas_2018 se
+# reutilizan tal cual de C8: la construcción de las tres medidas (A, B, C) no
+# depende de los efectos fijos de la regresión, solo del año base y los años
+# de promedio.
+
+EFECTOS_FIJOS_TAMANO <- paste(EFECTOS_FIJOS, "+ tamano_2022^ANIO_F")
+cat("Efectos fijos con tamaño:", EFECTOS_FIJOS_TAMANO, "\n")
+
+# El placebo usa 2015-2019. tamano_2022 se mide en 2022, así que una firma sin
+# esa clasificación queda fuera del modelo en cuanto se agrega el control
+# (como cualquier efecto fijo con NA) -- se reporta antes de estimar.
+firmas_placebo_sin_tamano <- base_medidas_2018 %>%
+  distinct(NORDEMP, tamano_2022) %>%
+  filter(is.na(tamano_2022)) %>%
+  nrow()
+cat("Firmas del placebo (2015-2019) sin clasificación de tamaño en 2022:",
+    firmas_placebo_sin_tamano, "de", n_distinct(base_medidas_2018$NORDEMP), "\n")
+
+salto_con_medida_tamano <- function(base, columna_quintil, variable, anio_choque, anio_base_ref) {
+  base <- base %>%
+    filter(!is.na(.data[[columna_quintil]])) %>%
+    mutate(g2 = as.integer(.data[[columna_quintil]] == "Q2"),
+           g3 = as.integer(.data[[columna_quintil]] == "Q3"),
+           g4 = as.integer(.data[[columna_quintil]] == "Q4"),
+           g5 = as.integer(.data[[columna_quintil]] == "Q5"))
+
+  modelo <- feols(as.formula(paste0(
+    variable, " ~ i(ANIO_F, g2, ref = '", anio_base_ref, "')",
+    " + i(ANIO_F, g3, ref = '", anio_base_ref, "')",
+    " + i(ANIO_F, g4, ref = '", anio_base_ref, "')",
+    " + i(ANIO_F, g5, ref = '", anio_base_ref, "') | ", EFECTOS_FIJOS_TAMANO)),
+    data = base, cluster = ~NORDEMP)
+
+  coeficientes <- as.data.frame(coeftable(modelo))
+  etiquetas <- c(g2 = "Q2", g3 = "Q3", g4 = "Q4", g5 = "Q5 (más expuestas)")
+  # obs() excluye las firmas sin tamano_2022 (y otras celdas vacías); el
+  # conteo de firmas refleja la muestra que el modelo usó de verdad.
+  firmas_usadas <- n_distinct(base$NORDEMP[obs(modelo)])
+
+  tibble(
+    nombre         = rownames(coeficientes),
+    coeficiente    = coeficientes[["Estimate"]],
+    error_estandar = coeficientes[["Std. Error"]],
+    p_valor        = coeficientes[["Pr(>|t|)"]]
+  ) %>%
+    mutate(anio    = as.integer(sub("ANIO_F::([0-9]{4}):.*", "\\1", nombre)),
+           clave   = sub(".*:(g[2-5])$", "\\1", nombre),
+           quintil = etiquetas[clave]) %>%
+    filter(anio == anio_choque) %>%
+    transmute(quintil, coeficiente, error_estandar, p_valor,
+              significancia = estrellas(p_valor),
+              efecto_porcentual = 100 * coeficiente,
+              firmas = firmas_usadas)
+}
+
+titulo("C9.1 Las tres medidas en el choque de 2023 (con tamaño)")
+
+real_2023_tamano <- bind_rows(
+  salto_con_medida_tamano(base_medidas_2022, "qa", "log_salario", 2023, "2022") %>%
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Costo laboral por trabajador (log)"),
+  salto_con_medida_tamano(base_medidas_2022, "qb", "log_salario", 2023, "2022") %>%
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Costo laboral por trabajador (log)"),
+  salto_con_medida_tamano(base_medidas_2022, "qc", "log_salario", 2023, "2022") %>%
+    mutate(medida = "C. Salario de firmas parecidas", resultado = "Costo laboral por trabajador (log)"),
+  salto_con_medida_tamano(base_medidas_2022, "qa", "log_empleo", 2023, "2022") %>%
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Empleo total (log)"),
+  salto_con_medida_tamano(base_medidas_2022, "qb", "log_empleo", 2023, "2022") %>%
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Empleo total (log)"),
+  salto_con_medida_tamano(base_medidas_2022, "qc", "log_empleo", 2023, "2022") %>%
+    mutate(medida = "C. Salario de firmas parecidas", resultado = "Empleo total (log)")
+) %>%
+  mutate(ejercicio = "Real (choque de 2023)")
+
+ver(real_2023_tamano, filas = 24)
+
+titulo("C9.2 Las tres medidas en el placebo de 2019 (con tamaño)")
+
+placebo_2019_tamano <- bind_rows(
+  salto_con_medida_tamano(base_medidas_2018, "qa", "log_salario", 2019, "2018") %>%
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Costo laboral por trabajador (log)"),
+  salto_con_medida_tamano(base_medidas_2018, "qb", "log_salario", 2019, "2018") %>%
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Costo laboral por trabajador (log)"),
+  salto_con_medida_tamano(base_medidas_2018, "qc", "log_salario", 2019, "2018") %>%
+    mutate(medida = "C. Salario de firmas parecidas", resultado = "Costo laboral por trabajador (log)"),
+  salto_con_medida_tamano(base_medidas_2018, "qa", "log_empleo", 2019, "2018") %>%
+    mutate(medida = "A. Salario de la firma en el año base", resultado = "Empleo total (log)"),
+  salto_con_medida_tamano(base_medidas_2018, "qb", "log_empleo", 2019, "2018") %>%
+    mutate(medida = "B. Salario promediado de los años previos", resultado = "Empleo total (log)"),
+  salto_con_medida_tamano(base_medidas_2018, "qc", "log_empleo", 2019, "2018") %>%
+    mutate(medida = "C. Salario de firmas parecidas", resultado = "Empleo total (log)")
+) %>%
+  mutate(ejercicio = "Placebo (año sin choque: 2019)")
+
+ver(placebo_2019_tamano, filas = 24)
+
+titulo("C9.3 Real frente a placebo (con tamaño)")
+
+comparacion_medidas_tamano <- bind_rows(real_2023_tamano, placebo_2019_tamano) %>%
+  select(resultado, medida, ejercicio, quintil, efecto_porcentual, error_estandar,
+         p_valor, significancia, firmas) %>%
+  arrange(resultado, medida, quintil, ejercicio)
+
+ver(comparacion_medidas_tamano, filas = 48)
+guardar_tabla(comparacion_medidas_tamano, "T24_tres_medidas_real_vs_placebo_tamano",
+              paste("Tabla 24 (con control de tamaño x año). Las tres medidas de exposición:",
+                    "salto real de 2023 frente al placebo de 2019.",
+                    "Real: año base 2022, promedio 2019, 2021 y 2022.",
+                    "Placebo: año base 2018, promedio 2015-2018."),
+              decimales = 4)
+
+# Resumen apretado: solo el quintil más expuesto, igual que T25
+resumen_medidas_tamano <- comparacion_medidas_tamano %>%
+  filter(quintil == "Q5 (más expuestas)") %>%
+  select(resultado, medida, ejercicio, efecto_porcentual, error_estandar, significancia) %>%
+  pivot_wider(names_from = ejercicio, values_from = c(efecto_porcentual, error_estandar, significancia)) %>%
+  mutate(
+    # error_estandar_* en puntos porcentuales, igual que T25.
+    `error_estandar_Real (choque de 2023)` = 100 * `error_estandar_Real (choque de 2023)`,
+    `error_estandar_Placebo (año sin choque: 2019)` = 100 * `error_estandar_Placebo (año sin choque: 2019)`,
+    diferencia_real_menos_placebo = `efecto_porcentual_Real (choque de 2023)` -
+      `efecto_porcentual_Placebo (año sin choque: 2019)`,
+    # Mismo supuesto conservador que en T25: asume independencia entre el
+    # ejercicio real y el placebo; al compartir firmas la covarianza
+    # probablemente es positiva, así que este error es más grande que el real.
+    ee_diferencia = sqrt(`error_estandar_Real (choque de 2023)`^2 +
+                           `error_estandar_Placebo (año sin choque: 2019)`^2),
+    p_diferencia = 2 * pnorm(-abs(diferencia_real_menos_placebo / ee_diferencia)),
+    significancia_diferencia = estrellas(p_diferencia)
+  )
+
+ver(resumen_medidas_tamano, filas = 12)
+guardar_tabla(resumen_medidas_tamano, "T25_resumen_medidas_q5_tamano",
+              "Tabla 25 (con control de tamaño x año). El quintil más expuesto: efecto real y efecto falso, con cada medida",
+              decimales = 2)
+
+cat("\nCÓMO LEER: compara esta tabla con T25_resumen_medidas_q5. Si la columna",
+    "\ndiferencia_real_menos_placebo y su significancia no cambian mucho al",
+    "\nagregar tamano_2022^ANIO_F, el veredicto sobre cuál medida sirve no",
+    "\ndepende de esa decisión de control.\n")
+
+
+# ==============================================================================
 # RESUMEN
 # ==============================================================================
 titulo("RESUMEN")
