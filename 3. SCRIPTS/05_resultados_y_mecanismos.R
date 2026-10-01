@@ -996,6 +996,84 @@ cat("\nCÓMO LEER: si el coeficiente de 2023 cambia mucho al mover el año base,
 
 
 # ==============================================================================
+# 7a. ROBUSTEZ: CONTROL POR TAMAÑO x AÑO
+# ==============================================================================
+titulo("7a. CONTROL POR TAMAÑO x AÑO")
+
+# La especificación principal (sección 2) NO controla por tamaño x año: el
+# tamaño de la firma (tamano_2022) se mide en 2022, el mismo año en que se
+# mide la exposición (Bite2022_obreros). Controlar por tamaño x año podría
+# absorber parte del efecto que se quiere estimar, no solo ruido, porque el
+# tamaño de 2022 ya refleja cualquier ajuste de las firmas al choque. Esta
+# sección muestra cuánto depende el resultado de esa decisión: si el
+# coeficiente de 2023 se mantiene al agregar el control, la decisión de no
+# controlar por tamaño no está impulsando el resultado.
+
+EFECTOS_TAMANO <- paste(EFECTOS, "+ tamano_2022^ANIO_F")
+cat("Efectos fijos con tamaño:", EFECTOS_TAMANO, "\n")
+
+evento_control_tamano <- function(outcome, control_tamano) {
+  efectos_uso <- if (control_tamano) EFECTOS_TAMANO else EFECTOS
+  evento <- estudio_evento(outcome, "Bite2022_obreros", efectos = efectos_uso)
+  a <- contraste(evento, c(`2023` = 1), "A. Cambio 2022 -> 2023")
+  if (is.null(a)) return(NULL)
+  a %>%
+    mutate(outcome = outcome,
+           control = ifelse(control_tamano, "Con control de tamaño x año",
+                            "Sin control de tamaño (principal)"),
+           p_previos = evento$p_previos,
+           observaciones = nobs(evento$modelo)) %>%
+    select(outcome, control, efecto_pct, ic95_inf_pct, ic95_sup_pct,
+           p_valor, significancia, p_previos, observaciones)
+}
+
+robustez_tamano <- bind_rows(
+  evento_control_tamano("log_costo", FALSE),
+  evento_control_tamano("log_costo", TRUE),
+  evento_control_tamano("log_empleo", FALSE),
+  evento_control_tamano("log_empleo", TRUE)
+)
+
+ver(robustez_tamano)
+guardar_tabla(robustez_tamano, "T07b_robustez_control_tamano",
+              "Tabla 7b. Coeficiente de 2023, con y sin control por tamaño x año",
+              decimales = 3)
+
+cat("\nCÓMO LEER: si el coeficiente de 2023 cambia mucho al agregar el control\n",
+    "de tamaño x año, el resultado principal depende de esa decisión y hay que\n",
+    "reportarlo. Si se mantiene, no controlar por tamaño no está sesgando el\n",
+    "resultado.\n")
+
+evento_empleo_sin_tamano <- estudio_evento("log_empleo", "Bite2022_obreros", efectos = EFECTOS)
+evento_empleo_con_tamano <- estudio_evento("log_empleo", "Bite2022_obreros", efectos = EFECTOS_TAMANO)
+
+if (!is.null(evento_empleo_sin_tamano) && !is.null(evento_empleo_con_tamano)) {
+  datos_control_tamano <- bind_rows(
+    evento_empleo_sin_tamano$tabla %>% mutate(control = "Sin control de tamaño (principal)"),
+    evento_empleo_con_tamano$tabla %>% mutate(control = "Con control de tamaño x año")
+  )
+
+  grafico_control_tamano <- ggplot(datos_control_tamano,
+                                   aes(x = anio, y = 100 * coeficiente, color = control)) +
+    geom_hline(yintercept = 0, color = "grey60") +
+    geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
+    geom_errorbar(aes(ymin = 100 * (coeficiente - 1.96 * error_estandar),
+                      ymax = 100 * (coeficiente + 1.96 * error_estandar)),
+                  position = position_dodge(width = 0.3), width = 0.2) +
+    geom_point(position = position_dodge(width = 0.3), size = 2.2) +
+    scale_x_continuous(breaks = c(2015:2019, 2021:2024)) +
+    scale_color_manual(values = c(`Sin control de tamaño (principal)` = COLOR_BAJA,
+                                  `Con control de tamaño x año` = COLOR_ALTA)) +
+    labs(title = "Empleo total: trayectoria con y sin control por tamaño x año",
+         subtitle = "Efecto de una DE más de exposición, frente a 2022",
+         x = NULL, y = "Efecto (%)", color = NULL,
+         caption = NOTA) +
+    tema_tesis
+  guardar_grafico(grafico_control_tamano, "G06b_control_tamano")
+}
+
+
+# ==============================================================================
 # 7b. DOSIS-RESPUESTA: QUINTILES DE EXPOSICIÓN
 # ==============================================================================
 titulo("7b. DOSIS-RESPUESTA: QUINTILES DE EXPOSICIÓN")
