@@ -158,10 +158,31 @@ t21_medio <- filter(t21, quintil_q %in% c("Q2", "Q3", "Q4"))
 t21_q1 <- filter(t21, quintil_q == "Q1")
 t21_q5 <- filter(t21, quintil_q == "Q5")
 
+# Segmento punteado 2019 -> 2021 por quintil (sin punto en 2020, que no existe
+# en los datos). Punteado ("dotted"), no rayado, para no confundirlo con la
+# línea vertical de 2022,5 (esa sí es "dashed"). Se dibuja ANTES que las
+# líneas sólidas para que estas no queden tapadas.
+segmentos_1921 <- t21 %>%
+  filter(ANIO %in% c(2019, 2021)) %>%
+  select(quintil_q, ANIO, vs_2015) %>%
+  pivot_wider(names_from = ANIO, values_from = vs_2015, names_prefix = "y")
+seg_medio <- filter(segmentos_1921, quintil_q %in% c("Q2", "Q3", "Q4"))
+seg_q1 <- filter(segmentos_1921, quintil_q == "Q1")
+seg_q5 <- filter(segmentos_1921, quintil_q == "Q5")
+
 grafico_g3 <- ggplot(t21, aes(x = ANIO, y = vs_2015, color = quintil_q,
                               group = interaction(quintil_q, tramo))) +
   geom_hline(yintercept = 0, color = "grey60") +
   geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
+  geom_segment(data = seg_medio, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
+                                    color = quintil_q),
+               linetype = "dotted", linewidth = 0.6, inherit.aes = FALSE) +
+  geom_segment(data = seg_q1, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
+                                  color = quintil_q),
+               linetype = "dotted", linewidth = 1.1, inherit.aes = FALSE) +
+  geom_segment(data = seg_q5, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
+                                  color = quintil_q),
+               linetype = "dotted", linewidth = 1.1, inherit.aes = FALSE) +
   geom_line(data = t21_medio, linewidth = 0.6) +
   geom_point(data = t21_medio, size = 1.4) +
   geom_line(data = t21_q1, linewidth = 1.1) +
