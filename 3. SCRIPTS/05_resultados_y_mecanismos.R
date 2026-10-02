@@ -1552,80 +1552,140 @@ if (!requireNamespace("HonestDiD", quietly = TRUE)) {
 
 
 # ==============================================================================
-# 7e. GRÁFICO DE TENDENCIAS PARALELAS
+# 7f. TRAYECTORIAS: MÁS EXPUESTAS (Q5) FRENTE A MENOS EXPUESTAS (Q1)
 # ==============================================================================
-titulo("7e. GRÁFICO DE TENDENCIAS PARALELAS")
+titulo("7f. TRAYECTORIAS: MÁS EXPUESTAS (Q5) FRENTE A MENOS EXPUESTAS (Q1)")
 
-# Un solo gráfico resumen con la trayectoria año a año (frente a 2022) de seis
-# resultados, con y sin control de tamaño x año, para ver de un vistazo si las
-# tendencias previas son paralelas y si esa decisión de control las cambia.
-# No reemplaza ninguna tabla existente.
+# Gráfico descriptivo de tendencias paralelas para la sección de estrategia
+# empírica. Compara la trayectoria de las firmas más expuestas (Q5 del Kaitz
+# de 2022) con la de las menos expuestas (Q1), sin controles.
+#
+# Para evitar cambios de composición (firmas que entran y salen), cada línea
+# NO es el promedio del nivel de la variable, sino el promedio del cambio de
+# cada firma frente a su propio valor de 2022: y_ft - y_f,2022. Así, ambas
+# líneas pasan por cero en 2022 y lo que se compara es su trayectoria.
+# Variables en log: x 100 (cambio en %). Participación: x 100 (puntos
+# porcentuales).
 
-VARIABLES_TENDENCIAS <- tribble(
+# Quintiles del Kaitz de 2022 (los mismos de la sección 7b)
+if (!exists("quintiles_kaitz")) {
+  quintiles_kaitz <- base %>%
+    filter(ANIO == 2022, !is.na(Bite2022_obreros)) %>%
+    distinct(NORDEMP, .keep_all = TRUE) %>%
+    transmute(NORDEMP, Bite2022_obreros,
+              quintil_kaitz = factor(ntile(Bite2022_obreros, 5)))
+}
+
+GRUPO_ALTO <- "Más expuestas (Q5)"
+GRUPO_BAJO <- "Menos expuestas (Q1)"
+
+grupos_q1_q5 <- quintiles_kaitz %>%
+  filter(quintil_kaitz %in% c("1", "5")) %>%
+  transmute(NORDEMP,
+            grupo = ifelse(quintil_kaitz == "5", GRUPO_ALTO, GRUPO_BAJO))
+
+VARIABLES_TRAYECTORIA <- tribble(
   ~variable,                   ~etiqueta,
-  "log_costo",                 "Costo laboral por trabajador (log)",
-  "log_empleo",                 "Empleo total (log)",
-  "log_permanente",             "Empleo permanente (log)",
-  "log_temporal_directo",       "Empleo temporal directo (log)",
-  "participacion_permanente",   "Participación de permanentes (%)",
-  "log_agencias",               "Personal de agencias (log)"
+  "log_costo",                 "Costo laboral",
+  "log_empleo",                "Empleo total",
+  "log_permanente",            "Empleo permanente",
+  "log_temporal_directo",      "Empleo temporal directo",
+  "participacion_permanente",  "Participación de permanentes (p.p.)",
+  "log_agencias",              "Personal de agencias"
 )
 
-CONTROLES_TENDENCIAS <- c("Sin control por tamaño" = EFECTOS,
-                          "Con control por tamaño" = EFECTOS_TAMANO)
+# Si es TRUE, recorta los cambios extremos (1% y 99%) dentro de cada variable
+# y año antes de promediar. Útil si alguna variable (p. ej. agencias) tiene
+# saltos muy grandes. Por defecto, FALSE (sin recorte, igual que 05).
+WINSORIZAR_CAMBIOS <- FALSE
 
-evento_tendencias <- function(variable, etiqueta, control) {
-  evento <- estudio_evento(variable, "Bite2022_obreros",
-                           efectos = CONTROLES_TENDENCIAS[[control]])
-  if (is.null(evento)) {
-    cat("AVISO: no se pudo estimar", variable, "con", control, "- se omite\n")
+cambios_q1_q5 <- bind_rows(lapply(seq_len(nrow(VARIABLES_TRAYECTORIA)), function(i) {
+  v <- VARIABLES_TRAYECTORIA$variable[i]
+  if (!v %in% names(datos)) {
+    cat("AVISO: no existe la variable", v, "- se omite\n")
     return(NULL)
   }
-  trayectoria <- evento$tabla %>%
-    mutate(variable = variable, etiqueta = etiqueta, control = control,
-           efecto_pct = 100 * coeficiente,
-           ic95_inf_pct = 100 * (coeficiente - 1.96 * error_estandar),
-           ic95_sup_pct = 100 * (coeficiente + 1.96 * error_estandar))
-  resumen <- tibble(variable = variable, etiqueta = etiqueta, control = control,
-                    p_previos = evento$p_previos, observaciones = nobs(evento$modelo))
-  list(trayectoria = trayectoria, resumen = resumen)
+  datos %>%
+    inner_join(grupos_q1_q5, by = "NORDEMP") %>%
+    select(NORDEMP, ANIO, grupo, valor = all_of(v)) %>%
+    group_by(NORDEMP) %>%
+    mutate(valor_2022 = valor[ANIO == 2022][1]) %>%
+    ungroup() %>%
+    filter(!is.na(valor), !is.na(valor_2022)) %>%
+    mutate(cambio = 100 * (valor - valor_2022),
+           variable = v,
+           etiqueta = VARIABLES_TRAYECTORIA$etiqueta[i])
+}))
+
+if (WINSORIZAR_CAMBIOS) {
+  cambios_q1_q5 <- cambios_q1_q5 %>%
+    group_by(variable, ANIO) %>%
+    mutate(cambio = winsorizar(cambio)) %>%
+    ungroup()
 }
 
-resultados_tendencias <- list()
-for (i in seq_len(nrow(VARIABLES_TENDENCIAS))) {
-  for (control in names(CONTROLES_TENDENCIAS)) {
-    resultados_tendencias[[length(resultados_tendencias) + 1]] <- evento_tendencias(
-      VARIABLES_TENDENCIAS$variable[i], VARIABLES_TENDENCIAS$etiqueta[i], control)
-  }
-}
-resultados_tendencias <- Filter(Negate(is.null), resultados_tendencias)
+trayectorias_q1_q5 <- cambios_q1_q5 %>%
+  group_by(variable, etiqueta, grupo, ANIO) %>%
+  summarise(firmas = n(),
+            media = mean(cambio),
+            ee = ifelse(n() > 1, sd(cambio) / sqrt(n()), 0),
+            .groups = "drop") %>%
+  mutate(ic95_inf = media - 1.96 * ee,
+         ic95_sup = media + 1.96 * ee,
+         # Dos tramos para no unir con línea el salto 2019 -> 2021 (sin 2020)
+         tramo = ifelse(ANIO <= 2019, "2015-2019", "2021-2024"),
+         etiqueta = factor(etiqueta, levels = VARIABLES_TRAYECTORIA$etiqueta),
+         grupo = factor(grupo, levels = c(GRUPO_ALTO, GRUPO_BAJO))) %>%
+  arrange(etiqueta, grupo, ANIO)
 
-trayectoria_tendencias <- bind_rows(lapply(resultados_tendencias, `[[`, "trayectoria")) %>%
-  mutate(etiqueta = factor(etiqueta, levels = VARIABLES_TENDENCIAS$etiqueta),
-         control = factor(control, levels = names(CONTROLES_TENDENCIAS)),
-         # Desplazamiento horizontal para que los puntos de las dos
-         # especificaciones no se tapen en el mismo año.
-         anio_offset = anio + ifelse(control == "Con control por tamaño", 0.12, -0.12))
+write_csv(trayectorias_q1_q5, file.path(CARPETA, "T11c_trayectorias_q1_q5.csv"))
+cat("Tabla guardada: T11c_trayectorias_q1_q5 (solo csv)\n")
 
-resumen_tendencias <- bind_rows(lapply(resultados_tendencias, `[[`, "resumen")) %>%
-  mutate(etiqueta = factor(etiqueta, levels = VARIABLES_TENDENCIAS$etiqueta),
-         control = factor(control, levels = names(CONTROLES_TENDENCIAS)))
+# Control: cuántas firmas tiene cada grupo en algunos años (empleo total)
+cat("\nFirmas por grupo y año (empleo total):\n")
+trayectorias_q1_q5 %>%
+  filter(variable == "log_empleo", ANIO %in% c(2015, 2019, 2022, 2024)) %>%
+  select(grupo, ANIO, firmas) %>%
+  pivot_wider(names_from = ANIO, values_from = firmas) %>%
+  print()
 
-ver(resumen_tendencias, filas = 12)
-guardar_tabla(resumen_tendencias %>% select(variable, etiqueta, control, p_previos, observaciones),
-              "T11_tendencias_paralelas",
-              "Tabla 11. Prueba conjunta de años previos y observaciones, por variable y especificación",
-              decimales = 4)
+COLORES_Q <- setNames(c(COLOR_BAJA, "grey30"), c(GRUPO_ALTO, GRUPO_BAJO))
+FORMAS_Q  <- setNames(c(17, 16), c(GRUPO_ALTO, GRUPO_BAJO))
 
-# El gráfico G09_tendencias_paralelas ya NO se dibuja aquí. Se mueve a
-# "3. SCRIPTS/herramientas/graficar_tendencias_paralelas.R", un script
-# independiente que no depende de correr 05 completo (HonestDiD, arriba,
-# tarda varios minutos y no hace falta para este gráfico). Ese script puede
-# reestimar desde cero (REESTIMAR <- TRUE) o, si ya existe
-# T11b_coeficientes_tendencias.csv, solo leerlo y graficar (REESTIMAR <-
-# FALSE, el default). Para no tener dos versiones del mismo gráfico, esta
-# sección de 05 se queda solo con las estimaciones y la tabla T11 de arriba;
-# correr el otro script después de este si hace falta regenerar el PNG.
+grafico_q1_q5 <- ggplot(trayectorias_q1_q5,
+                        aes(x = ANIO, y = media, color = grupo, fill = grupo,
+                            shape = grupo, group = interaction(grupo, tramo))) +
+  geom_hline(yintercept = 0, color = "grey60") +
+  geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
+  geom_ribbon(aes(ymin = ic95_inf, ymax = ic95_sup), alpha = 0.15, color = NA) +
+  geom_line(linewidth = 0.6) +
+  geom_point(size = 1.6) +
+  facet_wrap(~ etiqueta, ncol = 2, scales = "free_y") +
+  scale_x_continuous(breaks = c(2015, 2017, 2019, 2021, 2023),
+                     limits = c(2014.6, 2024.4)) +
+  scale_y_continuous(labels = scales::label_number(decimal.mark = ",",
+                                                   big.mark = ".")) +
+  scale_color_manual(values = COLORES_Q) +
+  scale_fill_manual(values = COLORES_Q) +
+  scale_shape_manual(values = FORMAS_Q) +
+  labs(x = NULL, y = "Cambio frente a 2022 (%)",
+       color = NULL, fill = NULL, shape = NULL) +
+  theme_minimal(base_size = 10) +
+  theme(strip.text = element_text(face = "bold", size = 9),
+        panel.spacing = unit(1, "lines"),
+        panel.grid.minor = element_blank(),
+        legend.position = "bottom")
+
+print(grafico_q1_q5)
+ggsave(file.path(CARPETA, "figuras", "G09c_trayectorias_q1_q5.png"), grafico_q1_q5,
+       width = 16, height = 20, units = "cm", dpi = 300, bg = "white")
+cat("Gráfico guardado: G09c_trayectorias_q1_q5\n")
+
+cat("\nCÓMO LEER: ambas líneas valen cero en 2022 por construcción. Si antes de\n",
+    "2022 se mueven en paralelo, el supuesto de tendencias paralelas es creíble\n",
+    "para esa variable; si se separan, hay una trayectoria previa distinta.\n",
+    "La participación de permanentes está en puntos porcentuales; el resto,\n",
+    "en cambio porcentual aproximado (diferencia de logaritmos x 100).\n")
 
 
 # ==============================================================================
