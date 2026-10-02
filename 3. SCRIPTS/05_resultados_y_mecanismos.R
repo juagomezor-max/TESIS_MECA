@@ -125,6 +125,13 @@ library(flextable)
 CARPETA <- file.path("4. RESULTADOS", "05_resultados_y_mecanismos")
 dir.create(file.path(CARPETA, "figuras"), recursive = TRUE, showWarnings = FALSE)
 
+# El foco de la tesis pasó a los quintiles de exposición; el control por
+# tamaño es un anexo. HonestDiD (secciones 7c y 7d.3) tarda varios minutos y
+# ya tiene sus tablas y gráfico guardados -- con FALSE se saltan esas dos
+# secciones por completo y T10*, T10b* y G08 NO se tocan. Con TRUE el
+# comportamiento es exactamente el de antes.
+CORRER_HONESTDID <- FALSE
+
 titulo <- function(texto) {
   cat("\n", strrep("=", 78), "\n", texto, "\n", strrep("=", 78), "\n", sep = "")
 }
@@ -1085,11 +1092,36 @@ titulo("7b. DOSIS-RESPUESTA: QUINTILES DE EXPOSICIÓN")
 # expuesto), con los mismos efectos fijos. Si el mínimo tiene efecto, debería
 # verse un gradiente: mayor en los quintiles altos.
 
+# Quintiles del Kaitz 2022: misma construcción que 06_tratamiento_continuo.R
+# y la Tabla 1 (winsorizar en p1-p99 entre las firmas de 2022 y cortar por
+# cuantiles de ese Kaitz ya recortado) -- antes se usaba ntile() sobre el
+# Kaitz SIN winsorizar, lo que repartía algunas firmas de borde distinto a
+# como las reparte 06.
 quintiles_kaitz <- base %>%
   filter(ANIO == 2022, !is.na(Bite2022_obreros)) %>%
   distinct(NORDEMP, .keep_all = TRUE) %>%
-  transmute(NORDEMP, Bite2022_obreros,
-            quintil_kaitz = factor(ntile(Bite2022_obreros, 5)))
+  transmute(NORDEMP, Bite2022_obreros)
+
+limites_quintiles <- quantile(quintiles_kaitz$Bite2022_obreros, probs = c(0.01, 0.99))
+
+quintiles_kaitz <- quintiles_kaitz %>%
+  mutate(
+    kaitz_winsorizado = pmin(pmax(Bite2022_obreros, limites_quintiles[1]), limites_quintiles[2]),
+    quintil_kaitz = cut(kaitz_winsorizado,
+                        breaks = quantile(kaitz_winsorizado, probs = seq(0, 1, 0.2)),
+                        labels = as.character(1:5), include.lowest = TRUE)
+  )
+
+# Control: firmas por quintil deben coincidir con T16_distribucion_exposicion
+# (06_tratamiento_continuo.R): 1.020 / 1.022 / 1.017 / 1.020 / 1.020.
+conteo_quintiles <- as.integer(table(quintiles_kaitz$quintil_kaitz))
+esperado_quintiles <- c(1020L, 1022L, 1017L, 1020L, 1020L)
+cat("Firmas por quintil (Kaitz 2022, winsorizado):", paste(conteo_quintiles, collapse = " / "),
+    "| esperado:", paste(esperado_quintiles, collapse = " / "), "\n")
+if (!identical(conteo_quintiles, esperado_quintiles)) {
+  stop("Los conteos por quintil NO coinciden con T16_distribucion_exposicion.csv (06). ",
+       "Deteniendo -- revisar antes de seguir.")
+}
 
 rangos_quintiles <- quintiles_kaitz %>%
   group_by(quintil_kaitz) %>%
@@ -1139,11 +1171,13 @@ evento_quintiles <- function(outcome) {
   efectos <- bind_rows(lapply(2:5, function(qq) bind_rows(
     combinar(c(`2023` = 1), "2023 vs 2022", qq),
     combinar(c(`2023` = 1, `2015` = pp, `2016` = pp, `2017` = pp, `2018` = pp,
-               `2019` = pp, `2021` = pp), "2023 vs promedio previo", qq)
+               `2019` = pp, `2021` = pp), "2023 vs promedio previo", qq),
+    combinar(c(`2023` = 1, `2021` = -1), "2023 vs 2021", qq),
+    combinar(c(`2024` = 1), "2024 vs 2022", qq)
   ))) %>%
     mutate(resultado = RESULTADOS_QUINTILES[[outcome]], significancia = estrellas(p_valor),
            p_previos = p_previos, observaciones = nobs(m))
-  
+
   list(trayectoria = trayectoria, efectos = efectos)
 }
 
@@ -1160,21 +1194,16 @@ guardar_tabla(efectos_quintiles, "T09_quintiles_exposicion",
 
 trayectoria_quintiles <- bind_rows(lapply(res_quintiles, `[[`, "trayectoria"))
 
-grafico_quintiles <- ggplot(trayectoria_quintiles,
-                            aes(x = anio, y = 100 * coeficiente,
-                                color = factor(quintil), group = factor(quintil))) +
-  geom_hline(yintercept = 0, color = "grey60") +
-  geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
-  geom_line(linewidth = 0.7) + geom_point(size = 1.6) +
-  facet_wrap(~ resultado, scales = "free_y", ncol = 1) +
-  scale_x_continuous(breaks = c(2015:2019, 2021:2024)) +
-  scale_color_manual(values = c(`2` = "#9DB4CE", `3` = "#5B84B1", `4` = "#E08080",
-                                `5` = COLOR_ALTA)) +
-  labs(title = "Dosis-respuesta: trayectoria de cada quintil de exposición frente al quintil 1",
-       subtitle = "Diferencia frente a 2022. Quintiles del Kaitz de obreros de 2022",
-       x = NULL, y = "Efecto (%)", color = "Quintil de Kaitz", caption = NOTA) +
-  tema_tesis
-guardar_grafico(grafico_quintiles, "G07_quintiles_exposicion", ancho = 10, alto = 11)
+# Trayectoria año a año de cada quintil (para graficar_figuras_tesis.R). El
+# gráfico G07_quintiles_exposicion ya NO se dibuja aquí: pasa a ese script.
+trayectoria_quintiles_csv <- trayectoria_quintiles %>%
+  mutate(efecto_pct = 100 * coeficiente,
+         ic95_inf_pct = 100 * (coeficiente - 1.96 * error_estandar),
+         ic95_sup_pct = 100 * (coeficiente + 1.96 * error_estandar)) %>%
+  select(resultado, quintil, anio, efecto_pct, ic95_inf_pct, ic95_sup_pct) %>%
+  arrange(resultado, quintil, anio)
+write_csv(trayectoria_quintiles_csv, file.path(CARPETA, "T09b_evento_quintiles.csv"))
+cat("Tabla guardada: T09b_evento_quintiles (solo csv)\n")
 
 cat("\nCÓMO LEER: si el mínimo tiene efecto, el coeficiente de 2023 debería\n",
     "crecer de Q2 a Q5 (gradiente). Si los quintiles se separan desde antes de\n",
@@ -1209,11 +1238,14 @@ titulo("7c. SENSIBILIDAD A TENDENCIAS PARALELAS (HONESTDID)")
 #     Sant'Anna, 2024).
 #   - Los intervalos están en puntos log (se reportan x 100 como %).
 
-if (!requireNamespace("HonestDiD", quietly = TRUE)) {
+if (!CORRER_HONESTDID) {
+  cat("CORRER_HONESTDID = FALSE: se omite HonestDiD. T10_honestdid_sensibilidad,\n",
+      "T10b_honestdid_valor_quiebre y G08_honestdid no se tocan.\n")
+} else if (!requireNamespace("HonestDiD", quietly = TRUE)) {
   cat("AVISO: el paquete HonestDiD no está instalado. Se omite esta sección.\n",
       "Para instalarlo: remotes::install_github(\"asheshrambachan/HonestDiD\")\n")
 } else {
-  
+
   RESULTADOS_HONEST <- c(log_costo = "Costo laboral por trabajador (log)",
                          log_empleo = "Empleo total (log)",
                          log_permanente = "Empleo permanente (log)")
@@ -1421,7 +1453,9 @@ evento_quintiles_tamano <- function(outcome) {
   efectos <- bind_rows(lapply(2:5, function(qq) bind_rows(
     combinar(c(`2023` = 1), "2023 vs 2022", qq),
     combinar(c(`2023` = 1, `2015` = pp, `2016` = pp, `2017` = pp, `2018` = pp,
-               `2019` = pp, `2021` = pp), "2023 vs promedio previo", qq)
+               `2019` = pp, `2021` = pp), "2023 vs promedio previo", qq),
+    combinar(c(`2023` = 1, `2021` = -1), "2023 vs 2021", qq),
+    combinar(c(`2024` = 1), "2024 vs 2022", qq)
   ))) %>%
     mutate(resultado = RESULTADOS_QUINTILES[[outcome]], significancia = estrellas(p_valor),
            p_previos = p_previos, observaciones = nobs(m))
@@ -1448,21 +1482,16 @@ guardar_tabla(efectos_quintiles_tamano, "T09_quintiles_exposicion_tamano",
 
 trayectoria_quintiles_tamano <- bind_rows(lapply(res_quintiles_tamano, `[[`, "trayectoria"))
 
-grafico_quintiles_tamano <- ggplot(trayectoria_quintiles_tamano,
-                                   aes(x = anio, y = 100 * coeficiente,
-                                       color = factor(quintil), group = factor(quintil))) +
-  geom_hline(yintercept = 0, color = "grey60") +
-  geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
-  geom_line(linewidth = 0.7) + geom_point(size = 1.6) +
-  facet_wrap(~ resultado, scales = "free_y", ncol = 1) +
-  scale_x_continuous(breaks = c(2015:2019, 2021:2024)) +
-  scale_color_manual(values = c(`2` = "#9DB4CE", `3` = "#5B84B1", `4` = "#E08080",
-                                `5` = COLOR_ALTA)) +
-  labs(title = "Dosis-respuesta con control de tamaño x año, frente al quintil 1",
-       subtitle = "Diferencia frente a 2022. Quintiles del Kaitz de obreros de 2022",
-       x = NULL, y = "Efecto (%)", color = "Quintil de Kaitz", caption = NOTA) +
-  tema_tesis
-guardar_grafico(grafico_quintiles_tamano, "G07_quintiles_exposicion_tamano", ancho = 10, alto = 11)
+# Trayectoria año a año (para graficar_figuras_tesis.R). G07_quintiles_exposicion_tamano
+# ya NO se dibuja aquí: pasa a ese script.
+trayectoria_quintiles_tamano_csv <- trayectoria_quintiles_tamano %>%
+  mutate(efecto_pct = 100 * coeficiente,
+         ic95_inf_pct = 100 * (coeficiente - 1.96 * error_estandar),
+         ic95_sup_pct = 100 * (coeficiente + 1.96 * error_estandar)) %>%
+  select(resultado, quintil, anio, efecto_pct, ic95_inf_pct, ic95_sup_pct) %>%
+  arrange(resultado, quintil, anio)
+write_csv(trayectoria_quintiles_tamano_csv, file.path(CARPETA, "T09b_evento_quintiles_tamano.csv"))
+cat("Tabla guardada: T09b_evento_quintiles_tamano (solo csv)\n")
 
 cat("\nCÓMO LEER: compara con T09_quintiles_exposicion (sin tamaño). Si el\n",
     "gradiente entre quintiles se mantiene, la dosis-respuesta no depende de\n",
@@ -1471,7 +1500,10 @@ cat("\nCÓMO LEER: compara con T09_quintiles_exposicion (sin tamaño). Si el\n",
 # --- 7d.3 HonestDiD con control de tamaño ---------------------------------------
 titulo("7d.3 HonestDiD con control de tamaño")
 
-if (!requireNamespace("HonestDiD", quietly = TRUE)) {
+if (!CORRER_HONESTDID) {
+  cat("CORRER_HONESTDID = FALSE: se omite HonestDiD con tamaño. T10_honestdid_tamano\n",
+      "y T10b_honestdid_valor_quiebre_tamano no se tocan.\n")
+} else if (!requireNamespace("HonestDiD", quietly = TRUE)) {
   cat("AVISO: el paquete HonestDiD no está instalado. Se omite esta subsección.\n")
 } else {
 

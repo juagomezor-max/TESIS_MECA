@@ -18,6 +18,8 @@
 #   4. RESULTADOS/05_resultados_y_mecanismos/T11b_coeficientes_tendencias.csv
 #   4. RESULTADOS/05_resultados_y_mecanismos/T09_quintiles_exposicion.csv
 #   4. RESULTADOS/05_resultados_y_mecanismos/T09_quintiles_exposicion_tamano.csv
+#   4. RESULTADOS/05_resultados_y_mecanismos/T09b_evento_quintiles.csv
+#   4. RESULTADOS/05_resultados_y_mecanismos/T09b_evento_quintiles_tamano.csv
 #   1. DATOS/panel_analitico_firma_eam.rds (solo si RECALCULAR_G1 o no existe
 #     el CSV de apoyo de G1)
 # Salidas: 4. RESULTADOS/07_figuras_tesis/ (G1 a G6, .png, y el CSV de apoyo
@@ -36,6 +38,8 @@ library(scales)
 
 CARPETA <- file.path("4. RESULTADOS", "07_figuras_tesis")
 dir.create(CARPETA, recursive = TRUE, showWarnings = FALSE)
+CARPETA_ANEXO <- file.path(CARPETA, "anexo")
+dir.create(CARPETA_ANEXO, recursive = TRUE, showWarnings = FALSE)
 
 # --- Estilo común ------------------------------------------------------------
 
@@ -55,10 +59,10 @@ tema_figuras <- theme_minimal(base_size = 10) +
         panel.grid.minor = element_blank(),
         legend.position = "bottom")
 
-guardar_figura <- function(grafico, nombre, alto) {
-  ggsave(file.path(CARPETA, paste0(nombre, ".png")), grafico,
+guardar_figura <- function(grafico, nombre, alto, carpeta = CARPETA) {
+  ggsave(file.path(carpeta, paste0(nombre, ".png")), grafico,
          width = 16, height = alto, units = "cm", dpi = 300, bg = "white")
-  cat("Guardado:", nombre, paste0("(16 x ", alto, " cm)\n"))
+  cat("Guardado:", file.path(carpeta, nombre), paste0("(16 x ", alto, " cm)\n"))
 }
 
 # Extrae el código corto de quintil ("Q2", "Q5", ...) de etiquetas largas
@@ -176,13 +180,13 @@ grafico_g3 <- ggplot(t21, aes(x = ANIO, y = vs_2015, color = quintil_q,
   geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
   geom_segment(data = seg_medio, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
                                     color = quintil_q),
-               linetype = "dotted", linewidth = 0.6, inherit.aes = FALSE) +
+               linetype = "dotted", linewidth = 0.6, inherit.aes = FALSE, show.legend = FALSE) +
   geom_segment(data = seg_q1, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
                                   color = quintil_q),
-               linetype = "dotted", linewidth = 1.1, inherit.aes = FALSE) +
+               linetype = "dotted", linewidth = 1.1, inherit.aes = FALSE, show.legend = FALSE) +
   geom_segment(data = seg_q5, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
                                   color = quintil_q),
-               linetype = "dotted", linewidth = 1.1, inherit.aes = FALSE) +
+               linetype = "dotted", linewidth = 1.1, inherit.aes = FALSE, show.legend = FALSE) +
   geom_line(data = t21_medio, linewidth = 0.6) +
   geom_point(data = t21_medio, size = 1.4) +
   geom_line(data = t21_q1, linewidth = 1.1) +
@@ -199,10 +203,85 @@ print(grafico_g3)
 guardar_figura(grafico_g3, "G3_trayectoria_costo_quintil", 9)
 
 
+
 # ==============================================================================
-# G4. SALTO REAL (2023) FRENTE AL PLACEBO (2019), POR QUINTIL
+# G4. EVENTO POR QUINTIL (DOSIS-RESPUESTA), SIN CONTROL POR TAMAÑO
 # ==============================================================================
-cat("\n=== G4. Real vs placebo por quintil ===\n")
+cat("\n=== G4. Evento por quintil (dosis-respuesta, sin tamaño) ===\n")
+
+RESULTADOS_QUINTIL_ORDEN <- c("Costo laboral por trabajador (log)", "Empleo total (log)",
+                              "Empleo permanente (log)")
+RESULTADOS_QUINTIL_ETIQUETAS <- c("Costo laboral por trabajador", "Empleo total",
+                                  "Empleo permanente")
+
+leer_evento_quintiles <- function(ruta) {
+  read_csv(ruta, show_col_types = FALSE) %>%
+    mutate(quintil_q = paste0("Q", quintil),
+           tramo = ifelse(anio <= 2019, "2015-2019", "2021-2024"),
+           resultado = factor(resultado, levels = RESULTADOS_QUINTIL_ORDEN,
+                              labels = RESULTADOS_QUINTIL_ETIQUETAS))
+}
+
+# Un solo gráfico para G4 (sin tamaño) y para el anexo A4_4 (con tamaño): tres
+# paneles en una columna, Q2-Q5 (Q1 es la referencia, no tiene coeficiente
+# propio), Q5 más grueso y con ribbon de IC95, tramo 2019-2021 punteado y sin
+# leyenda (no hay dato en 2020).
+graficar_evento_quintiles <- function(datos_evento) {
+  datos_resto <- filter(datos_evento, quintil_q != "Q5")
+  datos_q5 <- filter(datos_evento, quintil_q == "Q5")
+
+  seg <- datos_evento %>%
+    filter(anio %in% c(2019, 2021)) %>%
+    select(resultado, quintil_q, anio, efecto_pct) %>%
+    pivot_wider(names_from = anio, values_from = efecto_pct, names_prefix = "y")
+  seg_resto <- filter(seg, quintil_q != "Q5")
+  seg_q5 <- filter(seg, quintil_q == "Q5")
+
+  ggplot(datos_evento, aes(x = anio, y = efecto_pct, color = quintil_q,
+                           group = interaction(quintil_q, tramo))) +
+    geom_hline(yintercept = 0, color = "grey60") +
+    geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
+    geom_segment(data = seg_resto, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
+                                       color = quintil_q),
+                 linetype = "dotted", linewidth = 0.6, inherit.aes = FALSE, show.legend = FALSE) +
+    geom_segment(data = seg_q5, aes(x = 2019, xend = 2021, y = y2019, yend = y2021,
+                                    color = quintil_q),
+                 linetype = "dotted", linewidth = 1.1, inherit.aes = FALSE, show.legend = FALSE) +
+    geom_ribbon(data = datos_q5, aes(ymin = ic95_inf_pct, ymax = ic95_sup_pct, fill = quintil_q,
+                                     group = tramo),
+                alpha = 0.15, color = NA, show.legend = FALSE) +
+    geom_line(data = datos_resto, linewidth = 0.6) +
+    geom_point(data = datos_resto, size = 1.4) +
+    geom_line(data = datos_q5, linewidth = 1.1) +
+    geom_point(data = datos_q5, size = 1.4) +
+    facet_wrap(~ resultado, ncol = 1, scales = "free_y") +
+    scale_x_continuous(breaks = c(2015, 2017, 2019, 2021, 2023)) +
+    scale_y_continuous(labels = fmt_num) +
+    scale_color_manual(values = COLORES_QUINTIL, labels = ETIQUETAS_QUINTIL) +
+    scale_fill_manual(values = COLORES_QUINTIL, guide = "none") +
+    labs(x = NULL, y = "Diferencia frente a Q1, relativa a 2022 (%)", color = NULL) +
+    tema_figuras
+}
+
+t09b_sin <- leer_evento_quintiles(file.path("4. RESULTADOS", "05_resultados_y_mecanismos",
+                                            "T09b_evento_quintiles.csv"))
+
+cat("Control impreso (Q5, 2023):\n")
+t09b_sin %>%
+  filter(quintil_q == "Q5", anio == 2023) %>%
+  select(resultado, efecto_pct) %>%
+  as.data.frame() %>%
+  print(row.names = FALSE)
+
+grafico_g4 <- graficar_evento_quintiles(t09b_sin)
+print(grafico_g4)
+guardar_figura(grafico_g4, "G4_evento_quintiles", 16)
+
+
+# ==============================================================================
+# G5. SALTO REAL (2023) FRENTE AL PLACEBO (2019), POR QUINTIL -- SIN TAMAÑO
+# ==============================================================================
+cat("\n=== G5. Real vs placebo por quintil (sin tamaño) ===\n")
 
 t24_sin <- read_csv(file.path("4. RESULTADOS", "06_tratamiento_continuo",
                               "T24_tres_medidas_real_vs_placebo.csv"), show_col_types = FALSE) %>%
@@ -227,7 +306,7 @@ cat("Chequeo de escala del error estándar (Q5, costo, medida A, real):\n")
 cat("  T24.error_estandar x 100 =", ee_t24_x100[chequeo_ee$ejercicio == "Real (choque de 2023)"], "\n")
 cat("  T25.error_estandar_Real  =", ee_t25, "\n")
 if (abs(ee_t24_x100[chequeo_ee$ejercicio == "Real (choque de 2023)"] - ee_t25) > 1e-6) {
-  stop("G4: la escala del error estándar de T24 no cuadra con T25. Deteniendo -- revisar.")
+  stop("G5: la escala del error estándar de T24 no cuadra con T25. Deteniendo -- revisar.")
 }
 cat("Control de escala OK: T24.error_estandar esta en escala cruda (x100 = T25).\n")
 
@@ -247,20 +326,6 @@ t24_todo <- bind_rows(t24_sin, t24_con) %>%
                                              "Placebo (año sin choque: 2019)"))
   )
 
-# facet_grid(..., scales = "free_y") deja CADA panel libre, no cada columna.
-# Para que las dos filas (sin/con tamaño) de una misma columna (resultado)
-# compartan escala -- sin instalar ggh4x ni patchwork -- se agregan puntos
-# invisibles con el rango (mínimo y máximo) de cada columna, repetidos en
-# las dos filas: al incluirlos, ggplot expande cada panel de esa columna al
-# mismo rango, y las columnas entre sí siguen siendo libres.
-rango_g4 <- t24_todo %>%
-  group_by(resultado) %>%
-  summarise(ymin = min(ic95_inf), ymax = max(ic95_sup), .groups = "drop") %>%
-  tidyr::crossing(control = levels(t24_todo$control)) %>%
-  tidyr::pivot_longer(c(ymin, ymax), values_to = "y") %>%
-  mutate(control = factor(control, levels = levels(t24_todo$control)),
-         quintil_q = t24_todo$quintil_q[1])
-
 cat("\nControl impreso (Q5, medida A):\n")
 t24_todo %>%
   filter(quintil_q == "Q5") %>%
@@ -269,14 +334,15 @@ t24_todo %>%
   as.data.frame() %>%
   print(row.names = FALSE)
 
-grafico_g4 <- ggplot(t24_todo, aes(x = quintil_q, y = efecto_porcentual,
-                                   color = ejercicio, shape = ejercicio)) +
+t24_sin_solo <- filter(t24_todo, control == "Sin control por tamaño")
+
+grafico_g5 <- ggplot(t24_sin_solo, aes(x = quintil_q, y = efecto_porcentual,
+                                       color = ejercicio, shape = ejercicio)) +
   geom_hline(yintercept = 0, color = "grey60") +
-  geom_point(data = rango_g4, aes(x = quintil_q, y = y), alpha = 0, inherit.aes = FALSE) +
   geom_errorbar(aes(ymin = ic95_inf, ymax = ic95_sup),
                 position = position_dodge(width = 0.4), width = 0.15) +
   geom_point(position = position_dodge(width = 0.4), size = 1.8) +
-  facet_grid(control ~ resultado, scales = "free_y") +
+  facet_wrap(~ resultado, scales = "free_y") +
   scale_color_manual(values = c(`Real (choque de 2023)` = AZUL,
                                 `Placebo (año sin choque: 2019)` = GRIS)) +
   scale_shape_manual(values = c(`Real (choque de 2023)` = 17,
@@ -285,53 +351,14 @@ grafico_g4 <- ggplot(t24_todo, aes(x = quintil_q, y = efecto_porcentual,
   labs(x = NULL, y = "Cambio frente a Q1 (%)", color = NULL, shape = NULL) +
   tema_figuras
 
-print(grafico_g4)
-guardar_figura(grafico_g4, "G4_real_vs_placebo_quintil", 13)
-
-
-# ==============================================================================
-# G5. EVENTO DE EMPLEO, CON Y SIN CONTROL POR TAMAÑO
-# ==============================================================================
-cat("\n=== G5. Evento empleo con/sin tamaño ===\n")
-
-t11b <- read_csv(file.path("4. RESULTADOS", "05_resultados_y_mecanismos",
-                           "T11b_coeficientes_tendencias.csv"), show_col_types = FALSE) %>%
-  filter(variable == "log_empleo") %>%
-  mutate(control = factor(control,
-                          levels = c("Sin control por tamaño", "Con control por tamaño"),
-                          labels = c("Sin control por tamaño (principal)", "Con control por tamaño")))
-
-cat("Control impreso (log_empleo, 2023, y p de años previos):\n")
-t11b %>%
-  filter(anio == 2023) %>%
-  select(control, efecto_pct, p_previos) %>%
-  as.data.frame() %>%
-  print(row.names = FALSE)
-
-grafico_g5 <- ggplot(t11b, aes(x = anio, y = efecto_pct, color = control, shape = control)) +
-  geom_hline(yintercept = 0, color = "grey60") +
-  geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
-  geom_errorbar(aes(ymin = ic95_inf_pct, ymax = ic95_sup_pct),
-                position = position_dodge(width = 0.35), width = 0) +
-  geom_point(position = position_dodge(width = 0.35), size = 1.6) +
-  scale_color_manual(values = c(`Sin control por tamaño (principal)` = AZUL,
-                                `Con control por tamaño` = GRIS)) +
-  scale_shape_manual(values = c(`Sin control por tamaño (principal)` = 17,
-                                `Con control por tamaño` = 16)) +
-  scale_x_continuous(breaks = c(2015, 2017, 2019, 2021, 2023)) +
-  scale_y_continuous(breaks = seq(-5, 10, 2.5), labels = fmt_num) +
-  labs(x = NULL, y = "Efecto por DE de exposición (%)",
-       color = NULL, shape = NULL) +
-  tema_figuras
-
 print(grafico_g5)
-guardar_figura(grafico_g5, "G5_evento_empleo_tamano", 9)
+guardar_figura(grafico_g5, "G5_real_vs_placebo_quintil", 8)
 
 
 # ==============================================================================
-# G6. QUINTILES: FRENTE A 2022 Y FRENTE AL PROMEDIO PREVIO, CON Y SIN TAMAÑO
+# G6. QUINTILES: FRENTE A 2022 Y FRENTE AL PROMEDIO PREVIO -- SIN TAMAÑO
 # ==============================================================================
-cat("\n=== G6. Quintiles, dos referencias ===\n")
+cat("\n=== G6. Quintiles, dos referencias (sin tamaño) ===\n")
 
 t09_sin <- read_csv(file.path("4. RESULTADOS", "05_resultados_y_mecanismos",
                               "T09_quintiles_exposicion.csv"), show_col_types = FALSE) %>%
@@ -341,6 +368,9 @@ t09_con <- read_csv(file.path("4. RESULTADOS", "05_resultados_y_mecanismos",
   mutate(control = "Con control por tamaño")
 
 t09_todo <- bind_rows(t09_sin, t09_con) %>%
+  # T09 ahora también trae "2023 vs 2021" y "2024 vs 2022" (nuevas lecturas
+  # agregadas en 05); G6/A4_3 solo muestran las dos de siempre.
+  filter(lectura %in% c("2023 vs 2022", "2023 vs promedio previo")) %>%
   mutate(
     quintil_q = paste0("Q", quintil),
     control = factor(control, levels = c("Sin control por tamaño", "Con control por tamaño")),
@@ -359,8 +389,101 @@ t09_todo %>%
   as.data.frame() %>%
   print(row.names = FALSE)
 
-grafico_g6 <- ggplot(t09_todo, aes(x = quintil_q, y = efecto_pct,
-                                   color = lectura, shape = lectura)) +
+t09_sin_solo <- filter(t09_todo, control == "Sin control por tamaño")
+
+grafico_g6 <- ggplot(t09_sin_solo, aes(x = quintil_q, y = efecto_pct,
+                                       color = lectura, shape = lectura)) +
+  geom_hline(yintercept = 0, color = "grey60") +
+  geom_errorbar(aes(ymin = ic95_inf_pct, ymax = ic95_sup_pct),
+                position = position_dodge(width = 0.4), width = 0.15) +
+  geom_point(position = position_dodge(width = 0.4), size = 1.8) +
+  facet_wrap(~ resultado, scales = "free_y") +
+  scale_color_manual(values = c(`Frente a 2022` = AZUL, `Frente al promedio previo` = GRIS)) +
+  scale_shape_manual(values = c(`Frente a 2022` = 17, `Frente al promedio previo` = 16)) +
+  scale_y_continuous(labels = fmt_num) +
+  labs(x = NULL, y = "Cambio frente a Q1 (%)", color = NULL, shape = NULL) +
+  tema_figuras
+
+print(grafico_g6)
+guardar_figura(grafico_g6, "G6_quintiles_referencias", 8)
+
+
+# ==============================================================================
+# ANEXO: CONTROL POR TAMAÑO x AÑO
+# ==============================================================================
+cat("\n=== Anexo: figuras con control por tamaño ===\n")
+
+# --- A4_1: evento de empleo, con y sin control por tamaño (antes G5) ------------
+t11b <- read_csv(file.path("4. RESULTADOS", "05_resultados_y_mecanismos",
+                           "T11b_coeficientes_tendencias.csv"), show_col_types = FALSE) %>%
+  filter(variable == "log_empleo") %>%
+  mutate(control = factor(control,
+                          levels = c("Sin control por tamaño", "Con control por tamaño"),
+                          labels = c("Sin control por tamaño (principal)", "Con control por tamaño")))
+
+cat("Control impreso (log_empleo, 2023, y p de años previos):\n")
+t11b %>%
+  filter(anio == 2023) %>%
+  select(control, efecto_pct, p_previos) %>%
+  as.data.frame() %>%
+  print(row.names = FALSE)
+
+grafico_a4_1 <- ggplot(t11b, aes(x = anio, y = efecto_pct, color = control, shape = control)) +
+  geom_hline(yintercept = 0, color = "grey60") +
+  geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
+  geom_errorbar(aes(ymin = ic95_inf_pct, ymax = ic95_sup_pct),
+                position = position_dodge(width = 0.35), width = 0) +
+  geom_point(position = position_dodge(width = 0.35), size = 1.6) +
+  scale_color_manual(values = c(`Sin control por tamaño (principal)` = AZUL,
+                                `Con control por tamaño` = GRIS)) +
+  scale_shape_manual(values = c(`Sin control por tamaño (principal)` = 17,
+                                `Con control por tamaño` = 16)) +
+  scale_x_continuous(breaks = c(2015, 2017, 2019, 2021, 2023)) +
+  scale_y_continuous(breaks = seq(-5, 10, 2.5), labels = fmt_num) +
+  labs(x = NULL, y = "Efecto por DE de exposición (%)",
+       color = NULL, shape = NULL) +
+  tema_figuras
+
+print(grafico_a4_1)
+guardar_figura(grafico_a4_1, "A4_1_evento_empleo_tamano", 9, carpeta = CARPETA_ANEXO)
+
+# --- A4_2: real vs placebo por quintil, con y sin tamaño (antes G4) -------------
+# facet_grid(..., scales = "free_y") deja CADA panel libre, no cada columna.
+# Para que las dos filas (sin/con tamaño) de una misma columna (resultado)
+# compartan escala -- sin instalar ggh4x ni patchwork -- se agregan puntos
+# invisibles con el rango (mínimo y máximo) de cada columna, repetidos en
+# las dos filas: al incluirlos, ggplot expande cada panel de esa columna al
+# mismo rango, y las columnas entre sí siguen siendo libres.
+rango_a4_2 <- t24_todo %>%
+  group_by(resultado) %>%
+  summarise(ymin = min(ic95_inf), ymax = max(ic95_sup), .groups = "drop") %>%
+  tidyr::crossing(control = levels(t24_todo$control)) %>%
+  tidyr::pivot_longer(c(ymin, ymax), values_to = "y") %>%
+  mutate(control = factor(control, levels = levels(t24_todo$control)),
+         quintil_q = t24_todo$quintil_q[1])
+
+grafico_a4_2 <- ggplot(t24_todo, aes(x = quintil_q, y = efecto_porcentual,
+                                     color = ejercicio, shape = ejercicio)) +
+  geom_hline(yintercept = 0, color = "grey60") +
+  geom_point(data = rango_a4_2, aes(x = quintil_q, y = y), alpha = 0, inherit.aes = FALSE) +
+  geom_errorbar(aes(ymin = ic95_inf, ymax = ic95_sup),
+                position = position_dodge(width = 0.4), width = 0.15) +
+  geom_point(position = position_dodge(width = 0.4), size = 1.8) +
+  facet_grid(control ~ resultado, scales = "free_y") +
+  scale_color_manual(values = c(`Real (choque de 2023)` = AZUL,
+                                `Placebo (año sin choque: 2019)` = GRIS)) +
+  scale_shape_manual(values = c(`Real (choque de 2023)` = 17,
+                                `Placebo (año sin choque: 2019)` = 16)) +
+  scale_y_continuous(labels = fmt_num) +
+  labs(x = NULL, y = "Cambio frente a Q1 (%)", color = NULL, shape = NULL) +
+  tema_figuras
+
+print(grafico_a4_2)
+guardar_figura(grafico_a4_2, "A4_2_placebo_quintil_tamano", 13, carpeta = CARPETA_ANEXO)
+
+# --- A4_3: quintiles, dos referencias, con y sin tamaño (antes G6) --------------
+grafico_a4_3 <- ggplot(t09_todo, aes(x = quintil_q, y = efecto_pct,
+                                     color = lectura, shape = lectura)) +
   geom_hline(yintercept = 0, color = "grey60") +
   geom_errorbar(aes(ymin = ic95_inf_pct, ymax = ic95_sup_pct),
                 position = position_dodge(width = 0.4), width = 0.15) +
@@ -372,9 +495,18 @@ grafico_g6 <- ggplot(t09_todo, aes(x = quintil_q, y = efecto_pct,
   labs(x = NULL, y = "Cambio frente a Q1 (%)", color = NULL, shape = NULL) +
   tema_figuras
 
-print(grafico_g6)
-guardar_figura(grafico_g6, "G6_quintiles_referencias", 12)
+print(grafico_a4_3)
+guardar_figura(grafico_a4_3, "A4_3_quintiles_referencias_tamano", 12, carpeta = CARPETA_ANEXO)
+
+# --- A4_4: evento por quintil (dosis-respuesta), con control por tamaño --------
+t09b_con <- leer_evento_quintiles(file.path("4. RESULTADOS", "05_resultados_y_mecanismos",
+                                            "T09b_evento_quintiles_tamano.csv"))
+
+grafico_a4_4 <- graficar_evento_quintiles(t09b_con)
+print(grafico_a4_4)
+guardar_figura(grafico_a4_4, "A4_4_evento_quintiles_tamano", 16, carpeta = CARPETA_ANEXO)
 
 cat("\nFIN: figuras G1, G3, G4, G5 y G6 guardadas en", CARPETA, "\n")
+cat("Anexo (control por tamaño) guardado en", CARPETA_ANEXO, "\n")
 cat("(G2 no se pidió en esta tanda; G9 se actualiza aparte en",
     "herramientas/graficar_tendencias_paralelas.R)\n")
