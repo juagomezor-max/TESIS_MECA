@@ -42,8 +42,8 @@ dir.create(CARPETA, recursive = TRUE, showWarnings = FALSE)
 AZUL <- "#1F4E79"   # más expuestas (Q5) / especificación principal / choque real
 GRIS <- "grey45"    # menos expuestas (Q1) / especificación secundaria / placebo
 
-COLORES_QUINTIL <- c(Q1 = "grey75", Q2 = "#B7C7DA", Q3 = "#7F9DBF",
-                     Q4 = "#4A6F9A", Q5 = "#1F4E79")
+COLORES_QUINTIL <- c(Q1 = "grey45", Q2 = "#C9D6E5", Q3 = "#93ADCB",
+                     Q4 = "#5A7FAA", Q5 = "#1F4E79")
 ETIQUETAS_QUINTIL <- c(Q1 = "Q1 (menos expuestas)", Q2 = "Q2", Q3 = "Q3",
                        Q4 = "Q4", Q5 = "Q5 (más expuestas)")
 
@@ -121,11 +121,17 @@ if (!identical(as.integer(obtenido_g1), as.integer(esperado_g1))) {
 }
 cat("Control G1 OK: conteos idénticos a T16 (total", sum(obtenido_g1), "firmas).\n")
 
+# Altura real del histograma (bins=50), para ubicar la anotación al ~85% del
+# máximo del eje y en vez de pegarla al tope del panel.
+max_y_g1 <- max(ggplot_build(
+  ggplot(firmas_g1, aes(x = kaitz)) + geom_histogram(bins = 50)
+)$data[[1]]$count)
+
 grafico_g1 <- ggplot(firmas_g1, aes(x = kaitz, fill = quintil)) +
   geom_histogram(bins = 50, color = "white") +
   geom_vline(xintercept = 1.16, linetype = "dashed", color = "grey50") +
-  annotate("text", x = 1.16, y = Inf, label = "Mínimo de 2022 (1,16)",
-           hjust = -0.05, vjust = 1.5, size = 2.6, color = "grey30") +
+  annotate("text", x = 1.18, y = 0.85 * max_y_g1, label = "Mínimo de 2022 (1,16)",
+           hjust = 0, size = 3, color = "grey30") +
   scale_fill_manual(values = COLORES_QUINTIL, labels = ETIQUETAS_QUINTIL) +
   scale_x_continuous(labels = fmt_dec) +
   scale_y_continuous(labels = fmt_num) +
@@ -146,15 +152,22 @@ t21 <- read_csv(file.path("4. RESULTADOS", "06_tratamiento_continuo",
   mutate(quintil_q = quintil_corto(quintil),
          tramo = ifelse(ANIO <= 2019, "2015-2019", "2021-2024"))
 
+# Capas separadas por quintil para controlar el orden de dibujo: Q2-Q4 abajo,
+# Q1 y Q5 encima (últimas capas), para que no queden tapados.
+t21_medio <- filter(t21, quintil_q %in% c("Q2", "Q3", "Q4"))
+t21_q1 <- filter(t21, quintil_q == "Q1")
+t21_q5 <- filter(t21, quintil_q == "Q5")
+
 grafico_g3 <- ggplot(t21, aes(x = ANIO, y = vs_2015, color = quintil_q,
-                              linewidth = quintil_q,
                               group = interaction(quintil_q, tramo))) +
   geom_hline(yintercept = 0, color = "grey60") +
   geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
-  geom_line() +
-  geom_point(size = 1.4) +
-  scale_linewidth_manual(values = c(Q1 = 0.7, Q2 = 0.7, Q3 = 0.7, Q4 = 0.7, Q5 = 1.1),
-                         guide = "none") +
+  geom_line(data = t21_medio, linewidth = 0.6) +
+  geom_point(data = t21_medio, size = 1.4) +
+  geom_line(data = t21_q1, linewidth = 1.1) +
+  geom_point(data = t21_q1, size = 1.4) +
+  geom_line(data = t21_q5, linewidth = 1.1) +
+  geom_point(data = t21_q5, size = 1.4) +
   scale_color_manual(values = COLORES_QUINTIL, labels = ETIQUETAS_QUINTIL) +
   scale_x_continuous(breaks = c(2015, 2017, 2019, 2021, 2023)) +
   scale_y_continuous(labels = fmt_num) +
@@ -207,8 +220,25 @@ t24_todo <- bind_rows(t24_sin, t24_con) %>%
     control = factor(control, levels = c("Sin control por tamaño", "Con control por tamaño")),
     resultado = factor(resultado,
                        levels = c("Costo laboral por trabajador (log)", "Empleo total (log)"),
-                       labels = c("Costo laboral por trabajador", "Empleo total"))
+                       labels = c("Costo laboral por trabajador", "Empleo total")),
+    # Orden de la leyenda: Real primero, Placebo después.
+    ejercicio = factor(ejercicio, levels = c("Real (choque de 2023)",
+                                             "Placebo (año sin choque: 2019)"))
   )
+
+# facet_grid(..., scales = "free_y") deja CADA panel libre, no cada columna.
+# Para que las dos filas (sin/con tamaño) de una misma columna (resultado)
+# compartan escala -- sin instalar ggh4x ni patchwork -- se agregan puntos
+# invisibles con el rango (mínimo y máximo) de cada columna, repetidos en
+# las dos filas: al incluirlos, ggplot expande cada panel de esa columna al
+# mismo rango, y las columnas entre sí siguen siendo libres.
+rango_g4 <- t24_todo %>%
+  group_by(resultado) %>%
+  summarise(ymin = min(ic95_inf), ymax = max(ic95_sup), .groups = "drop") %>%
+  tidyr::crossing(control = levels(t24_todo$control)) %>%
+  tidyr::pivot_longer(c(ymin, ymax), values_to = "y") %>%
+  mutate(control = factor(control, levels = levels(t24_todo$control)),
+         quintil_q = t24_todo$quintil_q[1])
 
 cat("\nControl impreso (Q5, medida A):\n")
 t24_todo %>%
@@ -221,6 +251,7 @@ t24_todo %>%
 grafico_g4 <- ggplot(t24_todo, aes(x = quintil_q, y = efecto_porcentual,
                                    color = ejercicio, shape = ejercicio)) +
   geom_hline(yintercept = 0, color = "grey60") +
+  geom_point(data = rango_g4, aes(x = quintil_q, y = y), alpha = 0, inherit.aes = FALSE) +
   geom_errorbar(aes(ymin = ic95_inf, ymax = ic95_sup),
                 position = position_dodge(width = 0.4), width = 0.15) +
   geom_point(position = position_dodge(width = 0.4), size = 1.8) +
@@ -267,8 +298,8 @@ grafico_g5 <- ggplot(t11b, aes(x = anio, y = efecto_pct, color = control, shape 
   scale_shape_manual(values = c(`Sin control por tamaño (principal)` = 17,
                                 `Con control por tamaño` = 16)) +
   scale_x_continuous(breaks = c(2015, 2017, 2019, 2021, 2023)) +
-  scale_y_continuous(labels = fmt_num) +
-  labs(x = NULL, y = "Efecto por DE de exposición, frente a 2022 (%)",
+  scale_y_continuous(breaks = seq(-5, 10, 2.5), labels = fmt_num) +
+  labs(x = NULL, y = "Efecto por DE de exposición (%)",
        color = NULL, shape = NULL) +
   tema_figuras
 

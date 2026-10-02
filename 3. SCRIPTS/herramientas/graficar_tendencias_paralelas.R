@@ -315,11 +315,13 @@ niveles_titulo <- titulos_panel$titulo[match(VARIABLES_TENDENCIAS$variable, titu
 datos_grafico <- coeficientes_tendencias %>%
   left_join(select(titulos_panel, variable, titulo), by = "variable") %>%
   mutate(titulo = factor(titulo, levels = niveles_titulo),
-         control = factor(control, levels = c("Sin control por tamaño", "Con control por tamaño")))
+         control = factor(control,
+                          levels = c("Sin control por tamaño", "Con control por tamaño"),
+                          labels = c("Sin control por tamaño (principal)", "Con control por tamaño")))
 
-PALETA_TENDENCIAS <- c("Sin control por tamaño" = "#1F4E79",
+PALETA_TENDENCIAS <- c("Sin control por tamaño (principal)" = "#1F4E79",
                        "Con control por tamaño" = "grey45")
-FORMAS_TENDENCIAS <- c("Sin control por tamaño" = 17, "Con control por tamaño" = 16)
+FORMAS_TENDENCIAS <- c("Sin control por tamaño (principal)" = 17, "Con control por tamaño" = 16)
 
 grafico_tendencias <- ggplot(datos_grafico,
                              aes(x = anio, y = efecto_pct, color = control, shape = control)) +
