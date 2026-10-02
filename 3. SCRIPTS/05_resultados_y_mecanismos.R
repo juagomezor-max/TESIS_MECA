@@ -1684,12 +1684,24 @@ trayectorias_q1_q5 %>%
 COLORES_Q <- setNames(c(COLOR_BAJA, "grey30"), c(GRUPO_ALTO, GRUPO_BAJO))
 FORMAS_Q  <- setNames(c(17, 16), c(GRUPO_ALTO, GRUPO_BAJO))
 
+# Segmento punteado que une 2019 con 2021 (no hay dato en 2020) para cada
+# variable y grupo, igual que en G3 y G4 de graficar_figuras_tesis.R
+segmentos_q1_q5 <- trayectorias_q1_q5 %>%
+  filter(ANIO %in% c(2019, 2021)) %>%
+  select(etiqueta, grupo, ANIO, media) %>%
+  pivot_wider(names_from = ANIO, values_from = media, names_prefix = "anio_")
+
 grafico_q1_q5 <- ggplot(trayectorias_q1_q5,
                         aes(x = ANIO, y = media, color = grupo, fill = grupo,
                             shape = grupo, group = interaction(grupo, tramo))) +
   geom_hline(yintercept = 0, color = "grey60") +
   geom_vline(xintercept = 2022.5, linetype = "dashed", color = "grey50") +
   geom_ribbon(aes(ymin = ic95_inf, ymax = ic95_sup), alpha = 0.15, color = NA) +
+  geom_segment(data = segmentos_q1_q5,
+               aes(x = 2019, xend = 2021, y = anio_2019, yend = anio_2021,
+                   color = grupo),
+               inherit.aes = FALSE, linetype = "dotted", linewidth = 0.6,
+               show.legend = FALSE) +
   geom_line(linewidth = 0.6) +
   geom_point(size = 1.6) +
   facet_wrap(~ etiqueta, ncol = 2, scales = "free_y") +
