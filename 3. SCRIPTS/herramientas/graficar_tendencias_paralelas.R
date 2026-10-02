@@ -317,9 +317,9 @@ datos_grafico <- coeficientes_tendencias %>%
   mutate(titulo = factor(titulo, levels = niveles_titulo),
          control = factor(control, levels = c("Sin control por tamaño", "Con control por tamaño")))
 
-PALETA_TENDENCIAS <- c("Sin control por tamaño" = "grey30",
-                       "Con control por tamaño" = "#1F4E79")
-FORMAS_TENDENCIAS <- c("Sin control por tamaño" = 16, "Con control por tamaño" = 17)
+PALETA_TENDENCIAS <- c("Sin control por tamaño" = "#1F4E79",
+                       "Con control por tamaño" = "grey45")
+FORMAS_TENDENCIAS <- c("Sin control por tamaño" = 17, "Con control por tamaño" = 16)
 
 grafico_tendencias <- ggplot(datos_grafico,
                              aes(x = anio, y = efecto_pct, color = control, shape = control)) +
