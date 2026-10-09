@@ -338,6 +338,62 @@ firmas_2022 <- panel %>%
 
 ver(firmas_2022, filas = 10)
 
+# --- Diagnóstico del Kaitz ANTES de winsorizar -----------------------
+
+limites_revision <- quantile(
+  firmas_2022$Bite2022_obreros,
+  probs = c(0.01, 0.99),
+  na.rm = TRUE
+)
+
+revision_kaitz <- panel %>%
+  filter(ANIO == 2022, !is.na(Bite2022_obreros)) %>%
+  mutate(
+    grupo_revision = case_when(
+      Bite2022_obreros < limites_revision[1] ~ "Extremo inferior",
+      Bite2022_obreros > limites_revision[2] ~ "Extremo superior",
+      TRUE ~ "Dentro del 1–99%"
+    ),
+    salario_anual_obrero_miles = ifelse(
+      obreros_permanentes > 0,
+      sueldos_permanentes_obreros_c3r2c1 / obreros_permanentes,
+      NA_real_
+    ),
+    salario_mensual_obrero_pesos =
+      salario_anual_obrero_miles * 1000 / 12
+  ) %>%
+  select(
+    NORDEMP, grupo_revision, Bite2022_obreros,
+    obreros_permanentes,
+    sueldos_permanentes_obreros_c3r2c1,
+    salario_mensual_obrero_pesos,
+    CIIU4, DPTO, tamano_empresa
+  )
+
+# Resumen: extremos frente al resto de las firmas
+resumen_extremos <- revision_kaitz %>%
+  group_by(grupo_revision) %>%
+  summarise(
+    firmas = n(),
+    kaitz_min = min(Bite2022_obreros),
+    kaitz_mediana = median(Bite2022_obreros),
+    kaitz_max = max(Bite2022_obreros),
+    obreros_mediana = median(obreros_permanentes, na.rm = TRUE),
+    salario_mensual_mediana = median(
+      salario_mensual_obrero_pesos, na.rm = TRUE
+    ),
+    .groups = "drop"
+  )
+
+print(as.data.frame(resumen_extremos), row.names = FALSE)
+
+# Detalle de las firmas que serán recortadas
+casos_extremos <- revision_kaitz %>%
+  filter(grupo_revision != "Dentro del 1–99%") %>%
+  arrange(desc(Bite2022_obreros))
+
+View(casos_extremos)
+
 # Algunas firmas reportan muy pocos obreros y su Kaitz queda en valores
 # extremos. Recortamos al 1% y al 99% para que no distorsionen los resultados.
 limites <- quantile(firmas_2022$Bite2022_obreros, probs = c(0.01, 0.99))
