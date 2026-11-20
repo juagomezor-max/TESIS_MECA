@@ -1,0 +1,10 @@
+fila,costo_sin_tamano,costo_tamano_2022,costo_tamano_2019,empleo_sin_tamano,empleo_tamano_2022,empleo_tamano_2019
+A. Cambio 2022 -> 2023,3.27***,4.04***,3.77***,-0.77,-1.75***,-1.22*
+B. Salto 2023 ajustado por tendencia previa,3.95***,4.79***,4.51***,0.44,-1.43**,-1.35*
+C. DiD simple (promedio post - pre),-0.85**,-1.00**,-1.22***,-4.33***,-0.97,-4.41***
+D. 2023 frente a 2021,-0.17,0.20,-0.11,-1.98***,-0.97,-2.39***
+2023 vs promedio previo,NA,-1.80***,-2.06***,NA,-0.81,-4.44***
+p_previos,0,0,0,0,0.4551,1e-04
+Rango empleo (mínimo),NA,NA,NA,-4.33,-1.75,-4.44
+Rango empleo (máximo),NA,NA,NA,0.44,-0.81,-1.22
+Rango empleo (todas las especificaciones),NA,NA,NA,"[-4.44, 0.44]",NA,NA
