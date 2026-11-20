@@ -1,0 +1,3 @@
+variable,prueba,estadistico,gl1,gl2,p_valor,n_firmas
+empleo_total,Wald robusto HC1 (lm + sandwich),101.41520707882364,4,5094,3.3092446489538605e-83,5099
+empleo_total,Kruskal-Wallis,860.4489235008747,4,NA,6.174384496857546e-185,5099

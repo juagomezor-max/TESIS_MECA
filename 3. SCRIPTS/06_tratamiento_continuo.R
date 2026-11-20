@@ -1460,6 +1460,87 @@ cat("\nCÓMO LEER ESTO:",
     "\n  Si aparece un efecto concentrado en un tramo, hay que reportarlo por quintiles",
     "\n  y revisar si ese grupo tiene algo particular (tamaño, sector, medición).\n")
 
+
+# ==============================================================================
+# C_EXTRA. PRUEBA DE IGUALDAD DE MEDIAS DE EMPLEO ENTRE QUINTILES (TABLA 1)
+# ==============================================================================
+titulo("C_EXTRA. PRUEBA DE IGUALDAD DE MEDIAS DE EMPLEO ENTRE QUINTILES")
+
+# Pedido del asesor para la Tabla 1 de la tesis ("Características de las
+# firmas por quintil de exposición al salario mínimo (2022)", construida en
+# la sección C1 de arriba, objeto `distribucion`). Misma muestra exacta:
+# datos %>% filter(ANIO == 2022), 5.099 firmas, un registro por firma.
+# Se prueba solo "Empleo prom." (es una media); el Kaitz no se prueba porque
+# difiere por construcción entre quintiles, y "Empleo total"/"% del empleo"
+# no se prueban porque son sumas, no medias.
+muestra_prueba_medias <- datos %>% filter(ANIO == 2022)
+
+cat("Firmas en la muestra de la prueba:", nrow(muestra_prueba_medias), "\n")
+
+modelo_empleo_quintil <- lm(empleo_total ~ factor(quintil), data = muestra_prueba_medias)
+
+# Medias por quintil segun el modelo (deben coincidir con "Empleo prom." de
+# la Tabla 1 / distribucion): el intercepto es la media de Q1, y cada
+# coeficiente es la diferencia de ese quintil frente a Q1.
+medias_modelo <- muestra_prueba_medias %>%
+  group_by(quintil) %>%
+  summarise(empleo_promedio_modelo = mean(empleo_total, na.rm = TRUE), .groups = "drop")
+
+medias_comparacion <- distribucion %>%
+  select(quintil, empleo_promedio) %>%
+  left_join(medias_modelo, by = "quintil") %>%
+  mutate(diferencia = abs(empleo_promedio - empleo_promedio_modelo))
+
+cat("\nVerificación: medias por quintil (Tabla 1) vs. medias usadas en la prueba:\n")
+print(as.data.frame(medias_comparacion), row.names = FALSE)
+
+if (any(medias_comparacion$diferencia > 1e-6)) {
+  stop("Las medias de empleo por quintil usadas en la prueba NO coinciden con ",
+       "la columna 'Empleo prom.' de la Tabla 1 (distribucion). Deteniendo, ",
+       "como se pidió, sin guardar la prueba.")
+}
+cat("Las medias coinciden con la Tabla 1 (diferencia < 1e-6).\n")
+
+# --- Prueba de Wald conjunta, errores robustos HC1 --------------------------
+# car y lmtest no están instalados en este proyecto (verificado con
+# requireNamespace); sandwich sí. Se calcula el mismo F conjunto que daría
+# car::linearHypothesis(modelo, <coefs de quintil>, vcov = vcovHC(modelo,"HC1")):
+# Wald = beta_r' %*% solve(V_r) %*% beta_r ; F = Wald / q ; gl1 = q, gl2 = n-k.
+vcov_hc1 <- sandwich::vcovHC(modelo_empleo_quintil, type = "HC1")
+coefs_quintil <- coef(modelo_empleo_quintil)
+idx_quintil <- grep("^factor\\(quintil\\)", names(coefs_quintil))
+beta_r <- coefs_quintil[idx_quintil]
+V_r <- vcov_hc1[idx_quintil, idx_quintil]
+n_obs <- nobs(modelo_empleo_quintil)
+k_param <- length(coefs_quintil)
+gl1_wald <- length(idx_quintil)
+gl2_wald <- n_obs - k_param
+wald_stat <- as.numeric(t(beta_r) %*% solve(V_r) %*% beta_r)
+F_wald <- wald_stat / gl1_wald
+p_wald <- pf(F_wald, gl1_wald, gl2_wald, lower.tail = FALSE)
+
+cat("\nPrueba de Wald (H0: los 4 coeficientes de quintil = 0), HC1:\n")
+cat("  F(", gl1_wald, ",", gl2_wald, ") =", round(F_wald, 4), " p =", signif(p_wald, 4), "\n")
+
+# --- Kruskal-Wallis (chequeo no paramétrico) ---------------------------------
+prueba_kw <- kruskal.test(empleo_total ~ factor(quintil), data = muestra_prueba_medias)
+cat("\nKruskal-Wallis:\n")
+cat("  chi2(", unname(prueba_kw$parameter), ") =", round(unname(prueba_kw$statistic), 4),
+    " p =", signif(prueba_kw$p.value, 4), "\n")
+
+prueba_igualdad_medias <- tibble::tibble(
+  variable   = "empleo_total",
+  prueba     = c("Wald robusto HC1 (lm + sandwich)", "Kruskal-Wallis"),
+  estadistico = c(F_wald, unname(prueba_kw$statistic)),
+  gl1        = c(gl1_wald, unname(prueba_kw$parameter)),
+  gl2        = c(gl2_wald, NA_real_),
+  p_valor    = c(p_wald, prueba_kw$p.value),
+  n_firmas   = nrow(muestra_prueba_medias)
+)
+
+write_csv(prueba_igualdad_medias, file.path(CARPETA, "T01_prueba_igualdad_medias.csv"))
+cat("\nGuardado: T01_prueba_igualdad_medias.csv (solo csv)\n")
+
 if (length(compendio) > 0) {
   save_as_docx(values = compendio, path = file.path(CARPETA, "00_compendio_continuo.docx"))
   cat("\nCompendio guardado con", length(compendio), "tablas.\n")
